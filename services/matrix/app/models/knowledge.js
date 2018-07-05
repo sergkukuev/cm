@@ -34,58 +34,42 @@ Knowledge.statics.create = function(knowledge, callback) {
 }
 
 // Read
-Knowledge.statics.get = function(page = 0, count = 15, callback) {
-	return this.find(function(err, knowledges) {
-		if (err)
-			callback(err, null);
-		else {
-			if (knowledges) {
-				let result = [];
-				for (let i = 0; i < knowledges.length; i++)
-					result[i] = getKnowledgeInfo(knowledges[i]);
-				callback(null, result);
-			}
-			else
-				callback(null, null);
-		}
-	}).skip(page * count).limit(count);
+Knowledge.statics.read = function(page = 0, count = 0, callback) {
+	if (count == 0) {
+		return this.find(function(err, knowledges) {
+			if (err)
+				callback(err, null);
+			else {
+				if (knowledges) {
+					let result = [];
+					for (let i = 0; i < knowledges.length; i++)
+						result[i] = getKnowledgeInfo(knowledges[i]);
+					callback(null, result);
+				}
+				else
+					callback(null, null);
+			}	
+		});
+	}
+	else {
+		return this.find(function(err, knowledges) {
+			if (err)
+				callback(err, null);
+			else {
+				if (knowledges) {
+					let result = [];
+					for (let i = 0; i < knowledges.length; i++)
+						result[i] = getKnowledgeInfo(knowledges[i]);
+					callback(null, result);
+				}
+				else
+					callback(null, null);
+			}	
+		}).skip(page * count).limit(count);
+	}
 }
 
-Knowledge.statics.get = function(callback) {
-	return this.find(function(err, knowledges) {
-		if (err)
-			callback(err, null);
-		else {
-			if (knowledges) {
-				let result = [];
-				for (let i = 0; i < knowledges.length; i++)
-					result[i] = getKnowledgeInfo(knowledges[i]);
-				callback(null, result);
-			}
-			else
-				callback(null, null);
-		}
-	});
-}
-
-Knowledge.statics.getByName = function(_name, callback) {
-	return this.find({ name: _name}, function(err, knowledges) {
-		if (err)
-			callback(err, null);
-		else {
-			if (knowledges) {
-				let result = [];
-				for (let i = 0; i < knowledges.length; i++)
-					result[i] = getKnowledgeInfo(knowledges[i]);
-				callback(null, result);
-			}
-			else
-				callback(null, null);
-		}
-	});
-}
-
-Knowledge.statics.getById = function(id, callback) {
+Knowledge.statics.read = function(id, callback) {
 	return this.findById(id, function(err, knowledge) {
 		err ? callback(err, null) : (knowledge ? callback(null, getKnowledgeInfo(knowledge)) : callback(null, null));
 	});
@@ -121,7 +105,7 @@ Knowledge.statics.delById = function(id, callback) {
 	});
 }
 
-Knowledge.statics.delete = function(callback) {
+Knowledge.statics.clear = function(callback) {
 	this.remove({}, function(err, result) {
 		err ? callback(err, null) : (result ? callback(null, result) : callback(null, null));
 	});
