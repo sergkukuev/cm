@@ -30,7 +30,9 @@ Knowledge.virtual('date').get(function() {
 
 // Create
 Knowledge.statics.create = function(knowledge, callback) {
-	return knowledge.save(callback);
+	return knowledge.save(function(err, result) {
+		err ? callback(err, null) : callback(null, getKnowledgeInfo(result));
+	});
 }
 
 // Read
@@ -69,9 +71,29 @@ Knowledge.statics.read = function(page = 0, count = 0, callback) {
 	}
 }
 
-Knowledge.statics.read = function(id, callback) {
+Knowledge.statics.readById = function(id, callback) {
 	return this.findById(id, function(err, knowledge) {
 		err ? callback(err, null) : (knowledge ? callback(null, getKnowledgeInfo(knowledge)) : callback(null, null));
+	});
+}
+
+// Update
+Knowledge.statics.updateById = function(id, data, callback) {
+	return this.findByIdAndUpdate(id, data, {new: true}, function(err, knowledge) {
+		err ? callback(err, null) : (knowledge ? callback(null, getKnowledgeInfo(knowledge)) : callback(null, null));
+	});
+}
+
+// delete
+Knowledge.statics.delById = function(id, callback) {
+	return this.findByIdAndRemove(id, function(err, knowledge) {
+		err ? callback(err, null) : (knowledge ? callback(null, getKnowledgeInfo(knowledge)) : callback(null, null));
+	});
+}
+
+Knowledge.statics.delete = function(callback) {
+	this.remove({}, function(err, result) {
+		err ? callback(err, null) : (result ? callback(null, result) : callback(null, null));
 	});
 }
 
@@ -84,31 +106,6 @@ function getKnowledgeInfo(knowledge) {
 		marks		: knowledge.marks
 	};
 	return item;
-}
-
-// Update
-Knowledge.statics.updateById = function(id, data, callback) {
-	return this.findByIdAndUpdate(id, {
-			name		: data.name, 
-			category	: data.category,
-			sub_category: data.sub_category, 
-			marks		: data.marks
-		}, {new: true}, function(err, knowledge) {
-		err ? callback(err, null) : (knowledge ? callback(null, getKnowledgeInfo(knowledge)) : callback(null, null));
-	});
-}
-
-// delete
-Knowledge.statics.delById = function(id, callback) {
-	return this.findByIdAndRemove(id, function(err, knowledge) {
-		err ? callback(err, null) : (knowledge ? callback(null, getKnowledgeInfo(knowledge)) : callback(null, null));
-	});
-}
-
-Knowledge.statics.clear = function(callback) {
-	this.remove({}, function(err, result) {
-		err ? callback(err, null) : (result ? callback(null, result) : callback(null, null));
-	});
 }
 
 mongoose.model("Knowledge", Knowledge);
