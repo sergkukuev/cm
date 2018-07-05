@@ -31,7 +31,7 @@ Knowledge.virtual('date').get(function() {
 // Create
 Knowledge.statics.create = function(knowledge, callback) {
 	return knowledge.save(function(err, result) {
-		err ? callback(err, null) : callback(null, getKnowledgeInfo(result));
+		err ? callback(err, null) : callback(null, Format(result));
 	});
 }
 
@@ -45,7 +45,7 @@ Knowledge.statics.read = function(page = 0, count = 0, callback) {
 				if (knowledges) {
 					let result = [];
 					for (let i = 0; i < knowledges.length; i++)
-						result[i] = getKnowledgeInfo(knowledges[i]);
+						result[i] = Format(knowledges[i]);
 					callback(null, result);
 				}
 				else
@@ -61,7 +61,7 @@ Knowledge.statics.read = function(page = 0, count = 0, callback) {
 				if (knowledges) {
 					let result = [];
 					for (let i = 0; i < knowledges.length; i++)
-						result[i] = getKnowledgeInfo(knowledges[i]);
+						result[i] = Format(knowledges[i]);
 					callback(null, result);
 				}
 				else
@@ -73,21 +73,21 @@ Knowledge.statics.read = function(page = 0, count = 0, callback) {
 
 Knowledge.statics.readById = function(id, callback) {
 	return this.findById(id, function(err, knowledge) {
-		err ? callback(err, null) : (knowledge ? callback(null, getKnowledgeInfo(knowledge)) : callback(null, null));
+		err ? callback(err, null) : (knowledge ? callback(null, Format(knowledge)) : callback(null, null));
 	});
 }
 
 // Update
 Knowledge.statics.updateById = function(id, data, callback) {
 	return this.findByIdAndUpdate(id, data, {new: true}, function(err, knowledge) {
-		err ? callback(err, null) : (knowledge ? callback(null, getKnowledgeInfo(knowledge)) : callback(null, null));
+		err ? callback(err, null) : (knowledge ? callback(null, Format(knowledge)) : callback(null, null));
 	});
 }
 
 // delete
 Knowledge.statics.delById = function(id, callback) {
 	return this.findByIdAndRemove(id, function(err, knowledge) {
-		err ? callback(err, null) : (knowledge ? callback(null, getKnowledgeInfo(knowledge)) : callback(null, null));
+		err ? callback(err, null) : (knowledge ? callback(null, Format(knowledge)) : callback(null, null));
 	});
 }
 
@@ -97,7 +97,7 @@ Knowledge.statics.delete = function(callback) {
 	});
 }
 
-function getKnowledgeInfo(knowledge) {
+function Format(knowledge) {
 	let item = {
 		id			: knowledge._id,
 		name		: knowledge.name,
