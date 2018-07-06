@@ -49,7 +49,8 @@ router.get('/:id', function(req, res, next) {
 
     knowledge.readById(id, function(err, result) {
         err ? res.status(400).send(myJSON.Status("Error", err)) :
-            (result ? res.status(200).send(myJSON.Data(result)) : res.status(404).send(myJSON.Status("Error", "Object by id (" + id + ") doesn\'t exist")));
+            (result ? res.status(200).send(myJSON.Data(result)) : 
+                res.status(404).send(myJSON.Status("Error", "Object by id (" + id + ") doesn\'t exist")));
     });
 });
 
@@ -76,13 +77,15 @@ router.put('/:id', function(req, res, next) {
 
     knowledge.updateById(id, data, function(err, result) {
         err ? res.status(400).send(myJSON.Status("Error", err)) : 
-        (result ? res.status(202).send(myJSON.Data(result)) : res.status(404).send(myJSON.Status("Error", "Object by id (" + id + ") doesn\'t exist")));
+        (result ? res.status(202).send(myJSON.Data(result)) : 
+            res.status(404).send(myJSON.Status("Error", "Object by id (" + id + ") doesn\'t exist")));
     });
 });
 
 router.delete('/', function(req, res, next) {
 	knowledge.delete(function(err, result) {
-		err ? res.status(400).send(myJSON.Status("Error", err)) : res.status(200).send(myJSON.Status("Ok", "Operation \'delete\' completed successfully"))
+        err ? res.status(400).send(myJSON.Status("Error", err)) :
+            res.status(200).send(myJSON.Status("Ok", "Operation \'delete\' completed successfully"))
 	});
 });
 
@@ -93,7 +96,8 @@ router.delete('/:id', function(req, res, next) {
 
 	knowledge.delById(id, function(err, result) {
 		err ? res.status(400).send(myJSON.Status("Error", err)) :
-			(knowledge ? res.status(200).send(myJSON.Status("Ok", "Data by id (" + id + ") deleted")) : res.status(404).send(myJSON.Status("Error", "Object by id (" + id + ") not found")));
+            (knowledge ? res.status(200).send(myJSON.Status("Ok", "Data by id (" + id + ") deleted")) :
+                res.status(404).send(myJSON.Status("Error", "Object by id (" + id + ") not found")));
 	});
 });
 
