@@ -10,12 +10,12 @@ let Knowledge = new Schema({
 	// Основная категория
 	category: { 
 		type: String,
-		default: "None"
+		default: "-"
 	},
 	// Подкатегория знания
 	sub_category: {
 		type: String,
-		default: "None"
+		default: "-"
 	},
 	// Ранжирование знания (Массив из 4-ех рангов: 0 - базовый уровень, 4 уровень эксперта)
 	marks: [{
