@@ -9,7 +9,6 @@ module.exports = function(app) {
 };
 
 router.post('/create', function(req, res, next) {
-    // TODO: validate data
     let data = new knowledge({
         name: req.body.name,
         category: req.body.ctgr,
@@ -48,17 +47,20 @@ router.put('/:id', function(req, res, next) {
     const id = req.params.id;
     if (!validator.checkId(id))
         res.status(400).send(StatusJSON('Error', 'Incorrect ID'));
-    // TODO: validate data
-    let data = {
-        name: req.body.name,
-        category: req.body.ctgr,
-        sub_category: req.body.sctgr,
-        marks: req.body.marks
-    };
-    
+        
+    let data = {};
+    if (!validator.checkUndefined(req.body.name))
+        data["name"] = req.body.name;
+    if (!validator.checkUndefined(req.body.ctgr))
+        data["category"] = req.body.ctgr;
+    if (!validator.checkUndefined(req.body.sctgr))
+        data["sub_category"] = req.body.ctgr;
+    if (!validator.checkUndefined(req.body.marks))
+        data["marks"] = req.body.marks;
+
     knowledge.updateById(id, data, function(err, result) {
         err ? res.status(400).send(StatusJSON('Error', err)) : 
-        (knowledge ? res.status(202).send(ResponseJSON(result)) : res.status(404).send(StatusJSON('Error', 'Object by id (' + id + ') not found')));
+        (result ? res.status(202).send(ResponseJSON(result)) : res.status(404).send(StatusJSON('Error', 'Object by id (' + id + ') doesn\'t exist')));
     });
 });
 
