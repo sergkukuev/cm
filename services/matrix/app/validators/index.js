@@ -11,13 +11,21 @@ module.exports = {
     },
     // Проверка корректности ID объекта
     checkId : function(id) {
+        let mongoose = require('mongoose');
         return mongoose.Types.ObjectId.isValid(id);
     }, 
     // Проверка строки на пустоту
-    checkEmptyStr : function(string) {
-        if (string.trim() == '')
+    checkEmptyStr : function(str) {
+        if (str.trim() == '')
             return true;
         else    
+            return false;
+    },
+    // Проверка строки на 'undefined'
+    checkUndefined : function(str) {
+        if (str == undefined)
+            return true;
+        else
             return false;
     }
 }
