@@ -67,7 +67,7 @@ router.put('/:id', function(req, res, next) {
     if (!validator.checkUndefined(req.body.sctgr))
         data["sub_category"] = req.body.sctgr;
     // Не пришли данные для обновления 
-    if (data.length == null)
+    if (Object.keys(data).length == 0)
         return res.status(200).send(StatusJSON("Ok", "There are no new values"));
 
     knowledge.updateById(id, data, function(err, result) {
