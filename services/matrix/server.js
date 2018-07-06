@@ -9,15 +9,15 @@ mongoose.connect(config.db);
 var db = mongoose.connection;
 
 db.on('error', function(err) {
-	log.error('Ошибка соединения:', err.message);
+	log.error('Matrix: Connection error with DB:', err.message);
 });
 
 db.once('open', function callback() {
-	log.info("Matrix: Успешное соединение с БД.");
+	log.info("Matrix: Successfully connection with DB.");
 });
 
 module.exports = require('./config/express') (app, config);
 
 app.listen(config.port, function(){
-	log.info('Matrix: Сервер запущен на порту ' + config.port);
+	log.info('Matrix: Starting server on port ' + config.port);
 });
