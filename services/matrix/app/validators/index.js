@@ -27,5 +27,12 @@ module.exports = {
             return true;
         else
             return false;
+    },
+    // Проверка массива marks (если marks = undefined, то просто скипаем, данная ошибка обрабатывается при попытке добавления в базу)
+    checkMarks : function(marks) {
+        if (marks.length == 4 && (marks instanceof Array))
+            return true;
+        else
+            return false;
     }
 }
