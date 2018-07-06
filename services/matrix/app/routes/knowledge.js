@@ -32,6 +32,9 @@ router.get('/', function(req, res, next) {
     const count = validator.parsePageOrCount(req.query.count); 
     const page = validator.parsePageOrCount(req.query.page);
 
+    if (page < 0 || count < 0)
+        return res.status(400).send(StatusJSON("Error", "Parameters \'page\' and \'count\' mustn\'t be negative"));
+
     knowledge.read(page, count, function(err, result) {
         err ? res.status(400).send(StatusJSON("Error", err)) : 
             res.status(200).send(ResponseJSON(result));

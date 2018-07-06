@@ -3,7 +3,7 @@ module.exports = {
     parsePageOrCount : function(string) {
         if (string) {
             let res = Number(parseInt(string));
-            if (isNaN(res) || res < 0)
+            if (isNaN(res))
                 return 0;   // Дефолтное значение
             return res;
         }
