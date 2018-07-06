@@ -17,7 +17,9 @@ Work.virtual('date').get(function() {
 });
 
 Work.statics.create = function(work, callback) {
-    return work.save(callback);
+    return work.save(function(err, result) {
+		err ? callback(err, null) : callback(null, Format(result));
+	});
 }
 
 Work.statics.read = function(page = 0, count = 0, callback) {
@@ -29,7 +31,7 @@ Work.statics.read = function(page = 0, count = 0, callback) {
                 if (work) {
                     let res = [];
                     for (let i = 0; i < work.length; i++)
-                        res[i] = getWork(work[i]);
+                        res[i] = Format(work[i]);
                     callback(null, res);
                 }
                 else
@@ -45,7 +47,7 @@ Work.statics.read = function(page = 0, count = 0, callback) {
                 if (work) {
                     let res = [];
                     for (let i = 0; i < work.length; i++)
-                        res[i] = getWork(work[i]);
+                        res[i] = Format(work[i]);
                     callback(null, res);
                 }
                 else
@@ -57,7 +59,7 @@ Work.statics.read = function(page = 0, count = 0, callback) {
 
 Work.statics.read =  function(id, callback) {
     return this.findById(id, function(err, work) {
-        err ? callback(err, null) : (work ? callback(null, getWork(work)) : callback(null, null));
+        err ? callback(err, null) : (work ? callback(null, Format(work)) : callback(null, null));
     });
 }
 
@@ -66,13 +68,13 @@ Work.statics.update = function(id, data, callback) {
         name: data.name, 
         tasks: data.tasks 
     }, { new: true }, function(err, work) {
-        err ? callback(err, null) : (work ? callback(null, getWork(work)) : callback(null, null));
+        err ? callback(err, null) : (work ? callback(null, Format(work)) : callback(null, null));
     });
 }
 
 Work.statics.delete = function(id, callback) {
 	return this.findByIdAndRemove(id, function(err, work) {
-		err ? callback(err, null) : (obj ? callback(null, getWork(work)) : callback(null, null));
+		err ? callback(err, null) : (obj ? callback(null, Format(work)) : callback(null, null));
 	});
 }
 
@@ -82,12 +84,13 @@ Work.statics.clear = function(callback) {
 	});
 }
 
-function getWork(obj) {
-    let work = {
-        "name": obj.name,
-        "id_tasks": obj.tasks
+function Format(work) {
+    let item = {
+        id: work._id,
+        name: work.name,
+        id_tasks: work.tasks
     }
-    return work;
+    return item;
 }
 
 mongoose.model("Work", Work);

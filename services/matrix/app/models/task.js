@@ -29,20 +29,22 @@ let Task = new Schema({
 	}]
 });
 
-Task.statics.create = function(work, callback) {
-    return work.save(callback);
+Task.statics.create = function(task, callback) {
+    return task.save(function(err, result) {
+		err ? callback(err, null) : callback(null, Format(result));
+	});
 }
 
 Task.statics.read = function(page = 0, count = 0, callback) {
     if (count == 0) {
-        return this.find(function(err, work) {
+        return this.find(function(err, task) {
             if (err)
                 callback(err, null);
             else {
-                if (work) {
+                if (task) {
                     let res = [];
-                    for (let i = 0; i < work.length; i++)
-                        res[i] = getTask(work[i]);
+                    for (let i = 0; i < task.length; i++)
+                        res[i] = Format(task[i]);
                     callback(null, res);
                 }
                 else
@@ -51,14 +53,14 @@ Task.statics.read = function(page = 0, count = 0, callback) {
         });
     }
     else {
-        return this.find(function(err, work) {
+        return this.find(function(err, task) {
             if (err)
                 callback(err, null);
             else {
-                if (work) {
+                if (task) {
                     let res = [];
-                    for (let i = 0; i < work.length; i++)
-                        res[i] = getTask(work[i]);
+                    for (let i = 0; i < task.length; i++)
+                        res[i] = Format(task[i]);
                     callback(null, res);
                 }
                 else
@@ -68,39 +70,41 @@ Task.statics.read = function(page = 0, count = 0, callback) {
     }
 }
 
-Task.statics.read =  function(id, callback) {
-    return this.findById(id, function(err, work) {
-        err ? callback(err, null) : (work ? callback(null, getTask(work)) : callback(null, null));
+Task.statics.readById =  function(id, callback) {
+    return this.findById(id, function(err, task) {
+        err ? callback(err, null) : (task ? callback(null, Format(task)) : callback(null, null));
     });
 }
 
-Task.statics.update = function(id, data, callback) {
+Task.statics.updateById = function(id, data, callback) {
     return this.findByIdAndUpdate(id, { 
         name: data.name, 
         tasks: data.tasks 
-    }, { new: true }, function(err, work) {
-        err ? callback(err, null) : (work ? callback(null, getTask(work)) : callback(null, null));
+    }, { new: true }, function(err, task) {
+        err ? callback(err, null) : (task ? callback(null, Format(task)) : callback(null, null));
     });
 }
 
-Task.statics.delete = function(id, callback) {
-	return this.findByIdAndRemove(id, function(err, work) {
-		err ? callback(err, null) : (obj ? callback(null, getTask(work)) : callback(null, null));
+Task.statics.delById = function(id, callback) {
+	return this.findByIdAndRemove(id, function(err, task) {
+		err ? callback(err, null) : (obj ? callback(null, Format(task)) : callback(null, null));
 	});
 }
 
-Task.statics.clear = function(callback) {
+Task.statics.delete = function(callback) {
 	return this.remove({}, function(err, result) {
 		err ? callback(err, null) : (result ? callback(null, result) : callback(null, null));
 	});
 }
 
-function getTask(obj) {
-	let task = {
-		"name": obj.name,
-		"rank": obj.rank,
-		"need": obj.need
-	}
+function Format(task) {
+	let item = {
+		id: task._id,
+		name: task.name,
+        rank: task.rank,
+        need: task.need
+    }
+    return item;
 }
 
 mongoose.model("Task", Task);
