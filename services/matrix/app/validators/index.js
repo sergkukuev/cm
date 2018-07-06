@@ -9,6 +9,16 @@ module.exports = {
         }
         return 0;
     },
+    // Проверка челочисленного значения
+    checkInt : function(string) {
+        if (string) {
+            let res = Number(parseInt(string));
+            if (isNaN(res))
+                return undefined;
+            return res;
+        }
+        return undefined;
+    },
     // Проверка корректности ID объекта
     checkId : function(id) {
         let mongoose = require('mongoose');
