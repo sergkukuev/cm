@@ -51,7 +51,7 @@ router.get('/:id', function(req, res, next) {
     knowledge.readById(id, function(err, result) {
         err ? res.status(400).send(myJSON.BadRequest(err)) :
             (result ? res.status(200).send(myJSON.Data(result)) : 
-                res.status(404).send(myJSON.BadRequest(desc.NoFoundObj(id))));
+                res.status(404).send(myJSON.NotFound(desc.NoFoundObj(id))));
     });
 });
 
