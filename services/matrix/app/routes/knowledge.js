@@ -3,7 +3,8 @@ var express = require('express'),
     mongoose = require('mongoose'),
     knowledge = mongoose.model('Knowledge'), 
     validator = require('./../validators'), 
-    myJSON = require('./../format');
+    myJSON = require('./../validators/format'),
+    desc = require('./../validators/status');
 
 module.exports = function(app) {
     app.use('/api/cm/knowledge', router);
@@ -12,9 +13,9 @@ module.exports = function(app) {
 router.post('/create', function(req, res, next) {
     // Проверка массива оценок знания. Должно быть четко 4 уровня квалификации
     if (validator.checkUndefined(req.body.marks))
-        return res.status(400).send(myJSON.Status("Error", "Missing value \'marks\'"));
-    if (!validator.checkMarks(req.body.marks))
-        return res.status(400).send(myJSON.Status("Error", "Marks should be an array with a length of 4"));
+        return res.status(400).send(myJSON.BadRequest(desc.NoKey("marks")));
+    else if (!validator.checkMarks(req.body.marks))
+        return res.status(400).send(myJSON.BadRequest(desc.szMarks));
         
     let data = new knowledge({
         name: req.body.name,
@@ -24,7 +25,7 @@ router.post('/create', function(req, res, next) {
     });
 
     knowledge.create(data, function(err, result) {
-        err ? res.status(400).send(myJSON.Status("Error", err)) :
+        err ? res.status(400).send(myJSON.BadRequest(err)) :
             res.status(201).send(myJSON.Data(result));
     });
 });
@@ -34,10 +35,10 @@ router.get('/', function(req, res, next) {
     const page = validator.parsePageOrCount(req.query.page);
 
     if (page < 0 || count < 0)
-        return res.status(400).send(myJSON.Status("Error", "Parameters \'page\' and \'count\' mustn\'t be negative"));
+        return res.status(400).send(myJSON.BadRequest(desc.pcNegative));
 
     knowledge.read(page, count, function(err, result) {
-        err ? res.status(400).send(myJSON.Status("Error", err)) : 
+        err ? res.status(400).send(myJSON.BadRequest(err)) : 
             res.status(200).send(myJSON.Data(result));
     });
 });
@@ -45,24 +46,24 @@ router.get('/', function(req, res, next) {
 router.get('/:id', function(req, res, next) {
     const id = req.params.id;
     if (!validator.checkId(id))
-        res.status(400).send(myJSON.Status("Error", "Incorrect ID"));
+        res.status(400).send(myJSON.BadRequest(desc.incorrectID));
 
     knowledge.readById(id, function(err, result) {
-        err ? res.status(400).send(myJSON.Status("Error", err)) :
+        err ? res.status(400).send(myJSON.BadRequest(err)) :
             (result ? res.status(200).send(myJSON.Data(result)) : 
-                res.status(404).send(myJSON.Status("Error", "Object by id (" + id + ") doesn\'t exist")));
+                res.status(404).send(myJSON.BadRequest(desc.NoFoundObj(id))));
     });
 });
 
 router.put('/:id', function(req, res, next) { 
     const id = req.params.id;
     if (!validator.checkId(id))
-        res.status(400).send(myJSON.Status("Error", "Incorrect ID"));
+        res.status(400).send(myJSON.BadRequest(desc.incorrectID));
         
     let data = {};
     if (!validator.checkUndefined(req.body.marks)) {
         if (!validator.checkMarks(req.body.marks))
-            return res.status(400).send(myJSON.Status("Error", "Marks should be an array with a length of 4"));
+            return res.status(400).send(myJSON.BadRequest(desc.szMarks));
         data["marks"] = req.body.marks;
     }
     if (!validator.checkUndefined(req.body.name))
@@ -73,31 +74,31 @@ router.put('/:id', function(req, res, next) {
         data["sub_category"] = req.body.sctgr;
     // Не пришли данные для обновления 
     if (Object.keys(data).length == 0)
-        return res.status(200).send(myJSON.Status("Ok", "There are no new values"));
+        return res.status(400).send(myJSON.BadRequest(desc.noData));
 
     knowledge.updateById(id, data, function(err, result) {
-        err ? res.status(400).send(myJSON.Status("Error", err)) : 
+        err ? res.status(400).send(myJSON.BadRequest(err)) : 
         (result ? res.status(202).send(myJSON.Data(result)) : 
-            res.status(404).send(myJSON.Status("Error", "Object by id (" + id + ") doesn\'t exist")));
+            res.status(404).send(myJSON.NotFound(desc.NoFoundObj(id))));
     });
 });
 
 router.delete('/', function(req, res, next) {
 	knowledge.delete(function(err, result) {
-        err ? res.status(400).send(myJSON.Status("Error", err)) :
-            res.status(200).send(myJSON.Status("Ok", "Operation \'delete\' completed successfully"))
+        err ? res.status(400).send(myJSON.BadRequest(err)) :
+            res.status(200).send(myJSON.Status("Ok", desc.opDel));
 	});
 });
 
 router.delete('/:id', function(req, res, next) {
     const id = req.params.id;
     if (!validator.checkId(id))
-        res.status(400).send(myJSON.Status("Error", "Incorrect ID"));
+        res.status(400).send(myJSON.BadRequest(desc.incorrectID));
 
 	knowledge.delById(id, function(err, result) {
-		err ? res.status(400).send(myJSON.Status("Error", err)) :
-            (knowledge ? res.status(200).send(myJSON.Status("Ok", "Data by id (" + id + ") deleted")) :
-                res.status(404).send(myJSON.Status("Error", "Object by id (" + id + ") not found")));
+		err ? res.status(400).send(myJSON.BadRequest(err)) :
+            (knowledge ? res.status(200).send(myJSON.Status("Ok", desc.ObjDeleted(id))) :
+                res.status(404).send(myJSON.NotFound(desc.NoFoundObj(id))));
 	});
 });
 
