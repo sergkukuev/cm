@@ -44,5 +44,14 @@ module.exports = {
             return true;
         else
             return false;
+    },
+    // Проверка знаний в задаче на повторения
+    checkKnRepeat : function(id, kns) { // Идентификатор и массив, где проверяется 
+        let flag = false;
+        for (let i = 0; i < kns.length; i++) {
+            if (id == kns[i])
+                flag++;
+        }
+        return flag - 1;
     }
 }
