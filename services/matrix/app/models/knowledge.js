@@ -1,6 +1,7 @@
 var mongoose = require('mongoose');
 
 let Schema = mongoose.Schema;
+// Модель знаний
 let Knowledge = new Schema({
 	// Наименование знания
 	name: {	
@@ -97,15 +98,19 @@ Knowledge.statics.delete = function(callback) {
 	});
 }
 
-function Format(knowledge) {
+function Format(kn) {
 	let item = {
-		id			: knowledge._id,
-		name		: knowledge.name,
-		category	: knowledge.category,
-		sub_category: knowledge.sub_category,
-		marks		: knowledge.marks
+		id			: kn._id,
+		name		: kn.name,
+		category	: kn.category,
+		sub_category: kn.sub_category,
+		marks		: kn.marks
 	};
 	return item;
+}
+
+Knowledge.statics.Format = function(knowledge) {
+	return Format(knowledge);
 }
 
 mongoose.model("Knowledge", Knowledge);
