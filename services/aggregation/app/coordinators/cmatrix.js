@@ -2,7 +2,7 @@
 // Название сервиса: cm (competency matrix)
 const   port = 3001,
         host = 'http://localhost:' + port + '/api/cm',
-        requester = require('requester');
+        requester = require('./requester');
 
 module.exports = {
 	// POST REQUEST
