@@ -36,7 +36,7 @@ module.exports = {
     Response : function(err, status, response, callback) {
         if (err) {
             if (err.code == "ECONNREFUSED") 
-                return callback(err, 503, { status: "Error", code: 503, description: "Сервер недоступен, повторите попытку позже" });
+                return callback(err, 503, { status: "Error", description: "Сервер недоступен, повторите попытку позже" });
             return callback(err, status, JSON.parse(response));
         }
         else {
