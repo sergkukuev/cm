@@ -15,7 +15,7 @@ module.exports = {
         });
 	},
 	CreateWork : function(data, callback) {
-		const uri = host + '/work/create';
+		const uri = host + '/works/create';
 		const opt = requester.Options(uri, "POST");
         requester.HttpPost(opt, data, function(err, status, res) {
         	return requester.Response(err, status, res, callback);
@@ -23,7 +23,7 @@ module.exports = {
 	},
 	CreateHMark : function(data, callback) {
 		// HMark = mark holder
-		const uri = host + '/mark/create';
+		const uri = host + '/marks/create';
 		const opt = requester.Options(uri, "POST");
         requester.HttpPost(opt, data, function(err, status, res) {
         	return requester.Response(err, status, res, callback);
@@ -38,14 +38,14 @@ module.exports = {
         });
 	}, 
 	UpdateWork : function(id, data, callback) {
-		const uri = host + '/work/' + id;
+		const uri = host + '/works/' + id;
 		const opt = requester.Options(uri, "PUT");
 		requester.HttpPut(opt, data, function(err, status, res) {
         	return requester.Response(err, status, res, callback);
         });
 	},
 	UpdateHMark : function(id, data, callback) {
-		const uri = host + '/mark/' + id;
+		const uri = host + '/marks/' + id;
 		const opt = requester.Options(uri, "PUT");
 		requester.HttpPut(opt, data, function(err, status, res) {
         	return requester.Response(err, status, res, callback);
@@ -53,42 +53,42 @@ module.exports = {
 	},
 	// GET REQUEST
 	GetKns : function(page, count, callback) {
-		const uri = host + '/kn?page=' + page + '&count=' + count;
+		const uri = host + '/kns?page=' + page + '&count=' + count;
 		const opt = requester.Options(uri, "GET");
 		requester.HttpGet(opt, data, function(err, status, res) {
 			return requester.Response(err, status, res, callback);
 		});
 	},
 	GetKnById : function(id, callback) {
-		const uri = host + '/kn/' + id;
+		const uri = host + '/kns/' + id;
 		const opt = requester.Options(uri, "GET");
 		requester.HttpGet(opt, data, function(err, status, res) {
 			return requester.Response(err, status, res, callback);
 		});
 	},
 	GetWorks : function(page, count, callback) {
-		const uri = host + '/work?page=' + page + '&count=' + count;
+		const uri = host + '/works?page=' + page + '&count=' + count;
 		const opt = requester.Options(uri, "GET");
 		requester.HttpGet(opt, data, function(err, status, res) {
 			return requester.Response(err, status, res, callback);
 		});
 	},
 	GetWorkById : function(id, callback) {
-		const uri = host + '/work/' + id;
+		const uri = host + '/works/' + id;
 		const opt = requester.Options(uri, "GET");
 		requester.HttpGet(opt, data, function(err, status, res) {
 			return requester.Response(err, status, res, callback);
 		});
 	},
 	GetHMarks : function(page, count, callback) {
-		const uri = host + '/mark?page=' + page + '&count=' + count;
+		const uri = host + '/marks?page=' + page + '&count=' + count;
 		const opt = requester.Options(uri, "GET");
 		requester.HttpGet(opt, data, function(err, status, res) {
 			return requester.Response(err, status, res, callback);
 		});
 	},
 	GetHMarkById : function(id, callback) {
-		const uri = host + '/mark/' + id;
+		const uri = host + '/marks/' + id;
 		const opt = requester.Options(uri, "GET");
 		requester.HttpGet(opt, data, function(err, status, res) {
 			return requester.Response(err, status, res, callback);
@@ -96,42 +96,42 @@ module.exports = {
 	},
 	// DELETE REQUEST
 	DeleteKn : function(callback) {
-		const uri = host + '/kn';
+		const uri = host + '/kns';
 		const opt = requester.Options(uri, "DELETE");
 		requester.HttpDelete(opt, data, function(err, status, res) {
 			return requester.Response(err, status, res, callback);
 		});
 	},
 	DeleteKnById : function(id, callback) {
-		const uri = host + '/kn/' + id;
+		const uri = host + '/kns/' + id;
 		const opt = requester.Options(uri, "DELETE");
 		requester.HttpDelete(opt, data, function(err, status, res) {
 			return requester.Response(err, status, res, callback);
 		});
 	},
 	DeleteWork : function(callback) {
-		const uri = host + '/work';
+		const uri = host + '/works';
 		const opt = requester.Options(uri, "DELETE");
 		requester.HttpDelete(opt, data, function(err, status, res) {
 			return requester.Response(err, status, res, callback);
 		});
 	},
 	DeleteWorkById : function(id, callback) {
-		const uri = host + '/work/' + id;
+		const uri = host + '/works/' + id;
 		const opt = requester.Options(uri, "DELETE");
 		requester.HttpDelete(opt, data, function(err, status, res) {
 			return requester.Response(err, status, res, callback);
 		});
 	},
 	DeleteHMark : function(callback) {
-		const uri = host + '/mark';
+		const uri = host + '/marks';
 		const opt = requester.Options(uri, "DELETE");
 		requester.HttpDelete(opt, data, function(err, status, res) {
 			return requester.Response(err, status, res, callback);
 		});
 	},
 	DeleteHMarkById : function(id, callback) {
-		const uri = host + '/mark/' + id;
+		const uri = host + '/marks/' + id;
 		const opt = requester.Options(uri, "DELETE");
 		requester.HttpDelete(opt, data, function(err, status, res) {
 			return requester.Response(err, status, res, callback);
