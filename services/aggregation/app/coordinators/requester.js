@@ -1,4 +1,5 @@
 // Модуль обработки запросов
+const req  = require('request');
 module.exports = {
     Options : function(uri, method) {
         let item = {
@@ -8,31 +9,26 @@ module.exports = {
         return item;
     },
     HttpHead : function(opt, callback) {
-        const req = require('request');
         req.head(opt.uri, opt, function(err, res, body) {
             err ? callback(err, null, null) : callback(null, res.statusCode, body);
         });
     }, 
     HttpGet : function(opt, callback) {
-        const req = require('request');
         req.get(opt.uri, opt, function(err, res, body) {
             err ? callback(err, null, null) : callback(null, res.statusCode, body);
         });
     },
     HttpPost : function(opt, data, callback) {
-        const req = require('request');
         req.post(opt.uri, opt, function(err, res, body) {
             err ? callback(err, null, null) : callback(null, res.statusCode, body);
         }).form(data);
     }, 
     HttpPut : function(opt, data, callback) {
-        const req = require('request');
         req.put(opt.uri, opt, function(err, res, body) {
             err ? callback(err, null, null) : callback(null, res.statusCode, body);
         }).form(data);
     },
     HttpDelete : function(opt, callback) {
-        const req = require('request');
         req.delete(opt.uri, opt, function(err, res, body) {
             err ? callback(err, null, null) : callback(null, res.statusCode, body);
         });
@@ -41,10 +37,10 @@ module.exports = {
         if (err) {
             if (err.code == "ECONNREFUSED") 
                 return callback(err, 503, { status: "Error", code: 503, description: "Сервер недоступен, повторите попытку позже" });
-            return callback(err, status, response);
+            return callback(err, status, JSON.parse(response));
         }
         else {
-            response ? callback(err, status, response) : callback(err, status, null);
+            response ? callback(err, status, JSON.parse(response)) : callback(err, status, null);
         }
     }
 }
