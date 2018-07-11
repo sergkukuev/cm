@@ -6,10 +6,9 @@ module.exports = {
         return data;
     },
     // Шаблон для отправки статуса
-    Status : function(st, cd, desc) {
+    Status : function(st, desc) {
         let item = {
             status: st,
-            code: cd,
             description: desc
         };
         return item;
@@ -18,7 +17,6 @@ module.exports = {
     BadRequest : function(desc) {
         let item = {
             status: "Error",
-            code: 400,
             description: desc
         };
         return item;
@@ -27,7 +25,6 @@ module.exports = {
     NotFound : function(desc) {
         let item = {
             status: "Error",
-            code: 404,
             description: desc
         };
         return item;

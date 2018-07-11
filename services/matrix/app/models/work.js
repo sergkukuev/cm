@@ -43,43 +43,36 @@ Work.virtual('date').get(function() {
 
 Work.statics.create = function(work, callback) {
     return work.save(function(err, result) {
-		err ? callback(err, null) : callback(null, Format(result));
+		err ? callback(err, null) : (result  ? callback(null, Format(result)) : callback(null, null));
 	});
 }
 
 Work.statics.get = function(page, count, callback) {
     if (count == 0) {
         return this.find(function(err, work) {
-            if (err)
-                callback(err, null);
-            else {
-                if (work) {
-                    let res = [];
-                    for (let i = 0; i < work.length; i++)
-                        res[i] = Format(work[i]);
-                    callback(null, res);
-                }
-                else
-                    callback(null, null);
-            }
+            ReadArray(err, work, callback);
         });
     }
     else {
         return this.find(function(err, work) {
-            if (err)
-                callback(err, null);
-            else {
-                if (work) {
-                    let res = [];
-                    for (let i = 0; i < work.length; i++)
-                        res[i] = Format(work[i]);
-                    callback(null, res);
-                }
-                else
-                    callback(null, null);
-            }
+            ReadArray(err, work, callback);
         }).skip(page * count).limit(count);
     }
+}
+
+function ReadArray(err, arr, callback) {
+	if (err)
+		callback(err, null);
+	else {
+		if (arr) {
+			let result = [];
+			for (let i = 0; i < arr.length; i++)
+				result[i] = Format(arr[i]);
+			callback(null, result);
+		}
+		else
+			callback(null, null);
+	}
 }
 
 Work.statics.getById =  function(id, callback) {
@@ -89,10 +82,7 @@ Work.statics.getById =  function(id, callback) {
 }
 
 Work.statics.updateById = function(id, data, callback) {
-    return this.findByIdAndUpdate(id, { 
-        name: data.name, 
-        tasks: data.tasks 
-    }, { new: true }, function(err, work) {
+    return this.findByIdAndUpdate(id, data, { new: true }, function(err, work) {
         err ? callback(err, null) : (work ? callback(null, Format(work)) : callback(null, null));
     });
 }
@@ -111,22 +101,24 @@ Work.statics.delete = function(callback) {
 
 function Format(work) {
     let tasks = [];
-    for (let i = 0; i < work.tasks.length; i++) {
-        let kn_info = [];
-        for (let j = 0; j < work.tasks[i].need.length; j++) {
-            let temp = {
-                id_knowledge: work.tasks[i].need[j].id_knowledge,
-                mark: work.tasks[i].need[j].mark
+    if (work.tasks != null) {
+        for (let i = 0; i < work.tasks.length; i++) {
+            let kn_info = [];
+            for (let j = 0; j < work.tasks[i].need.length; j++) {
+                let temp = {
+                    id_knowledge: work.tasks[i].need[j].id_knowledge,
+                    mark: work.tasks[i].need[j].mark
+                }
+                kn_info.push(temp);
             }
-            kn_info.push(temp);
+            let task = {
+                id: work.tasks[i]._id,
+                name: work.tasks[i].name,
+                rank: work.tasks[i].rank,
+                need: kn_info
+            };
+            tasks.push(task);
         }
-        let task = {
-            id: work.tasks[i]._id,
-            name: work.tasks[i].name,
-            rank: work.tasks[i].rank,
-            need: kn_info
-        };
-        tasks.push(task);
     }
     
     let item = {
@@ -134,6 +126,15 @@ function Format(work) {
         name: work.name,
         tasks: tasks
     };
+    let flag = false;
+	for (let element in item)
+		if (element == undefined || element == null)
+			flag = true;
+
+	// Хоть одно поле нераспознано, кидаем пустой JSON
+	if (flag)
+        item = null;
+        
     return item;
 }
 

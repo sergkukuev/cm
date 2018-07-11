@@ -37,7 +37,7 @@ Knowledge.statics.create = function(knowledge, callback) {
 }
 
 // Read
-Knowledge.statics.read = function(page = 0, count = 0, callback) {
+Knowledge.statics.get = function(page = 0, count = 0, callback) {
 	if (count == 0) {
 		return this.find(function(err, knowledges) {
 			ReadArray(err, knowledges, callback);
@@ -65,7 +65,7 @@ function ReadArray(err, arr, callback) {
 	}
 }
 
-Knowledge.statics.readById = function(id, callback) {
+Knowledge.statics.getById = function(id, callback) {
 	return this.findById(id, function(err, knowledge) {
 		err ? callback(err, null) : (knowledge ? callback(null, Format(knowledge)) : callback(null, null));
 	});
@@ -79,7 +79,7 @@ Knowledge.statics.updateById = function(id, data, callback) {
 }
 
 // delete
-Knowledge.statics.delById = function(id, callback) {
+Knowledge.statics.deleteById = function(id, callback) {
 	return this.findByIdAndRemove(id, function(err, knowledge) {
 		err ? callback(err, null) : (knowledge ? callback(null, Format(knowledge)) : callback(null, null));
 	});
@@ -101,7 +101,7 @@ function Format(kn) {
 	};
 	let flag = false;
 	for (let element in item)
-		if (element == undefined)
+		if (element == undefined || element == null)
 			flag = true;
 
 	// Хоть одно поле нераспознано, кидаем пустой JSON

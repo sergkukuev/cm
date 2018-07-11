@@ -7,7 +7,7 @@ var express = require('express'),
     desc = require('./../validators/status');
 
 module.exports = function(app) {
-    app.use('/api/cm/knowledge', router);
+    app.use('/api/cm/kns', router);
 };
 
 router.post('/create', function(req, res, next) {
@@ -15,8 +15,11 @@ router.post('/create', function(req, res, next) {
     if (validator.checkUndefined(req.body.marks))
         return res.status(400).send(myJSON.BadRequest(desc.NoKey("marks")));
     else if (!validator.checkMarks(req.body.marks))
-        return res.status(400).send(myJSON.BadRequest(desc.szMarks));
-        
+        return res.status(400).send(myJSON.BadRequest("Количество оценок должно быть равным 4"));
+    
+    if (validator.checkUndefined(req.body.name))
+        return res.status(400).send(myJSON.BadRequest(desc.NoKey("name")));
+
     let data = new knowledge({
         name: req.body.name,
         category: req.body.ctgr,
@@ -33,37 +36,36 @@ router.post('/create', function(req, res, next) {
 router.get('/', function(req, res, next) {
     const count = validator.parsePageOrCount(req.query.count); 
     const page = validator.parsePageOrCount(req.query.page);
-
     if (page < 0 || count < 0)
-        return res.status(400).send(myJSON.BadRequest(desc.pcNegative));
+       return res.status(400).send(myJSON.BadRequest(desc.PCNegative));
 
-    knowledge.read(page, count, function(err, result) {
+    knowledge.get(page, count, function(err, result) {
         err ? res.status(400).send(myJSON.BadRequest(err)) : 
-            res.status(200).send(myJSON.Data(result));
+            (result ? res.status(200).send(myJSON.Data(result)) : res.status(404).send(myJSON.BadRequest(desc.LossData)));
     });
 });
 
 router.get('/:id', function(req, res, next) {
     const id = req.params.id;
     if (!validator.checkId(id))
-        res.status(400).send(myJSON.BadRequest(desc.incorrectID));
+        res.status(400).send(myJSON.BadRequest(desc.InvalidId(id)));
 
-    knowledge.readById(id, function(err, result) {
+    knowledge.getById(id, function(err, result) {
         err ? res.status(400).send(myJSON.BadRequest(err)) :
             (result ? res.status(200).send(myJSON.Data(result)) : 
-                res.status(404).send(myJSON.NotFound(desc.NoFoundObj(id))));
+                res.status(404).send(myJSON.NotFound(desc.NotFound(id))));
     });
 });
 
 router.put('/:id', function(req, res, next) { 
     const id = req.params.id;
     if (!validator.checkId(id))
-        res.status(400).send(myJSON.BadRequest(desc.incorrectID));
+        res.status(400).send(myJSON.BadRequest(desc.InvalidId(id)));
         
     let data = {};
     if (!validator.checkUndefined(req.body.marks)) {
         if (!validator.checkMarks(req.body.marks))
-            return res.status(400).send(myJSON.BadRequest(desc.szMarks));
+            return res.status(400).send(myJSON.BadRequest("Количество оценок должно быть равным 4"));
         data["marks"] = req.body.marks;
     }
     if (!validator.checkUndefined(req.body.name))
@@ -74,31 +76,31 @@ router.put('/:id', function(req, res, next) {
         data["sub_category"] = req.body.sctgr;
     // Не пришли данные для обновления 
     if (Object.keys(data).length == 0)
-        return res.status(400).send(myJSON.BadRequest(desc.noData));
+        return res.status(400).send(myJSON.BadRequest(desc.NoData));
 
     knowledge.updateById(id, data, function(err, result) {
         err ? res.status(400).send(myJSON.BadRequest(err)) : 
         (result ? res.status(202).send(myJSON.Data(result)) : 
-            res.status(404).send(myJSON.NotFound(desc.NoFoundObj(id))));
+            res.status(404).send(myJSON.NotFound(desc.NotFound(id))));
     });
 });
 
 router.delete('/', function(req, res, next) {
-	knowledge.delete(function(err, result) {
+	knowledge.delete(function(err, st) {
         err ? res.status(400).send(myJSON.BadRequest(err)) :
-            res.status(200).send(myJSON.Status("Ok", desc.opDel));
+            res.status(200).send(myJSON.Status("Ok", desc.Deleted(st.result.n)));
 	});
 });
 
 router.delete('/:id', function(req, res, next) {
     const id = req.params.id;
     if (!validator.checkId(id))
-        res.status(400).send(myJSON.BadRequest(desc.incorrectID));
+        res.status(400).send(myJSON.BadRequest(desc.InvalidId(id)));
 
-	knowledge.delById(id, function(err, result) {
+	knowledge.deleteById(id, function(err, result) {
 		err ? res.status(400).send(myJSON.BadRequest(err)) :
-            (knowledge ? res.status(200).send(myJSON.Status("Ok", desc.ObjDeleted(id))) :
-                res.status(404).send(myJSON.NotFound(desc.NoFoundObj(id))));
+            (result ? res.status(200).send(myJSON.Status("Ok", desc.ObjDeleted(id))) :
+                res.status(404).send(myJSON.NotFound(desc.NotFound(id))));
 	});
 });
 
