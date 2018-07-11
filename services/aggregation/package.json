@@ -35,6 +35,7 @@
     "mongoose": "^4.13.9",
     "mongoose-rollback": "^1.1.4",
     "morgan": "^1.6.1",
+    "request": "^2.87.0",
     "serve-favicon": "^2.3.0",
     "winston": "^2.4.0"
   }
