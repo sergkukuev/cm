@@ -37,7 +37,8 @@ router.get('/', function(req, res, next) {
 
     work.get(page, count, function(err, result){
         err ? res.status(400).send(myJSON.BadRequest(err)) : 
-            (result ? res.status(200).send(myJSON.Data(result)) : res.status(404).send(myJSON.BadRequest(desc.LossData)));
+            (result ? res.status(200).send(myJSON.Data(result)) : 
+                res.status(404).send(myJSON.BadRequest(desc.LossData)));
     });
 });
 
@@ -124,6 +125,10 @@ router.put('/:id_work/tasks/:id_task', function(req, res, next) {
                     return res.status(400).send(myJSON.BadRequest(desc.SzNotEqual("id_kn", "marks")));
                 let need = [];
                 for (let j = 0; j < req.body.id_kn.length; j++) {
+                    if (validator.checkKnRepeat(req.body.id_kn[j], req.body.id_kn)) {
+                        let msg = "Неоднозначность оценки знания (" + req.body.id_kn[j] + ") в данной задаче";
+                        return res.status(400).send(myJSON.BadRequest(msg));
+                    }
                     let temp = {
                         id_knowledge: req.body.id_kn[j],
                         mark: req.body.marks[j]
@@ -247,6 +252,10 @@ function parseTasks(req) {
         let need = [];
         let numeric = validator.checkInt(num_kn[i]);
         for (let j = 0; j < numeric; j++) {
+            if (!validator.checkId(id_kn[j + shift])) {
+                res["status"] = "Error";
+                res["desc"] = desc.InvalidId(id_kn[j + shift]);
+            }
             if (validator.checkKnRepeat(id_kn[j + shift], id_kn.slice(shift, numeric + shift))) {
                 let msg = "Неоднозначность оценки знания (" + id_kn[j + shift] + ") в одной из задач";
                 res["status"] = "Error";
