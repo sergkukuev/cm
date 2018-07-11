@@ -58,6 +58,9 @@ router.put('/:id', function(req, res, next) {
     if (!validator.checkId(id))
         return res.status(400).send(myJSON.BadRequest(desc.InvalidId(id)));
     
+    let data = {};
+    if (!validator.checkUndefined(req.body.name))
+        data["name"] = req.body.name;
     let ts_flag = false;
     let tasks = {};
     if (!validator.checkUndefined(req.body.tname) || !validator.checkUndefined(req.body.trank))
@@ -73,10 +76,6 @@ router.put('/:id', function(req, res, next) {
         else
             data["tasks"] = tasks.data;
     }
-
-    let data = {};
-    if (!validator.checkUndefined(req.body.name))
-        data["name"] = req.body.name;
     // Не пришли данные для обновления 
     if (Object.keys(data).length == 0)
         return res.status(400).send(myJSON.BadRequest(desc.NoData));
@@ -89,7 +88,62 @@ router.put('/:id', function(req, res, next) {
 });
 
 router.put('/:id_work/tasks/:id_task', function(req, res, next) {
+    const id_work = req.params.id_work;
+    const id_task = req.params.id_task;
 
+    if (!validator.checkId(id_work))
+        return res.status(400).send(myJSON.BadRequest(desc.InvalidId(id_work)));
+    if (!validator.checkId(id_task))
+        return res.status(400).send(myJSON.BadRequest(desc.InvalidId(id_task)));
+
+    work.getById(id_work, function(err, result1) {
+        if (err)
+            res.status(400).send(myJSON.BadRequest(err));
+        else if (!result1)
+            res.status(404).send(myJSON.NotFound(desc.NotFound(id)));
+        else {
+            let index = -1;
+            for (let i = 0; (i < result1.tasks.length) && index == -1; i++)
+                if (result1.tasks[i].id == id_task)
+                    index = i;  
+            if (index == -1)
+                return res.status(404).send(myJSON.NotFound("Задачи с таким идентификатором не существует в данной работе"));
+            if (!validator.checkUndefined(req.body.name))
+                result1.tasks[index].name = req.body.name;
+            if (!validator.checkUndefined(req.body.rank))
+                result1.tasks[index].rank = req.body.rank;
+
+            let fl_kn = validator.checkUndefined(req.body.id_kn);
+            let fl_marks = validator.checkUndefined(req.body.marks);
+            if (!fl_kn && !fl_marks) {
+                if (!req.body.id_kn instanceof Array)
+                    return res.status(400).send(myJSON.BadRequest(desc.ObjArray("id_kn")));
+                if (!req.body.marks instanceof Array)
+                    return res.status(400).send(myJSON.BadRequest(desc.ObjArray("marks")));
+                if (req.body.id_kn.length != req.body.marks.length)
+                    return res.status(400).send(myJSON.BadRequest(desc.SzNotEqual("id_kn", "marks")));
+                let need = [];
+                for (let j = 0; j < req.body.id_kn.length; j++) {
+                    let temp = {
+                        id_knowledge: req.body.id_kn[j],
+                        mark: req.body.marks[j]
+                    }
+                    need.push(temp);
+                }
+                result1.tasks[index].need = need;
+            }
+            else if (fl_kn)
+                return res.status(400).send(myJSON.BadRequest(desc.NoKey("id_kn")));
+            else 
+                return res.status(400).send(myJSON.BadRequest(desc.NoKey("marks")));
+
+            work.updateById(id_work, result1, function(err, result) {
+                err ? res.status(400).send(myJSON.BadRequest(err)) : 
+                    (result ? res.status(202).send(myJSON.Data(result)) : 
+                        res.status(404).send(myjson.NotFound(desc.NotFound(id))));
+            });
+        }
+    });
 });
 
 router.delete('/', function(req, res, next) {
