@@ -20,65 +20,70 @@ let MarkHolder = new Schema({
 });
 
 MarkHolder.virtual('date').get(function() {
-	return this._id.getTimestamp();
+    return this._id.getTimestamp();
 });
 
-MarkHolder.statics.create = function(obj, callback) {
-	return obj.save(function(err, obj) {
-		err ? callback(err, null) : callback(null, Format(obj));
+MarkHolder.statics.create = function(user, callback) {
+    return user.save(function(err, result) {
+		err ? callback(err, null) : (result  ? callback(null, Format(result)) : callback(null, null));
 	});
 }
 
-MarkHolder.statics.get = function(page = 0, count = 0, callback) {
-	if (count == 0) {
-		return this.find(function(err, users) {
-			if (err)
-				callback(err, null);
-			else {
-				if (users) {
-					let result = [];
-					for (let i = 0; i < users.length; i++)
-						result[i] = Format(users[i]);
-					callback(null, result);
-				}
-				else
-					callback(null, null);
-			}	
-		});
-	}
+MarkHolder.statics.get = function(page, count, callback) {
+    if (count == 0) {
+        return this.find(function(err, user) {
+            ReadArray(err, user, callback);
+        });
+    }
+    else {
+        return this.find(function(err, user) {
+            ReadArray(err, user, callback);
+        }).skip(page * count).limit(count);
+    }
+}
+
+function ReadArray(err, arr, callback) {
+	if (err)
+		callback(err, null);
 	else {
-		return this.find(function(err, users) {
-			if (err)
-				callback(err, null);
-			else {
-				if (users) {
-					let result = [];
-					for (let i = 0; i < users.length; i++)
-						result[i] = Format(users[i]);
-					callback(null, result);
-				}
-				else
-					callback(null, null);
-			}	
-		}).skip(page * count).limit(count);
+		if (arr) {
+			let result = [];
+			for (let i = 0; i < arr.length; i++)
+				result[i] = Format(arr[i]);
+			callback(null, result);
+		}
+		else
+			callback(null, null);
 	}
 }
 
-MarkHolder.statics.getById = function(id, callback) {
-	return this.find({ id_user: id }, function(err, obj) {
-		err ? callback(err, null) : (obj ? callback(null, Format(obj)) : callback(null, null));
-	});
+MarkHolder.statics.getById =  function(id, callback) {
+    return this.findById(id, function(err, user) {
+        err ? callback(err, null) : (user ? callback(null, Format(user)) : callback(null, null));
+    });
 }
 
-MarkHolder.statics.updateById = function(data, callback) {
-	return this.findAndUpdate({ id_user: data.id }, { test: data.test }, { new: true }, function(err, obj) {
-		err ? callback(err, null) : (obj ? callback(null, Format(obj)) : callback(null, null));
+MarkHolder.statics.getByUserId =  function(id, callback) {
+    return this.findOne({ id_user: id }, function(err, user) {
+        err ? callback(err, null) : (user ? callback(null, Format(user)) : callback(null, null));
+    });
+}
+
+MarkHolder.statics.updateById = function(id, data, callback) {
+    return this.findByIdAndUpdate(id, data, { new: true }, function(err, user) {
+        err ? callback(err, null) : (user ? callback(null, Format(user)) : callback(null, null));
+    });
+}
+
+MarkHolder.statics.updateByUserId = function(id, data, callback) {
+	return this.findOneAndUpdate({ id_user: id }, data, {new: true}, function(err, user) {
+		err ? callback(err, null) : (user ? callback(null, Format(user)) : callback(null, null));
 	});
 }
 
 MarkHolder.statics.deleteById = function(id, callback) {
-	return this.findAndRemove({ id_user: id }, function(err, obj) {
-		err ? callback(err, null) : (obj ? callback(null, Format(obj)) : callback(null, null));
+	return this.findByIdAndRemove(id, function(err, user) {
+		err ? callback(err, null) : (user ? callback(null, Format(user)) : callback(null, null));
 	});
 }
 
@@ -91,18 +96,30 @@ MarkHolder.statics.delete = function(callback) {
 // Формирование JSON объекта
 function Format(obj) {
 	let test = [];
-	for (let i = 0; i < obj.test.length; i++) {
-		let temp = {
-			id_knowledge: obj.test[i].id_knowledge,
-			mark: obj.test[i].mark
+	if (obj.test != null) {
+		for (let i = 0; i < obj.test.length; i++) {
+			let temp = {
+				id_knowledge: obj.test[i].id_knowledge,
+				mark: obj.test[i].mark
+			}
+			test.push(temp);
 		}
-		test.push(temp);
 	}
-	let marks = {
-		id: obj.id_user,
+	let item = {
+		id: obj.id_user,//obj._id,
+		//user_id: obj.id_user,
 		test: test
 	}
-	return marks;
+
+	let flag = false;
+	for (let element in item)
+		if (element == undefined || element == null)
+			flag = true;
+
+	// Хоть одно поле нераспознано, кидаем пустой JSON
+	if (flag)
+        item = null;
+	return item;
 }
 
 MarkHolder.statics.Format = function(user) {
