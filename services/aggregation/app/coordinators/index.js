@@ -16,6 +16,7 @@ module.exports = {
     UpdateKn    : function(id, data, callback) { return cm.UpdateKn(id, data, callback); },
     UpdateWork  : function(id, data, callback) { return cm.UpdateWork(id, data, callback); },
     UpdateHMark : function(id, data, callback) { return cm.UpdateHMark(id, data, callback); },
+    UpdateTask  : function(id_work, id_task, callback) { return cm.UpdateTask(id_work, id_task, callback); },
     // DELETE
     DeleteKns      : function(callback) { return cm.DeleteKns(callback); },
     DeleteKnById   : function(id, callback) { return cm.DeleteKnById(id, callback); },

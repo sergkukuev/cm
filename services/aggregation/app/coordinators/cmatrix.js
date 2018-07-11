@@ -23,7 +23,7 @@ module.exports = {
 	},
 	CreateHMark : function(data, callback) {
 		// HMark = mark holder
-		const uri = host + '/marks/create';
+		const uri = host + '/users/create';
 		const opt = requester.Options(uri, "POST");
         requester.HttpPost(opt, data, function(err, status, res) {
         	return requester.Response(err, status, res, callback);
@@ -44,8 +44,15 @@ module.exports = {
         	return requester.Response(err, status, res, callback);
         });
 	},
+	UpdateTask : function(id_work, id_task, callback) {
+		const uri = host + '/works/' + id_work + '/tasks/' + id_task;
+		const opt = requester.Options(uri, "PUT");
+		requester.HttpPost(opt, data, function(err, status, res) {
+			return requester.Response(err, status, res, callback);
+		});
+	},
 	UpdateHMark : function(id, data, callback) {
-		const uri = host + '/marks/' + id;
+		const uri = host + '/users/' + id;
 		const opt = requester.Options(uri, "PUT");
 		requester.HttpPut(opt, data, function(err, status, res) {
         	return requester.Response(err, status, res, callback);
@@ -81,14 +88,14 @@ module.exports = {
 		});
 	},
 	GetHMarks : function(page, count, callback) {
-		const uri = host + '/marks?page=' + page + '&count=' + count;
+		const uri = host + '/users?page=' + page + '&count=' + count;
 		const opt = requester.Options(uri, "GET");
 		requester.HttpGet(opt, function(err, status, res) {
 			return requester.Response(err, status, res, callback);
 		});
 	},
 	GetHMarkById : function(id, callback) {
-		const uri = host + '/marks/' + id;
+		const uri = host + '/users/' + id;
 		const opt = requester.Options(uri, "GET");
 		requester.HttpGet(opt, function(err, status, res) {
 			return requester.Response(err, status, res, callback);
@@ -124,14 +131,14 @@ module.exports = {
 		});
 	},
 	DeleteHMark : function(callback) {
-		const uri = host + '/marks';
+		const uri = host + '/users';
 		const opt = requester.Options(uri, "DELETE");
 		requester.HttpDelete(opt, function(err, status, res) {
 			return requester.Response(err, status, res, callback);
 		});
 	},
 	DeleteHMarkById : function(id, callback) {
-		const uri = host + '/marks/' + id;
+		const uri = host + '/users/' + id;
 		const opt = requester.Options(uri, "DELETE");
 		requester.HttpDelete(opt, function(err, status, res) {
 			return requester.Response(err, status, res, callback);
