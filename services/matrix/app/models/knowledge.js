@@ -32,7 +32,7 @@ Knowledge.virtual('date').get(function() {
 // Create
 Knowledge.statics.create = function(knowledge, callback) {
 	return knowledge.save(function(err, result) {
-		err ? callback(err, null) : callback(null, Format(result));
+		err ? callback(err, null) : (result ? callback(null, Format(result)) : callback (null, null));
 	});
 }
 
@@ -40,35 +40,28 @@ Knowledge.statics.create = function(knowledge, callback) {
 Knowledge.statics.read = function(page = 0, count = 0, callback) {
 	if (count == 0) {
 		return this.find(function(err, knowledges) {
-			if (err)
-				callback(err, null);
-			else {
-				if (knowledges) {
-					let result = [];
-					for (let i = 0; i < knowledges.length; i++)
-						result[i] = Format(knowledges[i]);
-					callback(null, result);
-				}
-				else
-					callback(null, null);
-			}	
+			ReadArray(err, knowledges, callback);
 		});
 	}
 	else {
 		return this.find(function(err, knowledges) {
-			if (err)
-				callback(err, null);
-			else {
-				if (knowledges) {
-					let result = [];
-					for (let i = 0; i < knowledges.length; i++)
-						result[i] = Format(knowledges[i]);
-					callback(null, result);
-				}
-				else
-					callback(null, null);
-			}	
+			ReadArray(err, knowledges, callback);
 		}).skip(page * count).limit(count);
+	}
+}
+
+function ReadArray(err, arr, callback) {
+	if (err)
+		callback(err, null);
+	else {
+		if (arr) {
+			let result = [];
+			for (let i = 0; i < arr.length; i++)
+				result[i] = Format(arr[i]);
+			callback(null, result);
+		}
+		else
+			callback(null, null);
 	}
 }
 
@@ -106,6 +99,15 @@ function Format(kn) {
 		sub_category: kn.sub_category,
 		marks		: kn.marks
 	};
+	let flag = false;
+	for (let element in item)
+		if (element == undefined)
+			flag = true;
+
+	// Хоть одно поле нераспознано, кидаем пустой JSON
+	if (flag)
+		item = null;
+
 	return item;
 }
 
