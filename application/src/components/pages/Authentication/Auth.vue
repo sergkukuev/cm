@@ -2,16 +2,16 @@
   <div class="l-auth-container">
     <div class="l-auth">
       <v-form v-model="validLogin">
-        <v-text-field label="Username"
-                      v-model="credentials.username"
+        <v-text-field label="Логин"
+                      v-model="this.login"
                       prepend-icon="account_box"
                       :rules="rules"
                       required
                       color="light-blue lighten-1">
         </v-text-field>
 
-        <v-text-field label="Password"
-                      v-model="credentials.password"
+        <v-text-field label="Пароль"
+                      v-model="this.password"
                       prepend-icon="lock"
                       :rules="rules"
                       :append-icon="loginPasswordVisible ? 'visibility' : 'visibility_off'"
@@ -21,8 +21,8 @@
                       required>
         </v-text-field>
 
-        <v-btn flat color="light-blue lighten-1" @click.native="signUpVisible = true">Create account</v-btn>
-        <v-btn color="light-blue lighten-1" @click.native="submitAuthentication()">Login</v-btn>
+        <v-btn flat color="light-blue lighten-1" @click.native="signUpVisible = true">Создать аккаунт</v-btn>
+        <v-btn color="light-blue lighten-1" @click.native="submitAuthentication()">Войти</v-btn>
       </v-form>
     </div>
 
@@ -47,7 +47,7 @@
                       required>
         </v-text-field>
 
-        <v-btn block color="light-blue lighten-1" @click.native="submitSignUp()">Sign Up</v-btn>
+        <v-btn block color="light-blue lighten-1" @click.native="submitSignUp()">Войти</v-btn>
       </v-form>
     </div>
 
@@ -59,6 +59,39 @@
     </v-snackbar>
   </div>
 </template>
+
 <script>
-export default { }
+export default {
+  name: 'Auth',
+  data: function () {
+    return {
+      password: '',
+      login: ''
+    }
+  }
+}
 </script>
+
+<style lang="scss">
+  @import "./../../../assets/styles";
+  .l-auth {
+    background-color: $background-color;
+    padding: 15px;
+    margin: 45px auto;
+    min-width: 272px;
+    max-width: 320px;
+    animation: bounceIn 1s forwards ease;
+    label, input, .icon {
+      color: #29b6f6!important;
+    }
+    .input-group__details {
+      &:before {
+        background-color: $border-color-input!important;
+      }
+    }
+  }
+  .l-signup {
+    @extend .l-auth;
+    animation: slideInFromLeft 1s forwards ease;
+  }
+</style>
