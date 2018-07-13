@@ -1,23 +1,5 @@
 @import "./variables";
 
-.base-window {
-  // Настроить стиль!
-  // background-color: $background-color;
-  font-family: 'Fedoka One', cursive;
-  height: 100%;
-  padding: 0 10px;
-  min-width: 980px;
-  border-radius: 0 0 20px 20px;
-  label, input, .icon, .input-group__selections__comma {
-    color: white!important;
-  }
-  .input-group__details {
-    &:before {
-      background-color: $border-color-input !important;
-    }
-  }
-}
-
 // Основа плиточного интерфейса
 .text-style {
   font-family: 'Fedoka One', cursive;
@@ -34,7 +16,7 @@
 .frame {
   @extend .border-frame;  // Рамка 
   @extend .text-style;    // Стиль текста
-  margin: 2px auto;
+  margin: 4px;
   padding: 5px;
 }
 
@@ -45,18 +27,17 @@
   font-size: 14px;
   border: 1px solid $border-color-input;
   width: 100%;
-  height: 45px;
+  height: 100%;
+  padding: 0 15px;
 }
 
 .elem-list-header {
   @extend .my-list-base;
   background: #AFCDE7; // $base-color-light;
+  height: 45px;
   display: flex;
   align-items: center;
-  text-align: center;
-  justify-content: center;
   color: white;
-  padding: 0 15px;
   @media (min-width: 601px) {
     justify-content: flex-start;
   }
@@ -64,13 +45,11 @@
 
 .elem-list-body {
   @extend .my-list-base;
+  background: #D8E6F3;
   height: 100%;
   flex-basis: 25%;
-  padding: 0 15px;
   display: flex;
   align-items: center;
-  justify-content: center;
-  background: #D8E6F3;
   &:first-of-type, &:nth-of-type(2) {
     text-transform: capitalize;
   }
