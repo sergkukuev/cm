@@ -83,7 +83,7 @@
       </template>
       <template slot="no-data">
         <v-alert :value="true" color="error" icon="warning">
-          {{ err_msg }} ({{ status }})
+          {{ err_msg }} (Статус ошибки: {{ status }})
         </v-alert>
       </template>
       <!-- Параметры на рассмотрении
@@ -125,7 +125,7 @@ export default {
       },
       pagination: {},
       search: '',
-      err_msg: '',
+      err_msg: 'Что-то пошло не так, но вот что? Да кто ж его черт знает! \\(\".\")/',
       status: 0
     }
   },
