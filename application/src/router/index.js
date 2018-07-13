@@ -3,19 +3,20 @@ import Router from 'vue-router'
 
 // Pages
 import Auth from '@/components/pages/Authentication/Auth.vue'
-import Kn from '@/components/pages/Knowledge.vue'
-import KnList from '@/components/Knowledge/List.vue'
+import Kns from '@/components/pages/Knowledge'
 
 // Global components
 import Navigate from '@/components/Navigate'
+import Footer from '@/components/Footer'
+
 Vue.component('app-navbar', Navigate)
-Vue.component('kn-list', KnList)
+Vue.component('app-footer', Footer)
 Vue.use(Router)
 
 // Application routes
 const routes = [
   { path: '/login', component: Auth },
-  { path: '/knowledges', components: { default: Kn, navbar: Navigate, list: KnList } }
+  { path: '/knowledge', component: Kns }
 ]
 export default new Router({
   routes,
