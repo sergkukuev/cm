@@ -1,81 +1,30 @@
 <template>
-  <header class="l-navigate-panel">
-    <v-layout row align-center justify-space-between>
-      <v-jumbotron :gradient="gradient" dark height="60px">
-        <v-container fill-height>
-          <!-- <img class="l-image" src="./../assets/images/logo.png"> -->
-          <!-- Активные ссылки -->
-          <v-flex class="link-navigate">
-            <router-link  to="/">
-              Главная
-            </router-link>
-            &nbsp;
-            <router-link to="/knowledges">
-              Знания
-            </router-link>
-          </v-flex>
-          <!-- Панель поиска -->
-          <v-flex v-if="display_search" xs2 md4>
-            <v-text-field
-                  v-model="search"
-                  append-icon="search"
-                  color="light-blue accent-4 white--text"
-                  label="Поиск"
-                  clearable>
-            </v-text-field>
-          </v-flex>
-          <!-- Кнопка авторизация -->
-          <v-flex>
-            <v-btn class="btn" color="light-blue accent-4 white--text" @click.native="sss()">Выйти</v-btn>
-          </v-flex>
-        </v-container>
-      </v-jumbotron>
+  <v-footer height="auto" color="primary lighten-1">
+    <v-layout justify-space-between align-center row wrap >
+      <v-flex>
+        <v-btn v-for="link in links" :key="link" color="white" flat round>
+        {{ link }}
+      </v-btn>
+      </v-flex>
+      <v-flex xs2 md2>
+        <v-text-field v-model="user" dark disabled white--text append-icon="account_circle"></v-text-field>
+      </v-flex>
+      <v-btn color="red white--text" round>
+        Выйти
+      </v-btn>
     </v-layout>
-  </header>
+  </v-footer>
 </template>
 
 <script>
 export default {
-  data () {
-    return {
-      search: '', // Данные поиска
-      gradient: 'to right, #0099f1, #001572', // Градиент
-      display_search: true // Статус отображения строки поиска
-    }
-  },
-  mounted: function () {
-    this.display_search = true
-  }
+  data: () => ({
+    links: [
+      'Матрица',
+      'Типовые работы',
+      'Знания'
+    ],
+    user: 'Admin Adminich'
+  })
 }
 </script>
-
-<style lang="scss">
-  @import "./../assets/styles.scss";
-  .l-navigate-panel {
-    @extend .base-window;
-  }
-  .btn {
-    margin-top: 5px;
-  }
-  .link-navigate {
-    a {
-      text-decoration: none;
-      display: inline-block;
-      padding: 15px 0;
-      font-size: 18px;
-      transition: .3s ease-in-out;
-      color: white;
-      //color: #969696;
-      text-shadow: 1px 1px black;
-      letter-spacing: 1px;
-      border-bottom: 2px solid transparent;
-    }
-    a:hover {
-      //color: #F54318;
-      //border-bottom: 2px solid #F54318;
-      color: #29b6f6;
-      border-bottom: 2px solid #29b6f6;
-      box-shadow: 0 1px 0 white, 0 2px 0 #969696;
-    }
-  }
-</style>
