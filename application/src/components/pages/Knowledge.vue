@@ -1,35 +1,30 @@
-<template lang="html">
-  <div id="kns">
-    <table class="table">
-        <thead>
-          <tr>
-            <th>Знание</th>
-            <th>Категория</th>
-            <th>Подкатегория</th>
-            <th>Ранжирование оценок</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="item in kns" :key="item.id">
-            <td>{{item.name}}</td>
-            <td>{{item.category}}</td>
-            <td>{{item.sub_category}}</td>
-            <td>{{item.marks}}</td>
-          </tr>
-        </tbody>
-      </table>
-  </div>
+<template>
+  <main class="l-knowledge-page">
+    <app-navbar></app-navbar>
+    <div class="l-knowledge">
+      <kns-list>
+        <list-header slot="list-header"></list-header>
+        <list-body slot="list-body" :kns="kns"></list-body>
+      </kns-list>
+    </div>
+  </main>
 </template>
 
 <script>
 import {API} from './../../router/api.js'
+import ListHeader from './../Knowledge/ListHeader'
+import ListBody from './../Knowledge/ListBody'
 
 export default {
   name: 'knowledges',
+  components: {
+    'list-header': ListHeader,
+    'list-body': ListBody
+  },
   data: function () {
     return {
       kns: [],
-      stPage: 0,
+      status: 0,
       error: {}
     }
   },
@@ -50,5 +45,11 @@ export default {
 }
 </script>
 
-<style lang="css">
+<style lang="scss" scoped>
+  @import "./../../assets/styles";
+
+  .l-knowledge {
+    @extend .frame;
+    min-width: 272px;
+  }
 </style>
