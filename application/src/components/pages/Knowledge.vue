@@ -11,7 +11,7 @@
         </v-btn>
         <v-card>
           <v-card-title class="headline primary white--text" primary-title>
-            Добавление знания
+            {{ title_dialog }}
           </v-card-title>
           <v-card-text>
             <v-text-field
@@ -140,6 +140,17 @@
         {{ props.pageStart }}-{{props.pageStop }} из {{ props.itemsLength}}
       </template>
     </v-data-table>
+    <v-snackbar
+      v-model="snack.flag"
+      :timeout="3000"
+      :color="snack.color"
+      bottom
+      right>
+      {{ snack.text }}
+      <v-btn flat @click="snack.flag = false">
+        <v-icon>clear</v-icon>
+      </v-btn>
+    </v-snackbar>
   </div>
 </template>
 
@@ -150,6 +161,11 @@ export default {
     return {
       // Взаимодействие с интерфейсом
       flag_ctgr: false,
+      snack: {
+        flag: false,
+        color: 'success',
+        text: 'Описание ошибки или необходимая информация'
+      },
       dialog: false,
       search: '',
       headers: [
@@ -176,6 +192,11 @@ export default {
       code: 0
     }
   },
+  computed: {
+    title_dialog () {
+      return this.edit_kn.id === undefined ? 'Добавление знания' : 'Редактирование знания'
+    }
+  },
   watch: {
     dialog (value) {
       value || this.close_dialog()
@@ -191,6 +212,7 @@ export default {
       api.get(path).then((response) => {
         this.kns = response.data
         this.code = response.status
+        this.success_snack()
       }, (err) => {
         console.log(err.response.data)
         this.code = err.response.status
@@ -201,6 +223,7 @@ export default {
       api.delete(path).then((response) => {
         const index = this.kns.indexOf(kn)
         this.kns.splice(index, 1) // Удаляем из массива, чтобы не делать дополнительный запрос на изменения в БД
+        this.success_snack()
       }, (err) => {
         console.log(err.response.data)
         this.code = err.response.status
@@ -210,6 +233,7 @@ export default {
       let path = '/kns/create'
       api.post(path, data).then((response) => {
         this.close_dialog()
+        this.success_snack()
         this.clear_data()
         this.code = response.status
         this.kns.push(response.data)
@@ -222,6 +246,7 @@ export default {
       let path = '/kns/' + id
       // Пустые данные
       api.put(path, data).then((response) => {
+        this.success_snack()
         this.close_dialog()
         this.clear_data()
         this.code = response.status
@@ -229,7 +254,6 @@ export default {
         console.log(err.response.data)
         this.code = err.response.status
       })
-      this.clear_data()
     },
     // Обработка данных
     dublicate_data (item) {
@@ -291,14 +315,44 @@ export default {
       }
       this.default_kn = this.dublicate_data(this.edit_kn)
     },
+    is_equal (one, two) {
+      let res = true
+
+      if (one.name !== two.name) {
+        res = false
+      }
+      if (one.ctgr !== two.ctgr) {
+        res = false
+      }
+      if (one.sctgr !== two.sctgr) {
+        res = false
+      }
+      if (one.marks.length !== two.marks.length) {
+        res = false
+      }
+      for (let i = 0; i < one.marks.length && res; i++) {
+        if (one.marks[i] !== two.marks[i]) {
+          res = false
+        }
+      }
+      return res
+    },
     // Взаимодействие с интерфейсом
     save_action () {
       let item = this.edit_kn
       item.id === undefined ? this.save_kn(this.format_data(item)) : this.update_kn(item.id, this.format_data(item))
     },
     cancel_action () {
-      this.copy_data(this.default_kn, this.edit_kn)
-      this.close_dialog()
+      if (!this.is_equal(this.default_kn, this.edit_kn)) {
+        const answer = confirm('Вы уверены, что хотите выйти из режима редактирования?\nВсе несохраненные данные будут потеряны.')
+        if (answer) {
+          this.close_dialog()
+          this.clear_data()
+        }
+      } else {
+        this.close_dialog()
+        this.clear_data()
+      }
     },
     update_action (item) {
       if (item.ctgr !== '-' || item.sctgr !== '-') {
@@ -313,6 +367,16 @@ export default {
     },
     close_dialog () {
       this.dialog = false
+    },
+    success_snack () {
+      this.snack.color = 'success'
+      this.snack.text = 'Операция успешно завершена'
+      this.snack.flag = true
+    },
+    error_snack (msg) {
+      this.snack.color = 'error'
+      this.snack.text = msg
+      this.snack.flag = true
     }
   },
   mounted: function () {
