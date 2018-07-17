@@ -10,8 +10,8 @@ module.exports = function(app) {
 router.post('/kns/create', function(req, res, next) {
     const data = {
         name: req.body.name, 
-        category: req.body.ctgr,
-        sub_category: req.body.sctgr,
+        ctgr: req.body.ctgr,
+        sctgr: req.body.sctgr,
         marks: req.body.marks
     };
     
@@ -35,12 +35,12 @@ router.get('/kns/:id', function(req, res, next) {
 router.put('/kns/:id', function(req, res, next) {
     let data = {
         name: req.body.name,
-        category: req.body.ctgr, 
-        sub_category: req.body.sctgr,
+        ctgr: req.body.ctgr, 
+        sctgr: req.body.sctgr,
         marks: req.body.marks
     };
     
-    crd.UpdateKn(data, function(err, st, response) {
+    crd.UpdateKn(req.params.id, data, function(err, st, response) {
         res.status(st).send(format.Data(err, response));
     });
 });
