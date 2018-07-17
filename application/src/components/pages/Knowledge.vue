@@ -13,76 +13,88 @@
           <v-card-title class="headline primary white--text" primary-title>
             {{ title_dialog }}
           </v-card-title>
-          <v-card-text>
-            <v-text-field
-              v-model="edit_kn.name"
-              label="Наименование">
-            </v-text-field>
-            <v-flex xs4>
-              <v-switch v-model="flag_ctgr" label="Категория"></v-switch>
-            </v-flex>
-            <v-layout row justify-space-between>
-              <v-flex xs6>
-                <v-text-field
-                  v-if="flag_ctgr"
-                  v-model="edit_kn.ctgr"
-                  label="Категория">
-                </v-text-field>
+          <v-form ref="form" v-model="valid" lazy-validation>
+            <v-card-text>
+              <v-text-field
+                v-model="edit_kn.name"
+                :rules="rules"
+                required
+                label="Наименование">
+              </v-text-field>
+              <v-flex xs4>
+                <v-switch v-model="flag_ctgr" label="Категория"></v-switch>
               </v-flex>
-              &nbsp;&nbsp;&nbsp;&nbsp;
-              <v-flex xs6>
-                <v-text-field
-                  v-if="flag_ctgr"
-                  v-model="edit_kn.sctgr"
-                  label="Подкатегория">
-                </v-text-field>
-              </v-flex>
-            </v-layout>
-            <v-layout row justify-space-between>
-              <v-flex xs6>
-                <v-textarea
-                  v-model="edit_kn.marks[0]"
-                  outline
-                  name="tx-area-1"
-                  label="1 - Начальный уровень">
-                </v-textarea>
-              </v-flex>
-              &nbsp;&nbsp;&nbsp;&nbsp;
-              <v-flex xs6>
-                <v-textarea
-                  v-model="edit_kn.marks[1]"
-                  outline
-                  name="tx-area-2"
-                  label="2 - Базовый уровень">
-                </v-textarea>
-              </v-flex>
-            </v-layout>
-            <v-layout row justify-space-between>
-              <v-flex xs6>
-                <v-textarea
-                  v-model="edit_kn.marks[2]"
-                  outline
-                  name="tx-area-3"
-                  label="3 - Продвинутый уровень">
-                </v-textarea>
-              </v-flex>
-              &nbsp;&nbsp;&nbsp;&nbsp;
-              <v-flex xs6>
-                <v-textarea
-                  v-model="edit_kn.marks[3]"
-                  outline
-                  name="tx-area-4"
-                  label="4 - Экспертный уровень">
-                </v-textarea>
-              </v-flex>
-            </v-layout>
-          </v-card-text>
-          <v-divider></v-divider>
-          <v-card-actions>
-            <v-spacer></v-spacer>
-            <v-btn color="primary" flat @click="cancel_action" round>Отмена</v-btn>
-            <v-btn color="primary" round @click="save_action">Сохранить</v-btn>
-          </v-card-actions>
+              <v-layout row justify-space-between>
+                <v-flex xs6>
+                  <v-text-field
+                    v-if="flag_ctgr"
+                    v-model="edit_kn.ctgr"
+                    label="Категория">
+                  </v-text-field>
+                </v-flex>
+                &nbsp;&nbsp;&nbsp;&nbsp;
+                <v-flex xs6>
+                  <v-text-field
+                    v-if="flag_ctgr"
+                    v-model="edit_kn.sctgr"
+                    label="Подкатегория">
+                  </v-text-field>
+                </v-flex>
+              </v-layout>
+              <v-layout row justify-space-between>
+                <v-flex xs6>
+                  <v-textarea
+                    v-model="edit_kn.marks[0]"
+                    outline
+                    :rules="rules"
+                    required
+                    name="tx-area-1"
+                    label="1 - Начальный уровень">
+                  </v-textarea>
+                </v-flex>
+                &nbsp;&nbsp;&nbsp;&nbsp;
+                <v-flex xs6>
+                  <v-textarea
+                    v-model="edit_kn.marks[1]"
+                    outline
+                    :rules="rules"
+                    required
+                    name="tx-area-2"
+                    label="2 - Базовый уровень">
+                  </v-textarea>
+                </v-flex>
+              </v-layout>
+              <v-layout row justify-space-between>
+                <v-flex xs6>
+                  <v-textarea
+                    v-model="edit_kn.marks[2]"
+                    outline
+                    :rules="rules"
+                    required
+                    name="tx-area-3"
+                    label="3 - Продвинутый уровень">
+                  </v-textarea>
+                </v-flex>
+                &nbsp;&nbsp;&nbsp;&nbsp;
+                <v-flex xs6>
+                  <v-textarea
+                    v-model="edit_kn.marks[3]"
+                    outline
+                    :rules="rules"
+                    reqiured
+                    name="tx-area-4"
+                    label="4 - Экспертный уровень">
+                  </v-textarea>
+                </v-flex>
+              </v-layout>
+            </v-card-text>
+            <v-divider></v-divider>
+            <v-card-actions>
+              <v-spacer></v-spacer>
+              <v-btn color="primary" flat @click="cancel_action" round>Отмена</v-btn>
+              <v-btn color="primary" :disabled="!valid" round @click="save_action">Сохранить</v-btn>
+            </v-card-actions>
+          </v-form>
         </v-card>
       </v-dialog>
       </div>
@@ -156,16 +168,21 @@
 
 <script>
 import {api} from './../../router/api.js'
+
 export default {
   data () {
     return {
       // Взаимодействие с интерфейсом
       flag_ctgr: false,
+      valid: false,
       snack: {
         flag: false,
         color: 'success',
         text: 'Описание ошибки или необходимая информация'
       },
+      rules: [
+        v => !!v || 'Поле должно быть заполнено'
+      ],
       dialog: false,
       search: '',
       headers: [
@@ -234,7 +251,6 @@ export default {
       api.post(path, data).then((response) => {
         this.close_dialog()
         this.success_snack()
-        this.clear_data()
         this.code = response.status
         this.kns.push(response.data)
       }, (err) => {
@@ -248,7 +264,6 @@ export default {
       api.put(path, data).then((response) => {
         this.success_snack()
         this.close_dialog()
-        this.clear_data()
         this.code = response.status
       }, (err) => {
         console.log(err.response.data)
@@ -313,7 +328,12 @@ export default {
         sctgr: '',
         marks: ['', '', '', '']
       }
-      this.default_kn = this.dublicate_data(this.edit_kn)
+      this.default_kn = {
+        name: '',
+        ctgr: '',
+        sctgr: '',
+        marks: ['', '', '', '']
+      }
     },
     is_equal (one, two) {
       let res = true
@@ -339,19 +359,20 @@ export default {
     },
     // Взаимодействие с интерфейсом
     save_action () {
-      let item = this.edit_kn
-      item.id === undefined ? this.save_kn(this.format_data(item)) : this.update_kn(item.id, this.format_data(item))
+      if (this.$refs.form.validate()) {
+        let item = this.edit_kn
+        item.id === undefined ? this.save_kn(this.format_data(item)) : this.update_kn(item.id, this.format_data(item))
+      }
     },
     cancel_action () {
       if (!this.is_equal(this.default_kn, this.edit_kn)) {
         const answer = confirm('Вы уверены, что хотите выйти из режима редактирования?\nВсе несохраненные данные будут потеряны.')
         if (answer) {
+          this.copy_data(this.default_kn, this.edit_kn)
           this.close_dialog()
-          this.clear_data()
         }
       } else {
         this.close_dialog()
-        this.clear_data()
       }
     },
     update_action (item) {
@@ -367,6 +388,8 @@ export default {
     },
     close_dialog () {
       this.dialog = false
+      this.valid = false
+      this.clear_data()
     },
     success_snack () {
       this.snack.color = 'success'
