@@ -9,12 +9,12 @@ let Knowledge = new Schema({
 		required: true
 	},
 	// Основная категория
-	category: { 
+	ctgr: { 
 		type: String,
 		default: "-"
 	},
 	// Подкатегория знания
-	sub_category: {
+	sctgr: {
 		type: String,
 		default: "-"
 	},
@@ -93,11 +93,11 @@ Knowledge.statics.delete = function(callback) {
 
 function Format(kn) {
 	let item = {
-		id			: kn._id,
-		name		: kn.name,
-		category	: kn.category,
-		sub_category: kn.sub_category,
-		marks		: kn.marks
+		id		: kn._id,
+		name	: kn.name,
+		ctgr	: kn.ctgr,
+		sctgr	: kn.sctgr,
+		marks	: kn.marks
 	};
 	let flag = false;
 	for (let element in item)

@@ -22,8 +22,8 @@ router.post('/create', function(req, res, next) {
 
     let data = new knowledge({
         name: req.body.name,
-        category: req.body.ctgr,
-        sub_category: req.body.sctgr,
+        ctgr: req.body.ctgr,
+        sctgr: req.body.sctgr,
         marks: req.body.marks
     });
 
@@ -60,7 +60,7 @@ router.get('/:id', function(req, res, next) {
 router.put('/:id', function(req, res, next) { 
     const id = req.params.id;
     if (!validator.checkId(id))
-        res.status(400).send(myJSON.BadRequest(desc.InvalidId(id)));
+        return res.status(400).send(myJSON.BadRequest(desc.InvalidId(id)));
         
     let data = {};
     if (!validator.checkUndefined(req.body.marks)) {
@@ -71,9 +71,9 @@ router.put('/:id', function(req, res, next) {
     if (!validator.checkUndefined(req.body.name))
         data["name"] = req.body.name;
     if (!validator.checkUndefined(req.body.ctgr))
-        data["category"] = req.body.ctgr;
+        data["ctgr"] = req.body.ctgr;
     if (!validator.checkUndefined(req.body.sctgr))
-        data["sub_category"] = req.body.sctgr;
+        data["sctgr"] = req.body.sctgr;
     // Не пришли данные для обновления 
     if (Object.keys(data).length == 0)
         return res.status(400).send(myJSON.BadRequest(desc.NoData));
