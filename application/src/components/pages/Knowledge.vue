@@ -107,51 +107,10 @@
         hide-details>
       </v-text-field>
     </v-toolbar>
-    <v-data-table
-      :headers="headers"
-      :items="kns"
-      :search="search"
-      class="elevation-2"
-      no-results-text="По данному запросу результатов не найдено"
-      no-data-text="Нет доступных данных">
-      <!-- Слот с данными -->
-      <template slot="items" slot-scope="props">
-        <tr @click="props.expanded = !props.expanded">
-          <td style="width: 50%">{{ props.item.name }}</td>
-          <td>{{ props.item.ctgr }}</td>
-          <td>{{ props.item.sctgr }}</td>
-          <td style="width: 5%">
-            <v-icon small @click="update_action(props.item)" class="mr-2">edit</v-icon>
-            <v-icon small @click="delete_action(props.item)">delete</v-icon>
-          </td>
-        </tr>
-      </template>
-      <template slot="expand" slot-scope="props">
-        <v-container fluid>
-          <v-card>
-            <v-card-text class="primary lighten-5">1 - {{ props.item.marks[0] }}</v-card-text>
-            <v-card-text class="primary lighten-4">2 - {{ props.item.marks[1] }}</v-card-text>
-            <v-card-text class="primary lighten-3">3 - {{ props.item.marks[2] }}</v-card-text>
-            <v-card-text class="primary lighten-2">4 - {{ props.item.marks[3] }}</v-card-text>
-          </v-card>
-        </v-container>
-      </template>
-      <!-- Выдача алерта, когда данные пустые -->
-      <!-- <template slot="no-data">
-        <v-layout align-center justify-center>
-            Нет доступных данных
-        </v-layout>
-      </template> -->
-      <!-- Вывести в футер напоминание о том, что при нажатии на элемент выпадет список оценок
-      <template slot="footer" primary>
-        <td colspan="100%">
-          <small>При нажатии на знание, будут показаны все его оценки</small>
-        </td>
-      </template> -->
-      <template slot="pageText" slot-scope="props">
-        {{ props.pageStart }}-{{props.pageStop }} из {{ props.itemsLength}}
-      </template>
-    </v-data-table>
+    <kns-table slot="kns-table"
+      :knowledges="kns"
+      :search="search">
+    </kns-table>
     <v-toolbar slot="footer" class="mt-2 elevation-2" dense flat>
       <v-toolbar-title class="caption">
         * - При нажатии на знание отображаются его оценочные уровни, где:
@@ -177,9 +136,13 @@
 </template>
 
 <script>
+import KnsTable from './../kns/KnsTable'
 import {api} from './../../router/api.js'
 
 export default {
+  components: {
+    'kns-table': KnsTable
+  },
   data () {
     return {
       // Взаимодействие с интерфейсом
