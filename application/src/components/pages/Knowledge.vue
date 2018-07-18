@@ -152,6 +152,16 @@
         {{ props.pageStart }}-{{props.pageStop }} из {{ props.itemsLength}}
       </template>
     </v-data-table>
+    <v-toolbar slot="footer" class="mt-2 elevation-2" dense flat>
+      <v-toolbar-title class="caption">
+        * - При нажатии на знание отображаются его оценочные уровни, где:
+        <!-- <br> &nbsp;&nbsp;&nbsp;&nbsp; -->
+        1 - начальный,
+        2 - базовый,
+        3 - продвинутый,
+        4 - экспертный
+      </v-toolbar-title>
+    </v-toolbar>
     <v-snackbar
       v-model="snack.flag"
       :timeout="3000"
