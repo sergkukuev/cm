@@ -35,7 +35,7 @@ export default {
       let flExit = false
       let index = -1
       for (let i = 0; i < this.links.length && !flExit; i++) {
-        if (this.links[i] === item) {
+        if (this.links[i] === link) {
           flExit = true
           index = i
         }
