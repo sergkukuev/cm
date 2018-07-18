@@ -16,16 +16,26 @@ module.exports = {
     // Клиентская ошибка
     BadRequest : function(desc) {
         let item = {
-            status: "Error",
-            description: desc
+            status: 400,
+            statusText: "Bad Request",
+            description: {
+                name: "MyBadRequestError",
+                message: desc,
+                status: "Error"
+            }
         };
         return item;
     },
     // Ресурс не найден
     NotFound : function(desc) {
         let item = {
-            status: "Error",
-            description: desc
+            status: 404,
+            statusText: "Not Found",
+            description: {
+                name: "MyNotFoundError",
+                message: desc,
+                status: "Error"
+            }
         };
         return item;
     }
