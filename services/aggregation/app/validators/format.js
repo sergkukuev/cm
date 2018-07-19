@@ -4,8 +4,33 @@ module.exports = {
     Data : function(err, res) {
         let result;
         err ? (err.code == "ECONNREFUSED" ? result = res : result = err) : 
-            (res ? result = res : result = { status: "Error", description: "Ресурс не найден"});
+            (res ? result = res : result = this.ResourceNotFound());
         return result;
+    },
+    // Отсутстувие ресурса
+    ResourceNotFound : function() {
+    	let item = {
+            status: 404,
+            statusText: "Not Found",
+            description: {
+                name: "ResourceNotFoundError",
+                message: "Ресурс не найден",
+                status: "Error"
+            }
+        };
+    },
+    // Сервер недоступен
+    ServerNotAviable : function() {
+        let item = {
+            status: 503,
+            statusText: "Server Not Aviable",
+            description: {
+                name: "ServerNotAviableError",
+                message: "Сервер недоступен, повторите попытку позже",
+                status: "Error"
+            }
+        };
+        return item;
     },
     // Формирование массива оценок 
     MarkArray : function(what, from) {

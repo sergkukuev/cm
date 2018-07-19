@@ -1,5 +1,6 @@
 // Модуль обработки запросов
 const req  = require('request');
+const format = require('./../validators/format')
 module.exports = {
     Options : function(uri, method) {
         let item = {
@@ -36,7 +37,7 @@ module.exports = {
     Response : function(err, status, response, callback) {
         if (err) {
             if (err.code == "ECONNREFUSED") 
-                return callback(err, 503, { status: "Error", description: "Сервер недоступен, повторите попытку позже" });
+                return callback(err, 503, format.ServerNotAviable());
             return callback(err, status, JSON.parse(response));
         }
         else {
