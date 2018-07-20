@@ -3,7 +3,7 @@
     <v-toolbar class="elevation-2">
       <v-toolbar-title>Список знаний</v-toolbar-title>
       <v-divider inset vertical class="mx-3"></v-divider>
-      <v-btn color="primary" @click="dialog = true" fab small class="mx-1">
+      <v-btn color="primary" @click="dialog = true" fab small class="mx-1 elevation-1">
         <v-icon dark>add</v-icon>
       </v-btn>
       <v-spacer></v-spacer>
@@ -74,11 +74,17 @@ export default {
       // Данные
       kns: [], // Все доступные знания
       knowledge: {}, // Дефолтное знание
-      code: 0
+      code: 0 // Код 0 - состояние ожидания ввода
+    }
+  },
+  watch: {
+    code (value) {
+      if (value === 201 || value === 202) {
+        this.close_dialog()
+      }
     }
   },
   methods: {
-    // Взаимодействие с интерфейсом
     save_item (id, item) {
       id === undefined ? crud.save(this, item) : crud.update(this, id, item)
     },
@@ -91,6 +97,7 @@ export default {
     },
     close_dialog () {
       this.dialog = false
+      this.code = 0 // Сброс кода в ожидание
       this.clear_default()
     },
     clear_default () {
