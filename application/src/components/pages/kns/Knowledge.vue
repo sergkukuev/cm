@@ -1,6 +1,6 @@
 <template>
   <div>
-    <v-toolbar class="elevation-2">
+    <v-toolbar class="elevation-2 mb-2">
       <v-toolbar-title>Список знаний</v-toolbar-title>
       <v-divider inset vertical class="mx-3"></v-divider>
       <v-btn color="primary" @click="dialog = true" fab small class="mx-1 elevation-1">
@@ -64,7 +64,6 @@ export default {
   },
   data () {
     return {
-      // Взаимодействие с интерфейсом
       dialog: false,
       search: '',
       snack: {
