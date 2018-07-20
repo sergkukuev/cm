@@ -80,9 +80,22 @@ export default {
   },
   watch: {
     code (value) {
-      if (value === 201 || value === 202) {
-        this.close_dialog()
+      // 100 - 199 Информационные
+      // 200 - 299 Успешные
+      // 300- 399 Перенаправление
+      // 400 - 499 Ошибка клиента
+      // 500 - 599 Ошибка сервера
+      if (value >= 100 && value < 200) {
+        this.render_snack('info', this.snack.text)
+      } else if (value >= 200 && value < 300) {
+        if (value === 201 || value === 202) {
+          this.close_dialog()
+        }
+        this.render_snack('success', this.snack.text)
+      } else if (value >= 400 && value < 600) {
+        this.render_snack('error', this.snack.text)
       }
+      this.code = 0 // Сброс кода в ожидание
     }
   },
   methods: {
@@ -97,11 +110,10 @@ export default {
       confirm('Вы уверены, что хотите удалить данный элемент?') && crud.remove(this, item)
     },
     no_change () {
-      crud.info_snack(this, 'Нет никаких изменений, сохранение не требуется')
+      this.render_snack('info', 'Нет никаких изменений, сохранение не требуется')
     },
     close_dialog () {
       this.dialog = false
-      this.code = 0 // Сброс кода в ожидание
       this.clear_default()
     },
     clear_default () {
@@ -111,6 +123,12 @@ export default {
         sctgr: '',
         marks: ['', '', '', '']
       }
+    },
+    // Отображение snackbar
+    render_snack (color, text) {
+      this.snack.color = color
+      this.snack.text = text
+      this.snack.activator = true
     }
   },
   mounted: function () {
