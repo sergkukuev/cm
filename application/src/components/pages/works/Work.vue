@@ -123,7 +123,7 @@
 </template>
 
 <script>
-import {api} from './../../router/api.js'
+import {api} from './../../../router/api.js'
 
 export default {
   data () {

@@ -4,7 +4,7 @@ import Router from 'vue-router'
 // Pages
 import Auth from '@/components/pages/auth/Auth.vue'
 import Kns from '@/components/pages/kns/Knowledge'
-import Work from '@/components/pages/Work'
+import Work from '@/components/pages/works/Work'
 
 // Global components
 import Navigate from '@/components/Navigate'
