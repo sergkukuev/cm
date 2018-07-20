@@ -1,6 +1,6 @@
 <template>
   <div class="text-xs-center">
-    <v-dialog v-model="dialog" max-width="800px">
+    <v-dialog v-model="dialog" max-width="800px" persistent>
       <v-card>
         <v-card-title class="headline primary white--text" primary-title>
           {{ title_dialog }}
@@ -112,9 +112,11 @@ export default {
   },
   methods: {
     save_action () {
-      let data = this.format()
-      if (!this.is_equal(data, this.default)) {
+      let data = this.diff_compare(this.format(), this.default)
+      if (JSON.stringify(data) !== '{}') {
         this.$emit('saveAction', this.default.id, data)
+      } else {
+        console.log('Ничего не изменилось, нет смысла сохранять')
       }
     },
     cancel_action () {
@@ -170,6 +172,29 @@ export default {
         }
       }
       return result
+    },
+    // Отличия между первым и вторым (возвращаются отличительные данные первого элемента от второго)
+    diff_compare (one, two) {
+      let data = {}
+      for (let key in one) {
+        if (one[key] instanceof Array && two[key] instanceof Array) {
+          let bArr = false
+          if (one[key].length !== two[key].length) {
+            bArr = true
+          }
+          for (let i = 0; i < one[key].length; i++) {
+            if (one[key][i] !== two[key][i]) {
+              bArr = true
+            }
+          }
+          if (bArr) {
+            data[key] = one[key]
+          }
+        } else if (one[key] !== two[key]) {
+          data[key] = one[key]
+        }
+      }
+      return data
     }
   }
 }
