@@ -14,14 +14,14 @@
             <v-switch v-model="activator" label="Категория"></v-switch>
           </v-flex>
           <v-layout row justify-space-between>
-            <v-flex xs6>
+            <v-flex xs6 class="mr-2">
               <v-text-field
                 v-if="activator"
                 v-model="item.ctgr"
                 label="Категория">
               </v-text-field>
             </v-flex>
-            <v-flex xs6>
+            <v-flex xs6 class="ml-2">
               <v-text-field
                 v-if="activator"
                 v-model="item.sctgr"
@@ -30,7 +30,7 @@
             </v-flex>
           </v-layout>
           <v-layout row justify-space-between>
-            <v-flex xs6>
+            <v-flex xs6 class="mr-2">
               <v-textarea
                 v-model="item.beginer"
                 outline
@@ -38,7 +38,7 @@
                 label="1 - Начальный уровень">
               </v-textarea>
             </v-flex>
-            <v-flex xs6>
+            <v-flex xs6 class="ml-2">
               <v-textarea
                 v-model="item.base"
                 outline
@@ -48,7 +48,7 @@
             </v-flex>
           </v-layout>
           <v-layout row justify-space-between>
-            <v-flex xs6>
+            <v-flex xs6 class="mr-2">
               <v-textarea
                 v-model="item.advance"
                 outline
@@ -56,7 +56,7 @@
                 label="3 - Продвинутый уровень">
               </v-textarea>
             </v-flex>
-            <v-flex xs6>
+            <v-flex xs6 class="ml-2">
               <v-textarea
                 v-model="item.expert"
                 outline
