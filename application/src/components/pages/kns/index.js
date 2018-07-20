@@ -6,7 +6,7 @@ export default {
   save (context, data) {
     let path = './kns/create'
     api.post(path, data).then((res) => {
-      context.kns.push(res.data)
+      context.kns.push(res.data) // Вставка в массив, чтобы не делать дополнительный запрос на получение изменений
       context.code = res.status
       this.success_snack(context, sdesc)
     }, (err) => {
@@ -30,6 +30,17 @@ export default {
   update (context, id, data) {
     let path = '/kns/' + id
     api.put(path, data).then((res) => {
+      // Вставка изменений в элемент массива, чтобы не делать дополнительный запрос на получение изменений
+      let bUpd = false
+      for (let i = 0; i < context.kns.length && !bUpd; i++) {
+        if (context.kns[i].id === res.data.id) {
+          context.kns[i].name = res.data.name
+          context.kns[i].ctgr = res.data.ctgr
+          context.kns[i].sctgr = res.data.sctgr
+          context.kns[i].marks = res.data.marks
+          bUpd = true
+        }
+      }
       context.code = res.status
       this.success_snack(context, sdesc)
     }, (err) => {
@@ -42,7 +53,7 @@ export default {
     let path = '/kns/' + item.id
     api.delete(path).then((res) => {
       const index = context.kns.indexOf(item)
-      context.kns.splice(index, 1) // Удаляем из массива, чтобы не делать дополнительный запрос на изменения в БД
+      context.kns.splice(index, 1) // Удаляем из массива, чтобы не делать дополнительный запрос на получение изменений
       context.code = res.status
       this.success_snack(context, sdesc)
     }, (err) => {
