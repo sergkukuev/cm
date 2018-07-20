@@ -2,8 +2,8 @@ import Vue from 'vue'
 import Router from 'vue-router'
 
 // Pages
-import Auth from '@/components/pages/Authentication/Auth.vue'
-import Kns from '@/components/pages/Knowledge'
+import Auth from '@/components/pages/auth/Auth.vue'
+import Kns from '@/components/pages/kns/Knowledge'
 import Work from '@/components/pages/Work'
 
 // Global components
