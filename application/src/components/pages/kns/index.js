@@ -72,5 +72,10 @@ export default {
     context.snack.color = 'error'
     context.snack.text = msg
     context.snack.activator = true
+  },
+  info_snack (context, msg) {
+    context.snack.color = 'info'
+    context.snack.text = msg
+    context.snack.activator = true
   }
 }

@@ -70,7 +70,7 @@
         <v-card-actions>
           <v-spacer></v-spacer>
           <v-btn color="primary" flat round @click="cancel_action">Отмена</v-btn>
-          <v-btn color="primary" round @click="save_action">Сохранить</v-btn>
+          <v-btn color="primary" round @click="save_action" :disabled="disable">Сохранить</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -83,6 +83,7 @@ export default {
   data () {
     return {
       dialog: false,
+      disable: false, // Активатор кнопки сохранения
       activator: false, // Активатор категории
       item: {
         name: '',
@@ -116,7 +117,7 @@ export default {
       if (JSON.stringify(data) !== '{}') {
         this.$emit('saveAction', this.default.id, data)
       } else {
-        console.log('Ничего не изменилось, нет смысла сохранять')
+        this.$emit('nochangeAction')
       }
     },
     cancel_action () {

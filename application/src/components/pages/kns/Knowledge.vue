@@ -17,6 +17,7 @@
     <kns-dialog slot="kns-dialog"
       :default="knowledge"
       :wdialog="dialog"
+      @nochangeAction="no_change"
       @saveAction="save_item"
       @cancelAction="close_dialog">
     </kns-dialog>
@@ -94,6 +95,9 @@ export default {
     },
     delete_item (item) {
       confirm('Вы уверены, что хотите удалить данный элемент?') && crud.remove(this, item)
+    },
+    no_change () {
+      crud.info_snack(this, 'Нет никаких изменений, сохранение не требуется')
     },
     close_dialog () {
       this.dialog = false
