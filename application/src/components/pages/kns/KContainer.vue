@@ -20,7 +20,10 @@
     </template>
     <template slot="expand" slot-scope="props">
       <v-container fluid>
-        <v-card>
+        <span>
+          Оценочные уровни знания:
+        </span>
+        <v-card class="mt-2">
           <v-card-text class="primary lighten-5">1 - {{ props.item.marks[0] }}</v-card-text>
           <v-card-text class="primary lighten-4">2 - {{ props.item.marks[1] }}</v-card-text>
           <v-card-text class="primary lighten-3">3 - {{ props.item.marks[2] }}</v-card-text>

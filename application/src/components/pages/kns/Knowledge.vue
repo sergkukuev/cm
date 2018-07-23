@@ -52,15 +52,15 @@
 </template>
 
 <script>
-import KnsTable from './Table'
-import KnsDialog from './EditDialog'
+import KContainer from './KContainer'
+import KDialog from './KEditDlg'
 
 import crud from './index.js'
 
 export default {
   components: {
-    'kns-dialog': KnsDialog,
-    'kns-table': KnsTable
+    'kns-dialog': KDialog,
+    'kns-table': KContainer
   },
   data () {
     return {
