@@ -52,7 +52,7 @@
 </template>
 
 <script>
-import KContainer from './KContainer'
+import KContainer from './KDataTable'
 import KDialog from './KEditDlg'
 
 import crud from './index.js'
