@@ -3,54 +3,14 @@
     <v-dialog v-model="dialog" max-width="800px" persistent>
       <v-card>
         <v-card-title class="headline primary white--text" primary-title>
-          Добавление работы
+          Добавление направления
         </v-card-title>
         <v-card-text>
           <v-text-field
             v-model="name"
             label="Наименование">
           </v-text-field>
-          <v-card-text v-for="(task, i) in tasks" :key="i" class="elevation-2 mb-2">
-            <v-layout row wrap>
-              <v-flex xs11>
-                <span class="title">Задача №{{i}}</span>
-              </v-flex>
-              <v-flex xs1 class="text-xs-right">
-                <v-icon small @click="delete_task(i)">delete</v-icon>
-              </v-flex>
-            </v-layout>
-            <v-divider></v-divider>
-            <v-layout row wrap>
-              <v-flex xs10 class="mr-4">
-                <v-text-field
-                  v-model="task.name"
-                  label="Наименование">
-                </v-text-field>
-              </v-flex>
-              <v-flex xs1 class="ml-4">
-                <v-select
-                  :items="ranks"
-                  v-model="rank"
-                  :hint="'Ранг'"
-                  persistent-hint
-                  return-object
-                  single-line>
-                  </v-select>
-              </v-flex>
-            </v-layout>
-            <v-tooltip bottom>
-              <v-btn block slot="activator" color="primary" dark @click="add_knowledges">
-                <v-icon dark>add</v-icon>
-              </v-btn>
-              <span>Добавить знания к задаче №{{i}}</span>
-            </v-tooltip>
-          </v-card-text>
-          <v-tooltip bottom>
-            <v-btn block slot="activator" color="primary" dark @click="add_task">
-              <v-icon dark>add</v-icon>
-            </v-btn>
-            <span>Добавить задачу</span>
-          </v-tooltip>
+          <task-edit></task-edit>
         </v-card-text>
         <v-divider></v-divider>
         <v-card-actions>
@@ -64,7 +24,12 @@
 </template>
 
 <script>
+import TEdit from './TEditContainer'
+
 export default {
+  components: {
+    'task-edit': TEdit
+  },
   props: ['wdialog'],
   data () {
     return {
