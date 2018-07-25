@@ -2,7 +2,6 @@ import Vue from 'vue'
 import Router from 'vue-router'
 
 // Pages
-import Auth from '@/components/pages/auth/Auth.vue'
 import Kns from '@/components/pages/kns/Knowledge'
 import Work from '@/components/pages/works/Work'
 
@@ -16,7 +15,6 @@ Vue.use(Router)
 
 // Application routes
 const routes = [
-  { path: '/login', component: Auth },
   { path: '/knowledge', component: Kns },
   { path: '/work', component: Work }
 ]
