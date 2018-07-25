@@ -1,16 +1,22 @@
 <template>
-  <div>
-    <v-toolbar class="elevation-2 mb-2">
-      <v-toolbar-title>Список знаний</v-toolbar-title>
-      <v-divider inset vertical class="mx-3"></v-divider>
-      <v-btn color="primary" @click="dialog = true" fab small class="mx-1 elevation-1">
-        <v-icon dark>add</v-icon>
-      </v-btn>
+  <v-layout row wrap>
+    <v-toolbar class="secondary elevation-2 mb-1 font-weight-light">
+      <v-toolbar-title class="font-weight-regular">Список знаний</v-toolbar-title>
+      <v-divider vertical inset class="ml-3"></v-divider>
+      <v-tooltip bottom>
+        <v-btn slot="activator" @click="dialog = true" icon class="ml-2">
+          <v-icon>add</v-icon>
+        </v-btn>
+        <span>Добавить</span>
+      </v-tooltip>
+      <!-- <v-alert :value="alert" color="primary" outline icon="priority_high">
+        {{ snack.text }}
+      </v-alert> -->
       <v-spacer></v-spacer>
       <v-text-field
         v-model="search"
         append-icon="search"
-        lable="Поиск"
+        label="Поиск"
         hide-details>
       </v-text-field>
     </v-toolbar>
@@ -23,23 +29,14 @@
     </kns-dialog>
     <kns-table slot="kns-table"
       :knowledges="kns"
+      :loading="loading"
       :search="search"
       @editItem="update_item"
       @removeItem="delete_item">
     </kns-table>
-    <v-toolbar slot="footer" class="mt-2 elevation-2" dense flat>
-      <v-toolbar-title class="caption">
-        * - При нажатии на знание отображаются его оценочные уровни, где:
-        <!-- <br> &nbsp;&nbsp;&nbsp;&nbsp; -->
-        1 - начальный,
-        2 - базовый,
-        3 - продвинутый,
-        4 - экспертный
-      </v-toolbar-title>
-    </v-toolbar>
     <v-snackbar
       v-model="snack.activator"
-      :timeout="3000"
+      :timeout="snack.timer"
       :color="snack.color"
       bottom
       right>
@@ -48,7 +45,7 @@
         <v-icon>clear</v-icon>
       </v-btn>
     </v-snackbar>
-  </div>
+  </v-layout>
 </template>
 
 <script>
@@ -66,10 +63,13 @@ export default {
     return {
       dialog: false,
       search: '',
+      alert: false,
+      loading: true, // Статус загрузки всех элементов
       snack: {
         activator: false, // Активатор snackbar
         color: 'info',
-        text: 'Здесь лежит описание последней ошибки или операции'
+        text: 'Здесь лежит описание последней ошибки или операции',
+        timer: 5000
       },
       // Данные
       kns: [], // Все доступные знания
@@ -85,16 +85,27 @@ export default {
       // 400 - 499 Ошибка клиента
       // 500 - 599 Ошибка сервера
       if (value >= 100 && value < 200) {
+        this.loading = false
+        this.alert = true
         this.render_snack('info', this.snack.text)
       } else if (value >= 200 && value < 300) {
         if (value === 201 || value === 202) {
           this.close_dialog()
         }
+        this.loading = false
+        this.alert = false
         this.render_snack('success', this.snack.text)
       } else if (value >= 400 && value < 600) {
+        this.loading = false
+        this.alert = true
         this.render_snack('error', this.snack.text)
       }
       this.code = 0 // Сброс кода в ожидание
+    },
+    alert (value) {
+      if (value) {
+        // TODO: Сделать таймер сброса
+      }
     }
   },
   methods: {

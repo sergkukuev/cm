@@ -1,29 +1,24 @@
 <template>
-  <div class="text-xs-center">
-    <v-dialog v-model="dialog" max-width="800px" persistent>
+  <div>
+    <v-dialog v-model="dialog" max-width="1000px" persistent>
       <v-card>
-        <v-card-title class="headline primary white--text" primary-title>
+        <v-card-title class="title accent elevation-2 font-weight-regular">
           {{ title_dialog }}
         </v-card-title>
-        <v-card-text>
+        <v-card-text class="font-weight-light">
           <v-text-field
             v-model="item.name"
             label="Наименование">
           </v-text-field>
-          <v-flex xs4>
-            <v-switch v-model="activator" label="Категория"></v-switch>
-          </v-flex>
           <v-layout row justify-space-between>
             <v-flex xs6 class="mr-2">
               <v-text-field
-                v-if="activator"
                 v-model="item.ctgr"
                 label="Категория">
               </v-text-field>
             </v-flex>
             <v-flex xs6 class="ml-2">
               <v-text-field
-                v-if="activator"
                 v-model="item.sctgr"
                 label="Подкатегория">
               </v-text-field>
@@ -69,8 +64,8 @@
         <v-divider></v-divider>
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn color="primary" flat round @click="cancel_action">Отмена</v-btn>
-          <v-btn color="primary" round @click="save_action" :disabled="disable">Сохранить</v-btn>
+          <v-btn class="transparent text--primary font-weight-regular elevation-0" @click="cancel_action">Отмена</v-btn>
+          <v-btn class="accent text--primary font-weight-regular" @click="save_action">Сохранить</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -83,8 +78,6 @@ export default {
   data () {
     return {
       dialog: false,
-      disable: false, // Активатор кнопки сохранения
-      activator: false, // Активатор категории
       item: {
         name: '',
         ctgr: '',
@@ -108,7 +101,7 @@ export default {
     },
     default (value) {
       this.copy(this.default, this.item)
-      this.default.ctgr !== '' || this.default.sctgr !== '' ? this.activator = true : this.activator = false
+      // this.default.ctgr !== '' || this.default.sctgr !== '' ? this.activator = true : this.activator = false
     }
   },
   methods: {
