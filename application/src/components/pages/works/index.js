@@ -51,6 +51,27 @@ export default {
       context.snack.text = err.response.data.description.message
       context.code = err.response.status
     })
+  },
+  // Преобразование данных к виду отправки на сервер
+  format (work) {
+    let res = {
+      tname: [],
+      trank: [],
+      num_kn: [],
+      id_kn: [],
+      marks: []
+    }
+    res['name'] = work.name
+    work.tasks.forEach(task => {
+      res.tname.push(task.name)
+      res.trank.push(task.rank)
+      res.num_kn.push(task.need.length)
+      task.need.forEach(knowledge => {
+        res.id_kn.push(knowledge.id)
+        res.marks.push(knowledge.mark)
+      })
+    })
+    return res
   }
 }
 
