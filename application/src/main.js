@@ -6,10 +6,20 @@ import router from './router'
 
 import VueCookie from 'vue-cookie'
 import Vuetify from 'vuetify'
+// Helpers
+import colors from 'vuetify/es5/util/colors'
 import('../node_modules/vuetify/dist/vuetify.min.css')
 
 Vue.use(VueCookie)
-Vue.use(Vuetify)
+// Можно добавить любой цвет в тему с любым названием, хоть azazazello
+Vue.use(Vuetify, {
+  theme: {
+    primary: colors.grey.darken3,
+    secondary: colors.amber.accent3,
+    accent: colors.amber.lighten4,
+    background: colors.grey.lighten3
+  }
+})
 Vue.config.productionTip = false
 
 /* eslint-disable no-new */
