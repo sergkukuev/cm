@@ -1,6 +1,7 @@
 import {api} from './../../../router/api'
 
 const sdesc = 'Операция прошла успешно'
+export const timeout = 10000 // Время ожидания ответа сервера
 
 export default {
   save (context, data) {
@@ -17,6 +18,7 @@ export default {
   },
   get (context) {
     let path = '/kns'
+    context.loading = true
     api.get(path).then((res) => {
       context.kns = res.data
       context.snack.text = sdesc
