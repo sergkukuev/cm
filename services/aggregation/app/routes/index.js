@@ -62,7 +62,7 @@ router.post('/works/create', function(req, res, next) {
         marks: req.body.marks
     };
 
-    crd.CreateWork(data, function(err, res, next) {
+    crd.CreateWork(data, function(err, st, response) {
         res.status(st).send(format.Data(err, response));
     });
 });
