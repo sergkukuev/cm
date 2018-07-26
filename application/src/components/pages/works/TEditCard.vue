@@ -27,7 +27,7 @@
           <v-flex xs2>
             <v-select
               class="mt-1"
-              v-model="select"
+              v-model="task.rank"
               label="Ранг"
               :items="ranks"
               item-text="text"
@@ -93,7 +93,6 @@ export default {
   },
   data () {
     return {
-      select: { value: this.task.rank },
       ranks: [
         { text: 'ведущий', value: 0 },
         { text: '1 кат.', value: 1 },
@@ -103,11 +102,6 @@ export default {
       ],
       dialog: false,
       show_list: false
-    }
-  },
-  watch: {
-    select (value) {
-      this.task.rank = this.select.value
     }
   },
   methods: {

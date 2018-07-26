@@ -182,7 +182,10 @@ export default {
       let path = '/kns'
       api.get(path).then((res) => {
         this.kns = res.data.map(function (knowledge) {
-          knowledge['mark'] = 1 // Добавляем новое поле под оценку
+          let value = {
+            value: 1
+          }
+          knowledge['mark'] = value // Добавляем новое поле под оценку
           return knowledge
         })
         this.answer = true

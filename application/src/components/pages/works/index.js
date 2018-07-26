@@ -64,11 +64,11 @@ export default {
     res['name'] = work.name
     work.tasks.forEach(task => {
       res.tname.push(task.name)
-      res.trank.push(task.rank)
+      res.trank.push(task.rank.value)
       res.num_kn.push(task.need.length)
       task.need.forEach(knowledge => {
         res.id_kn.push(knowledge.id)
-        res.marks.push(knowledge.mark)
+        res.marks.push(knowledge.mark.value)
       })
     })
     return res

@@ -9,6 +9,7 @@
     </v-toolbar>
     <works-dialog slot="works-dialog"
       :wdialog="dialog"
+      @saveAction="save_action"
       @cancelAction="dialog = false">
     </works-dialog>
     <works-table slot="works-table"
@@ -37,10 +38,17 @@ export default {
   data () {
     return {
       dialog: false,
+      snack: {
+        text: ''
+      },
       // Данные
       works: [], // Все доступные знания
-      work: {}, // Дефолтное знание
       code: 0 // Код 0 - состояние ожидания действий
+    }
+  },
+  methods: {
+    save_action (work) {
+      crud.save(this, crud.format(work))
     }
   },
   mounted: function () {

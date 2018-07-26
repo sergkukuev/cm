@@ -100,7 +100,9 @@ export default {
     deafult_task () {
       return {
         name: '',
-        rank: 3,
+        rank: {
+          value: 3
+        },
         need: []
       }
     }
