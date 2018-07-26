@@ -1,16 +1,19 @@
 <template>
   <v-layout row wrap>
-    <v-card style="width: 100%">
+    <v-card style="width: 100%" class="elevation-3">
       <v-card-title class="subheading">
         Задача {{ index }}
         <v-spacer></v-spacer>
         <!-- <v-icon small class="mr-2">save</v-icon> -->
-        <v-icon small v-if="all > 1" @click="$emit('deleteAction')">delete</v-icon>
+        <v-tooltip bottom>
+          <v-icon slot="activator" small v-if="all > 1" @click="$emit('deleteAction')">delete</v-icon>
+          <span>Удалить задачу</span>
+        </v-tooltip>
       </v-card-title>
       <v-divider></v-divider>
       <v-card-text>
         <v-layout row wrap>
-          <v-flex xs8 class="mr-2">
+          <v-flex xs7 class="mr-2">
             <v-text-field
               class="mt-1"
               v-model="task.name"
@@ -18,22 +21,24 @@
             </v-text-field>
           </v-flex>
           <v-spacer></v-spacer>
-          <v-flex xs1>
-            <v-input class="subheading font-weight-light mt-2">Ранг:</v-input>
+          <v-flex xs2>
+            <v-input class="subheading font-weight-light mt-2">Квалификация:</v-input>
           </v-flex>
-          <v-flex xs1>
+          <v-flex xs2>
             <v-select
               class="mt-1"
-              v-model="task.rank"
+              v-model="select"
               label="Ранг"
-              :items="[0, 1, 2, 3]"
+              :items="ranks"
+              item-text="text"
+              item-value="value"
               persistent-hint
               return-object
               single-line>
             </v-select>
           </v-flex>
           <v-flex>
-            <span class="subheading font-weight-light">Требуемые знания:</span>
+            <span class="subheading font-weight-regular">Требуемые знания:</span>
             <v-tooltip bottom>
               <v-btn slot="activator" @click="show_list = !show_list" icon small>
                 <v-icon>{{show_list ? 'keyboard_arrow_down' : 'keyboard_arrow_up'}}</v-icon>
@@ -66,7 +71,8 @@
           <v-flex xs12>
             <kns-need-list
               v-show="show_list"
-              :knowledges="task.need">
+              :knowledges="task.need"
+              @deleteMark="delete_mark">
             </kns-need-list>
           </v-flex>
         </v-layout>
@@ -87,8 +93,21 @@ export default {
   },
   data () {
     return {
+      select: { value: this.task.rank },
+      ranks: [
+        { text: 'ведущий', value: 0 },
+        { text: '1 кат.', value: 1 },
+        { text: '2 кат.', value: 2 },
+        { text: '3 кат.', value: 3 },
+        { text: 'б/кат', value: 4 }
+      ],
       dialog: false,
       show_list: false
+    }
+  },
+  watch: {
+    select (value) {
+      this.task.rank = this.select.value
     }
   },
   methods: {
@@ -96,6 +115,9 @@ export default {
     selected_action (knowledges) {
       this.dialog = false
       this.task.need = knowledges
+    },
+    delete_mark (i) {
+      this.task.need.splice(i, 1)
     }
   }
 }

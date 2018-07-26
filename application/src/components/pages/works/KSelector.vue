@@ -63,7 +63,7 @@
               <v-tooltip right max-width="400px">
                 <td slot="activator" class="py-3" style="width: 50%">{{ props.item.name }}</td>
                 <span>Оценочные уровни знания: <br></span>
-                <span v-for="(mark, i) in props.item.marks" :key="i">{{i + 1}} - {{mark}}<br></span>
+                <span v-for="(mark, i) in props.item.marks" :key="i">{{i + 1}} - <strong>{{ level[i] }}</strong> - {{mark}}<br></span>
               </v-tooltip>
               <td>{{ props.item.ctgr }}</td>
               <td>{{ props.item.sctgr }}</td>
@@ -74,19 +74,6 @@
               <v-progress-circular indeterminate color="primary" v-if="!answer"></v-progress-circular>
               <span v-else>{{ message }}</span>
             </div>
-          </template>
-          <template slot="expand" slot-scope="props">
-            <v-container fluid class="background font-weight-light">
-              <span>
-                <strong>Оценочные уровни знания: </strong>
-              </span>
-              <v-card class="mt-2">
-                <v-card-text class="accent lighten-2">1 - {{ props.item.marks[0] }}</v-card-text>
-                <v-card-text class="accent lighten-1">2 - {{ props.item.marks[1] }}</v-card-text>
-                <v-card-text class="accent">3 - {{ props.item.marks[2] }}</v-card-text>
-                <v-card-text class="accent darken-1">4 - {{ props.item.marks[3] }}</v-card-text>
-              </v-card>
-            </v-container>
           </template>
         </v-data-table>
         <!-- Футер для описания и пагинации -->
@@ -136,6 +123,7 @@ export default {
   props: ['exists', 'open'],
   data () {
     return {
+      level: ['начальный', 'базовый', 'продвинутый', 'экспертный'],
       // Начальные значения пагинации
       pagination: {
         page: 1,

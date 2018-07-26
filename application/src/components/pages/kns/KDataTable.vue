@@ -60,10 +60,10 @@
             <strong>Оценочные уровни знания: </strong>
           </span>
           <v-card class="mt-2">
-            <v-card-text class="accent lighten-2">1 - {{ props.item.marks[0] }}</v-card-text>
-            <v-card-text class="accent lighten-1">2 - {{ props.item.marks[1] }}</v-card-text>
-            <v-card-text class="accent">3 - {{ props.item.marks[2] }}</v-card-text>
-            <v-card-text class="accent darken-1">4 - {{ props.item.marks[3] }}</v-card-text>
+            <v-card-text class="accent lighten-2"><strong>1. Начальный</strong>: {{ props.item.marks[0] }}</v-card-text>
+            <v-card-text class="accent lighten-1"><strong>2. Базовый</strong>: {{ props.item.marks[1] }}</v-card-text>
+            <v-card-text class="accent"><strong>3. Продвинутый</strong>: {{ props.item.marks[2] }}</v-card-text>
+            <v-card-text class="accent darken-1"><strong>4. Экспертный</strong>: {{ props.item.marks[3] }}</v-card-text>
           </v-card>
         </v-container>
       </template>
@@ -71,11 +71,7 @@
     <!-- Футер для описания и пагинации -->
     <v-toolbar slot="footer" class="accent elevation-2" dense flat>
       <span class="caption font-weight-light">
-        * - При нажатии на знание отображаются его оценочные уровни, где:
-        1 - начальный,
-        2 - базовый,
-        3 - продвинутый,
-        4 - экспертный
+        * - При нажатии на знание отображаются его оценочные уровни
       </span>
       <v-spacer></v-spacer>
       <div v-if="knowledges.length !== 0">
