@@ -4,7 +4,7 @@ const sdesc = 'Операция прошла успешно'
 
 export default {
   save (context, data) {
-    let path = './works/create'
+    let path = '/works/create'
     api.post(path, data).then((res) => {
       context.works.push(res.data) // Вставка в массив, чтобы не делать дополнительный запрос на получение изменений
       context.snack.text = sdesc
