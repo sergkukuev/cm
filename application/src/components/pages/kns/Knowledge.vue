@@ -1,7 +1,7 @@
 <template>
   <v-layout row wrap>
     <v-toolbar class="secondary elevation-2 mb-1 font-weight-light">
-      <v-toolbar-title class="font-weight-regular">Список знаний</v-toolbar-title>
+      <v-toolbar-title class="title font-weight-regular">Список знаний</v-toolbar-title>
       <v-divider vertical inset class="ml-3"></v-divider>
       <v-tooltip bottom>
         <v-btn slot="activator" @click="dialog = true" icon class="ml-2">

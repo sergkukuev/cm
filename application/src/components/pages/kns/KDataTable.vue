@@ -148,7 +148,6 @@ export default {
       // props.expanded ? this.highlight = 'background' : this.highlight = ''
     },
     sort_by (column, sortable) {
-      console.log(sortable)
       if (sortable) {
         if (this.pagination.sortBy === column) {
           this.pagination.descending = !this.pagination.descending

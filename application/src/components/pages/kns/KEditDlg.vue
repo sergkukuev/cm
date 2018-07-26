@@ -1,8 +1,8 @@
 <template>
-  <div>
+  <v-layout>
     <v-dialog v-model="dialog" max-width="1000px" persistent>
       <v-card>
-        <v-card-title class="title accent elevation-2 font-weight-regular">
+        <v-card-title class="title accent elevation-2 font-weight-regular" primary-title>
           {{ title_dialog }}
         </v-card-title>
         <v-card-text class="font-weight-light">
@@ -69,7 +69,7 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
-  </div>
+  </v-layout>
 </template>
 
 <script>
