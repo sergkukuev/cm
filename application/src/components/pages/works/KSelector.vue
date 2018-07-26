@@ -3,7 +3,7 @@
     <v-card>
       <v-card-title class="title accent elevation-2 font-weight-regular">
         <span class="mt-2">
-          Список доступных знаний:
+          Список доступных знаний
         </span>
         <v-spacer></v-spacer>
         <v-text-field

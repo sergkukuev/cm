@@ -1,22 +1,49 @@
 <template>
-    <div class="text-xs-center d-flex">
-    <v-dialog v-model="dialog" max-width="800px" persistent>
+  <div class="text-xs-center d-flex">
+    <v-dialog v-model="dialog" max-width="1000px" persistent>
       <v-card>
-        <v-card-title class="headline primary white--text" primary-title>
+        <v-card-title class="title accent elevation-2 font-weight-regular" primary-title>
           Добавление направления
         </v-card-title>
-        <v-card-text>
+        <v-card-text class="font-weight-light">
           <v-text-field
-            v-model="name"
-            label="Наименование">
+            class="mt-1"
+            v-model="work.name"
+            label="Наименование направления">
           </v-text-field>
-          <task-edit></task-edit>
+          <v-layout row>
+            <v-input class="subheading mt-1">Карточки задач:</v-input>
+            <v-tooltip bottom>
+              <v-btn slot="activator" class="mt-1" icon small @click="add_task">
+                <v-icon>add</v-icon>
+              </v-btn>
+              <span>Добавить задачу</span>
+            </v-tooltip>
+          </v-layout>
+          <task-edit-card
+            :index="index"
+            :all="work.tasks.length"
+            :task="work.tasks[index - 1]"
+            @deleteAction="delete_task">
+          </task-edit-card>
+          <v-layout row>
+            <v-spacer></v-spacer>
+            <v-pagination
+              class="mt-1"
+              v-model="index"
+              color="primary"
+              :length="work.tasks.length"
+              :total-visible="7"
+              circle>
+            </v-pagination>
+            <v-spacer></v-spacer>
+          </v-layout>
         </v-card-text>
         <v-divider></v-divider>
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn color="primary" flat round @click="$emit('cancelAction')">Отмена</v-btn>
-          <v-btn color="primary" round @click="$emit('cancelAction')">Сохранить</v-btn>
+          <v-btn class="transparent text--primary font-weight-regular elevation-0" @click="$emit('cancelAction')">Отмена</v-btn>
+          <v-btn class="accent text--primary font-weight-regular" @click="save_work">Сохранить</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -24,55 +51,59 @@
 </template>
 
 <script>
-import TEdit from './TEditContainer'
+import TEdit from './TEditCard'
 
 export default {
   components: {
-    'task-edit': TEdit
+    'task-edit-card': TEdit
   },
   props: ['wdialog'],
   data () {
     return {
       dialog: false,
-      rank: '3',
-      ranks: ['0', '1', '2', '3'],
-      name: '',
-      tasks: []
+      index: 1,
+      work: {
+        name: '',
+        tasks: [{
+          name: '',
+          rank: 3,
+          need: []
+        }]
+      }
     }
   },
   watch: {
     wdialog (value) {
       this.dialog = value
+    },
+    index (value) {
+      // В случае, если индекс вываливает за дозволенные границы
+      if (value < 1 || value > this.work.tasks.length) {
+        value < 1 ? this.index = 1 : this.index = this.work.tasks.length
+      }
     }
   },
   methods: {
-    add_task () {
-      let task = {
-        id: 'akwjdnawjkdawd',
-        name: 'Задачка умная, соленая, спелая и сочная',
-        rank: 0,
-        need: [{
-          id_knowledge: 'awdawdawdadawd',
-          mark: 3
-        }]
-      }
-      this.tasks.push(task)
+    save_work () {
+      this.$emit('saveAction', this.work)
     },
-    delete_task (index) {
-      this.tasks.splice(index, 1)
+    add_task () {
+      this.index++
+      this.work.tasks.push(this.deafult_task())
+    },
+    delete_task () {
+      this.work.tasks.splice(this.index - 1, 1)
+      if (this.index > this.work.tasks.length) {
+        this.index--
+      }
+    },
+    deafult_task () {
+      return {
+        name: '',
+        rank: 3,
+        need: []
+      }
     }
-  },
-  mounted: function () {
-    let task = {
-      id: 'akwjdnawjkdawd',
-      name: 'Задачка умная',
-      rank: 0,
-      need: [{
-        id_knowledge: 'awdawdawdadawd',
-        mark: 3
-      }]
-    }
-    this.tasks.push(task)
   }
 }
 </script>
