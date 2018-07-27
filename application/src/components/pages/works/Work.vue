@@ -1,11 +1,24 @@
 <template>
-  <div>
-    <v-toolbar slot="header" class="mb-2 elevation-2" flat>
-      <v-toolbar-title>Список направлений</v-toolbar-title>
-      <v-divider inset vertical class="mx-3"></v-divider>
-      <v-btn color="primary" @click="dialog = true" fab small class="mx-1 elevation-1">
-        <v-icon dark>add</v-icon>
-      </v-btn>
+  <v-layout row wrap>
+    <v-toolbar class="secondary elevation-2 mb-1 font-weight-light">
+      <v-toolbar-title class="title font-weight-regular">Список направлений</v-toolbar-title>
+      <v-divider vertical inset class="ml-3"></v-divider>
+      <v-tooltip bottom>
+        <v-btn slot="activator" @click="dialog = true" icon class="ml-2">
+          <v-icon>add</v-icon>
+        </v-btn>
+        <span>Добавить</span>
+      </v-tooltip>
+      <!-- <v-alert :value="alert" color="primary" outline icon="priority_high">
+        {{ snack.text }}
+      </v-alert> -->
+      <v-spacer></v-spacer>
+      <!-- <v-text-field
+        v-model="search"
+        append-icon="search"
+        label="Поиск"
+        hide-details>
+      </v-text-field> -->
     </v-toolbar>
     <works-dialog slot="works-dialog"
       :wdialog="dialog"
@@ -13,21 +26,19 @@
       @cancelAction="dialog = false">
     </works-dialog>
     <works-table slot="works-table"
-      :works="works"
-      @editItem="console.log('edit')"
-      @removeItem="console.log('remove')">
+      :works="works">
     </works-table>
     <v-toolbar slot="footer" class="mt-2 elevation-2" dense flat>
       <v-toolbar-title class="caption">
         Тут будет подбадривающий текст
       </v-toolbar-title>
     </v-toolbar>
-  </div>
+  </v-layout>
 </template>
 
 <script>
 import crud from './index.js'
-import WorkTable from './Table'
+import WorkTable from './WDataTable'
 import WorkDialog from './WEditDlg'
 
 export default {
