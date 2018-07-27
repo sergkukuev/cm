@@ -1,48 +1,69 @@
 <template>
-  <v-footer color="primary">
-    <v-layout justify-space-between align-center row wrap >
-      <v-btn v-for="link in links" :key="link" color="white" small flat round @click="my_location(link)">
-        {{ link }}
-      </v-btn>
-      <v-spacer></v-spacer>
-      <v-flex xs2 class="pl-5">
-        <v-text-field dark v-model="user" disabled white--text append-icon="account_circle"></v-text-field>
-      </v-flex>
-      <v-btn color="red white--text" round small>
-        Выйти
-      </v-btn>
-    </v-layout>
-  </v-footer>
+  <v-navigation-drawer v-model="drawer" fixed clipped class="background" app>
+    <v-list dense class="background">
+      <template v-for="(item, i) in menu">
+        <v-layout v-if="item.heading" :key="i" row align-center>
+          <v-flex xs12>
+            <v-subheader v-if="item.heading">
+              {{ item.heading }}
+            </v-subheader>
+          </v-flex>
+        </v-layout>
+        <v-list-tile v-else-if="item.user" :key="i" avatar>
+          <v-list-tile-avatar>
+            <v-icon large>{{ item.icon }}</v-icon>
+          </v-list-tile-avatar>
+          <v-list-tile-content>
+            <v-list-tile-title>{{ item.text }}</v-list-tile-title>
+          </v-list-tile-content>
+          <v-list-tile-action>
+            <v-btn color="red" dark small>Выйти</v-btn>
+          </v-list-tile-action>
+        </v-list-tile>
+        <v-divider v-else-if="item.divider" :key="i" dark class="my-3">
+        </v-divider>
+        <v-list-tile v-else :key="i" @click="redirect(item.link)">
+          <v-list-tile-action>
+            <v-icon>{{ item.icon }}</v-icon>
+          </v-list-tile-action>
+          <v-list-tile-content>
+            <v-list-tile-title class="grey--text">
+              {{ item.text }}
+            </v-list-tile-title>
+          </v-list-tile-content>
+        </v-list-tile>
+      </template>
+    </v-list>
+  </v-navigation-drawer>
 </template>
 
 <script>
 export default {
+  props: ['checker'],
   data: () => ({
-    links: [
-      'Матрица',
-      'Типовые работы',
-      'Знания'
-    ],
-    sites: [
-      '/cm',
-      '/work',
-      '/knowledge'
-    ],
-    user: 'Admin Adminich'
+    drawer: null,
+    menu: [
+      { heading: 'Пользователь' },
+      { text: 'Admin', icon: 'account_circle', user: true, link: '/account' },
+      { heading: 'Основное' },
+      { text: 'Матрица', icon: 'dashboard', link: '/cm' },
+      { divider: true },
+      { heading: 'Списки' },
+      { text: 'Направления', icon: 'list', link: '/work' },
+      { text: 'Знания', icon: 'list', link: '/knowledge' }
+    ]
   }),
+  watch: {
+    checker (value) {
+      this.drawer = !this.drawer
+    },
+    user (value) {
+
+    }
+  },
   methods: {
-    my_location (link) {
-      let flExit = false
-      let index = -1
-      for (let i = 0; i < this.links.length && !flExit; i++) {
-        if (this.links[i] === link) {
-          flExit = true
-          index = i
-        }
-      }
-      if (index !== -1) {
-        window.location = 'http://localhost:8080/#' + this.sites[index]
-      }
+    redirect (link) {
+      window.location = 'http://localhost:8080/#' + link
     }
   }
 }

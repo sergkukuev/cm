@@ -6,12 +6,6 @@ import Kns from '@/components/pages/kns/Knowledge'
 import Work from '@/components/pages/works/Work'
 import NotFound from '@/components/pages/NotFound'
 
-// Global components
-import Navigate from '@/components/Navigate'
-import Footer from '@/components/Footer'
-
-Vue.component('app-navbar', Navigate)
-Vue.component('app-footer', Footer)
 Vue.use(Router)
 
 // Application routes
