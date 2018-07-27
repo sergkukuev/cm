@@ -1,8 +1,20 @@
 <template>
-  <v-layout row wrap>
-    <v-toolbar class="secondary elevation-2 mb-1 font-weight-light">
-      <v-toolbar-title class="title font-weight-regular">Список знаний</v-toolbar-title>
-      <v-divider vertical inset class="ml-3"></v-divider>
+  <v-layout align-start wrap>
+    <kns-dialog slot="kns-dialog"
+      :default="knowledge"
+      :wdialog="dialog"
+      @nochangeAction="no_change"
+      @saveAction="save_item"
+      @cancelAction="close_dialog">
+    </kns-dialog>
+    <v-toolbar
+      class="secondary elevation-2 mb-1 font-weight-light"
+      extension-height
+    >
+      <v-toolbar-title class="title font-weight-regular">
+        Список знаний
+      </v-toolbar-title>
+      <v-divider vertical  class="ml-3"></v-divider>
       <v-tooltip bottom>
         <v-btn slot="activator" @click="dialog = true" icon class="ml-2">
           <v-icon>add</v-icon>
@@ -20,13 +32,6 @@
         hide-details>
       </v-text-field>
     </v-toolbar>
-    <kns-dialog slot="kns-dialog"
-      :default="knowledge"
-      :wdialog="dialog"
-      @nochangeAction="no_change"
-      @saveAction="save_item"
-      @cancelAction="close_dialog">
-    </kns-dialog>
     <kns-table slot="kns-table"
       :knowledges="kns"
       :loading="loading"
@@ -147,3 +152,9 @@ export default {
   }
 }
 </script>
+
+<style>
+  .toolbar {
+    height: 200px;
+  }
+</style>

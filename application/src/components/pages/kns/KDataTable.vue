@@ -1,5 +1,5 @@
 <template>
-  <v-layout row wrap>
+  <v-layout fill-height column>
     <v-data-table
       style="width: 100%"
       :headers="headers"
@@ -9,18 +9,23 @@
       hide-actions
       class="elevation-2"
       no-results-text="По данному запросу результатов не найдено"
-      no-data-text="Нет доступных данных">
+      no-data-text="Нет доступных данных"
+    >
       <!-- Слот с заголовками -->
       <template slot="headers" slot-scope="props">
-          <th
-            class="accent text-xs-left font-weight-medium"
-            v-for="header in props.headers"
-            :key="header.text"
-            :class="['column sortable', pagination.descending ? 'desc' : 'asc', header.value === pagination.sortBy ? 'active' : '']"
-            @click="sort_by(header.value, header.sortable)">
-            {{ header.text }}
-            <v-icon small v-if="header.text != headers[3].text">arrow_upward</v-icon>
-          </th>
+        <th
+          class="accent text-xs-left font-weight-medium"
+          v-for="header in props.headers"
+          :key="header.text"
+          :class="['column sortable', pagination.descending ?
+            'desc' : 'asc', header.value === pagination.sortBy ? 'active' : '']"
+          @click="sort_by(header.value, header.sortable)"
+        >
+          {{ header.text }}
+          <v-icon small v-if="header.text != headers[3].text">
+            arrow_upward
+          </v-icon>
+        </th>
       </template>
       <!-- Слот с данными -->
       <template slot="items" slot-scope="props">
@@ -50,7 +55,8 @@
       </template>
       <template slot="no-data">
         <div class="text-xs-center">
-          <v-progress-circular indeterminate color="primary" v-if="loading"></v-progress-circular>
+          <v-progress-circular indeterminate color="primary" v-if="loading">
+          </v-progress-circular>
           <span v-else>Нет доступных данных</span>
         </div>
       </template>
@@ -60,16 +66,24 @@
             <strong>Оценочные уровни знания: </strong>
           </span>
           <v-card class="mt-2">
-            <v-card-text class="accent lighten-2"><strong>1. Начальный</strong>: {{ props.item.marks[0] }}</v-card-text>
-            <v-card-text class="accent lighten-1"><strong>2. Базовый</strong>: {{ props.item.marks[1] }}</v-card-text>
-            <v-card-text class="accent"><strong>3. Продвинутый</strong>: {{ props.item.marks[2] }}</v-card-text>
-            <v-card-text class="accent darken-1"><strong>4. Экспертный</strong>: {{ props.item.marks[3] }}</v-card-text>
+            <v-card-text class="accent lighten-2">
+              <strong>1. Начальный</strong>: {{ props.item.marks[0] }}
+            </v-card-text>
+            <v-card-text class="accent lighten-1">
+              <strong>2. Базовый</strong>: {{ props.item.marks[1] }}
+            </v-card-text>
+            <v-card-text class="accent">
+              <strong>3. Продвинутый</strong>: {{ props.item.marks[2] }}
+            </v-card-text>
+            <v-card-text class="accent darken-1">
+              <strong>4. Экспертный</strong>: {{ props.item.marks[3] }}
+            </v-card-text>
           </v-card>
         </v-container>
       </template>
     </v-data-table>
     <!-- Футер для описания и пагинации -->
-    <v-toolbar slot="footer" class="accent elevation-2" dense flat>
+    <v-toolbar slot="footer" class="accent elevation-2" flat>
       <span class="caption font-weight-light">
         * - При нажатии на знание отображаются его оценочные уровни
       </span>
@@ -83,14 +97,16 @@
           icon
           class="mr-0"
           :disabled="pagination.page <= 1"
-          @click="pagination.page--">
+          @click="pagination.page--"
+        >
           <v-icon>keyboard_arrow_left</v-icon>
         </v-btn>
         <v-btn
           icon
           class="ml-0"
           :disabled="pagination.page >= pages"
-          @click="pagination.page++">
+          @click="pagination.page++"
+        >
           <v-icon>keyboard_arrow_right</v-icon>
         </v-btn>
       </div>
