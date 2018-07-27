@@ -44,3 +44,10 @@ export default {
   }
 }
 </script>
+
+<style>
+  .container {
+    min-height: 100px;
+    max-height: 50px;
+  }
+</style>
