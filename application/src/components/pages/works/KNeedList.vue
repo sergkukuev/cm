@@ -20,7 +20,7 @@
           <v-tooltip top max-width="400px">
             <v-select
               slot="activator"
-              class="mt-1 mr-2 font-weight-light"
+              class="mt-1 mr-2 font-weight-light body-1"
               :items="marks"
               item-text="text"
               item-value="value"
@@ -89,7 +89,6 @@ export default {
   props: ['knowledges'],
   data () {
     return {
-      select: { value: 1 },
       marks: [
         { text: 'начальный', value: 1 },
         { text: 'базовый', value: 2 },

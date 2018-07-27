@@ -7,18 +7,21 @@
         </v-card-title>
         <v-card-text class="font-weight-light">
           <v-text-field
+            class="mt-1"
             v-model="item.name"
             label="Наименование">
           </v-text-field>
           <v-layout row justify-space-between>
             <v-flex xs6 class="mr-2">
               <v-text-field
+                class="mt-1"
                 v-model="item.ctgr"
                 label="Категория">
               </v-text-field>
             </v-flex>
             <v-flex xs6 class="ml-2">
               <v-text-field
+                class="mt-1"
                 v-model="item.sctgr"
                 label="Подкатегория">
               </v-text-field>
@@ -27,6 +30,7 @@
           <v-layout row justify-space-between>
             <v-flex xs6 class="mr-2">
               <v-textarea
+                height="120px"
                 v-model="item.beginer"
                 outline
                 name="tx-area-1"
@@ -35,6 +39,7 @@
             </v-flex>
             <v-flex xs6 class="ml-2">
               <v-textarea
+                height="120px"
                 v-model="item.base"
                 outline
                 name="tx-area-2"
@@ -45,6 +50,7 @@
           <v-layout row justify-space-between>
             <v-flex xs6 class="mr-2">
               <v-textarea
+                height="120px"
                 v-model="item.advance"
                 outline
                 name="tx-area-3"
@@ -53,6 +59,7 @@
             </v-flex>
             <v-flex xs6 class="ml-2">
               <v-textarea
+                height="120px"
                 v-model="item.expert"
                 outline
                 name="tx-area-4"

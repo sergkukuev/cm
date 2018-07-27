@@ -2,12 +2,12 @@
   <v-layout justify-space-around column>
     <v-card>
       <v-card-title class="title accent elevation-2 font-weight-regular">
-        <span class="mt-2">
+        <span>
           Список доступных знаний
         </span>
         <v-spacer></v-spacer>
         <v-text-field
-          class="mb-2"
+          class="mb-2 mt-1"
           v-model="search"
           append-icon="search"
           label="Поиск"
