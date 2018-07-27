@@ -1,5 +1,5 @@
 <template>
-  <v-layout column align-center fill-height>
+  <v-layout column align-center justify-center>
     <v-flex xs12>
       <p class="display-1 text-xs-center">Страница не найдена (404)</p>
     </v-flex>

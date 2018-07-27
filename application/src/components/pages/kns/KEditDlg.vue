@@ -1,82 +1,48 @@
 <template>
-  <v-layout>
-    <v-dialog v-model="dialog" max-width="1000px" persistent>
-      <v-card>
-        <v-card-title class="title accent elevation-2 font-weight-regular" primary-title>
-          {{ title_dialog }}
-        </v-card-title>
-        <v-card-text class="font-weight-light">
-          <v-text-field
-            class="mt-1"
-            v-model="item.name"
-            label="Наименование">
-          </v-text-field>
-          <v-layout row justify-space-between>
-            <v-flex xs6 class="mr-2">
-              <v-text-field
-                class="mt-1"
-                v-model="item.ctgr"
-                label="Категория">
-              </v-text-field>
-            </v-flex>
-            <v-flex xs6 class="ml-2">
-              <v-text-field
-                class="mt-1"
-                v-model="item.sctgr"
-                label="Подкатегория">
-              </v-text-field>
-            </v-flex>
-          </v-layout>
-          <v-layout row justify-space-between>
-            <v-flex xs6 class="mr-2">
-              <v-textarea
-                height="120px"
-                v-model="item.beginer"
-                outline
-                name="tx-area-1"
-                label="1 - Начальный уровень">
-              </v-textarea>
-            </v-flex>
-            <v-flex xs6 class="ml-2">
-              <v-textarea
-                height="120px"
-                v-model="item.base"
-                outline
-                name="tx-area-2"
-                label="2 - Базовый уровень">
-              </v-textarea>
-            </v-flex>
-          </v-layout>
-          <v-layout row justify-space-between>
-            <v-flex xs6 class="mr-2">
-              <v-textarea
-                height="120px"
-                v-model="item.advance"
-                outline
-                name="tx-area-3"
-                label="3 - Продвинутый уровень">
-              </v-textarea>
-            </v-flex>
-            <v-flex xs6 class="ml-2">
-              <v-textarea
-                height="120px"
-                v-model="item.expert"
-                outline
-                name="tx-area-4"
-                label="4 - Экспертный уровень">
-              </v-textarea>
-            </v-flex>
-          </v-layout>
-        </v-card-text>
-        <v-divider></v-divider>
-        <v-card-actions>
-          <v-spacer></v-spacer>
-          <v-btn class="transparent text--primary font-weight-regular elevation-0" @click="cancel_action">Отмена</v-btn>
-          <v-btn class="accent text--primary font-weight-regular" @click="save_action">Сохранить</v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
-  </v-layout>
+  <v-dialog v-model="dialog" max-width="1000px" persistent>
+    <v-card>
+      <v-card-title
+        class="title accent elevation-2 font-weight-regular"
+        primary-title
+      >
+        {{ title_dialog }}
+      </v-card-title>
+      <v-card-text class="font-weight-light">
+        <v-layout row wrap>
+          <v-flex d-flex xs12 class="px-1">
+              <v-text-field v-model="name.value" :label="name.text"></v-text-field>
+          </v-flex>
+          <v-flex d-flex xs12 sm6 class="px-1" v-for="(item, i) in items" :key="i">
+            <v-textarea v-if="item.area"
+              outline
+              v-model="item.value"
+              :label="item.text"
+            >
+            </v-textarea>
+            <v-text-field v-else
+              v-model="item.value"
+              :label="item.text"
+            ></v-text-field>
+          </v-flex>
+        </v-layout>
+      </v-card-text>
+      <v-divider></v-divider>
+      <v-card-actions>
+        <v-spacer></v-spacer>
+        <v-btn
+          class="transparent text--primary font-weight-regular elevation-0"
+          @click="cancel_action"
+        >
+          Отмена
+        </v-btn>
+        <v-btn class="accent text--primary font-weight-regular"
+          @click="save_action"
+        >
+          Сохранить
+        </v-btn>
+      </v-card-actions>
+    </v-card>
+  </v-dialog>
 </template>
 
 <script>
@@ -85,16 +51,17 @@ export default {
   data () {
     return {
       dialog: false,
-      item: {
-        name: '',
-        ctgr: '',
-        sctgr: '',
-        // Уровни
-        beginer: '',
-        base: '',
-        advance: '',
-        expert: ''
-      }
+      name: { text: 'Наименование', value: '' },
+      items: [
+        // Категория
+        { text: 'Категория', value: '' },
+        { text: 'Подкатегория', value: '' },
+        // Оценочные уровни
+        { text: '1 - Начальный уровень', value: '', area: true },
+        { text: '2 - Базовый уровень', value: '', area: true },
+        { text: '3 - Продвинутый уровень', value: '', area: true },
+        { text: '4 - Экспертный уровень', value: '', area: true }
+      ]
     }
   },
   computed: {
@@ -107,7 +74,7 @@ export default {
       this.dialog = value
     },
     default (value) {
-      this.copy(this.default, this.item)
+      this.copy(value)
       // this.default.ctgr !== '' || this.default.sctgr !== '' ? this.activator = true : this.activator = false
     }
   },
@@ -132,25 +99,25 @@ export default {
         this.$emit('cancelAction')
       }
     },
-    copy (from, to) {
-      to.name = from.name
-      to.ctgr = from.ctgr
-      to.sctgr = from.sctgr
-      to.beginer = from.marks[0]
-      to.base = from.marks[1]
-      to.advance = from.marks[2]
-      to.expert = from.marks[3]
+    copy (from) {
+      this.name.value = from.name
+      this.items[0].value = from.ctgr
+      this.items[1].value = from.sctgr
+      this.items[2].value = from.marks[0]
+      this.items[3].value = from.marks[1]
+      this.items[4].value = from.marks[2]
+      this.items[5].value = from.marks[3]
     },
     format () {
       let data = {
-        name: this.item.name,
-        ctgr: this.item.ctgr,
-        sctgr: this.item.sctgr,
+        name: this.name.value,
+        ctgr: this.items[0].value,
+        sctgr: this.items[1].value,
         marks: [
-          this.item.beginer,
-          this.item.base,
-          this.item.advance,
-          this.item.expert
+          this.items[2].value,
+          this.items[3].value,
+          this.items[4].value,
+          this.items[5].value
         ]
       }
       return data
