@@ -27,7 +27,10 @@
       <v-spacer></v-spacer>
       <v-text-field
         v-model="search"
-        append-icon="search"
+        prepend-inner-icon="search"
+        clearable
+        solo
+        background-color="white"
         label="Поиск"
         hide-details>
       </v-text-field>
