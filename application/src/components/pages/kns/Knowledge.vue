@@ -10,10 +10,7 @@
     >
     </kns-dialog>
     <!-- Шапка страницы -->
-    <v-toolbar
-      class="secondary elevation-2 mb-1 font-weight-light"
-      extension-height
-    >
+    <v-toolbar class="secondary elevation-2 mb-1 font-weight-light">
       <v-toolbar-title class="title font-weight-regular">
         Список знаний
       </v-toolbar-title>
