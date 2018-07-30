@@ -17,7 +17,7 @@
     </v-card-title>
     <v-divider></v-divider>
     <!-- Параметры задачи -->
-    <v-card-text>
+    <v-card-text v-if="all != 0" class="font-weight-light">
       <v-layout row wrap>
         <v-flex d-flex xs12 md9>
           <v-text-field
@@ -82,9 +82,16 @@
         </v-flex>
       </v-layout>
     </v-card-text>
-    <v-divider></v-divider>
+    <v-card-text v-else class="font-weight-light" text-xs-center>
+      <span>Задачи отсутствуют</span>
+    </v-card-text>
+    <v-divider v-if="all != 0"></v-divider>
     <!-- Список выбранных требуемых знаний -->
-    <kns-need-list :knowledges="task.need" @deleteMark="delete_mark">
+    <kns-need-list
+      v-if="all != 0"
+      :knowledges="task.need"
+      @deleteMark="delete_mark"
+    >
     </kns-need-list>
     <v-divider></v-divider>
     <!-- Кнопки переключения между задачами -->
