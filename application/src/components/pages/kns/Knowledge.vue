@@ -1,5 +1,6 @@
 <template>
   <v-layout align-start wrap>
+    <!-- Диалог для изменения и добавления знаний -->
     <kns-dialog slot="kns-dialog"
       :default="knowledge"
       :wdialog="dialog"
@@ -7,6 +8,7 @@
       @saveAction="save_item"
       @cancelAction="close_dialog">
     </kns-dialog>
+    <!-- Шапка страницы -->
     <v-toolbar
       class="secondary elevation-2 mb-1 font-weight-light"
       extension-height
@@ -35,6 +37,7 @@
         hide-details>
       </v-text-field>
     </v-toolbar>
+    <!-- Таблица данных -->
     <kns-table slot="kns-table"
       :knowledges="kns"
       :loading="loading"
@@ -42,6 +45,7 @@
       @editItem="update_item"
       @removeItem="delete_item">
     </kns-table>
+    <!-- Snackbar -->
     <v-snackbar
       v-model="snack.activator"
       :timeout="snack.timer"

@@ -53,6 +53,7 @@
           </td>
         </tr>
       </template>
+      <!-- Слот отсутствия данных -->
       <template slot="no-data">
         <div class="text-xs-center">
           <v-progress-circular indeterminate color="primary" v-if="loading">
@@ -60,6 +61,7 @@
           <span v-else>Нет доступных данных</span>
         </div>
       </template>
+      <!-- Слот расширения -->
       <template slot="expand" slot-scope="props">
         <v-container fluid class="background font-weight-light">
           <span>
