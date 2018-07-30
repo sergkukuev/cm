@@ -11,7 +11,7 @@
         <v-layout row wrap>
           <v-flex d-flex xs12 class="px-1">
               <v-text-field
-                background-color="grey lighten-4"
+                background-color="background"
                 v-model="name.value"
                 :label="name.text"
                 box
@@ -21,7 +21,7 @@
           <v-flex d-flex xs12 sm6 class="px-1" v-for="(item, i) in items" :key="i">
             <v-textarea v-if="item.area"
               box
-              background-color="grey lighten-4"
+              background-color="background"
               v-model="item.value"
               :label="item.text"
             >
@@ -29,7 +29,7 @@
             <v-text-field v-else
               v-model="item.value"
               :label="item.text"
-              background-color="grey lighten-4"
+              background-color="background"
               box
             ></v-text-field>
           </v-flex>

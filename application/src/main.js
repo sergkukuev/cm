@@ -17,7 +17,7 @@ Vue.use(Vuetify, {
     primary: colors.grey.darken3,
     secondary: colors.amber.accent3,
     accent: colors.amber.lighten4,
-    background: colors.grey.lighten3
+    background: colors.grey.lighten4
   }
 })
 Vue.config.productionTip = false
