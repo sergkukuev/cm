@@ -115,7 +115,7 @@
 </template>
 
 <script>
-import {api} from './../../../router/api.js'
+import {api} from './../../../../router/api.js'
 
 export default {
   // wopen - событие, которое открывает данный список знаний
