@@ -4,7 +4,7 @@
     <v-layout row wrap :class="frame"
       justify-center v-if="knowledges.length == 0"
     >
-      <span>Задачи отсутствуют</span>
+      <span>{{ no_data }}</span>
     </v-layout>
     <v-layout row wrap
       v-else
