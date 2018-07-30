@@ -12,11 +12,11 @@
       :key="knowledge.id"
       :class="frame"
     >
-      <v-flex d-flex xs12 md8 mt-2>
+      <v-flex d-flex xs12 md9 mt-2>
         <span>{{ knowledge.name }}</span>
       </v-flex>
       <v-spacer></v-spacer>
-      <v-flex d-flex xs6 md2>
+      <v-flex d-flex xs8 md2>
         <v-tooltip top max-width="400px">
           <!-- Выбор оценочного уровня знания -->
           <v-select
@@ -37,7 +37,7 @@
             - {{mark}}<br></span>
         </v-tooltip>
       </v-flex>
-      <v-flex d-flex xs6 md1 align-center text-xs-right>
+      <v-flex d-flex xs4 md1 align-center text-xs-right>
         <v-tooltip bottom>
           <v-icon slot="activator"
             class="mx-2"
