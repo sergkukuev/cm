@@ -6,7 +6,8 @@
       :wdialog="dialog"
       @nochangeAction="no_change"
       @saveAction="save_item"
-      @cancelAction="close_dialog">
+      @cancelAction="close_dialog"
+    >
     </kns-dialog>
     <!-- Шапка страницы -->
     <v-toolbar
@@ -34,7 +35,8 @@
         solo
         background-color="white"
         label="Поиск"
-        hide-details>
+        hide-details
+      >
       </v-text-field>
     </v-toolbar>
     <!-- Таблица данных -->
@@ -43,7 +45,8 @@
       :loading="loading"
       :search="search"
       @editItem="update_item"
-      @removeItem="delete_item">
+      @removeItem="delete_item"
+    >
     </kns-table>
     <!-- Snackbar -->
     <v-snackbar
@@ -51,8 +54,9 @@
       :timeout="snack.timer"
       :color="snack.color"
       bottom
-      right>
-        {{ snack.text }}
+      right
+    >
+      {{ snack.text }}
       <v-btn flat @click="snack.activator = false">
         <v-icon>clear</v-icon>
       </v-btn>
