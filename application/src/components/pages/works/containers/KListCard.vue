@@ -1,6 +1,6 @@
 <template>
   <!-- Список требуемых знаний для задачи в элемент card -->
-  <v-card-text style="height: 250px">
+  <v-card-text style="height: 300px">
     <v-layout row wrap :class="frame"
       justify-center v-if="knowledges.length == 0"
     >
