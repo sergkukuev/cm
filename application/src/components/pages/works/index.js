@@ -17,6 +17,7 @@ export default {
   },
   get (context) {
     let path = '/works'
+    context.loading = true
     api.get(path).then((res) => {
       context.works = res.data
       context.snack.text = sdesc
@@ -54,7 +55,7 @@ export default {
   },
   // Преобразование данных к виду отправки на сервер
   format (work) {
-    let res = {
+    let res = { // Структура отправки
       tname: [],
       trank: [],
       num_kn: [],
