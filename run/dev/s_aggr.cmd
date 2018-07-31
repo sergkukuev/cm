@@ -1,0 +1,2 @@
+cd ./../services/aggregation
+gulp
