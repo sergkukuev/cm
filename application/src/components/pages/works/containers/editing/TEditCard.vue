@@ -1,4 +1,5 @@
 <template>
+  <!-- Карточка редактирования задачи -->
   <v-card style="width: 100%" class="elevation-2">
     <v-card-title
       class="title font-weight-medium accent elevation-2"
