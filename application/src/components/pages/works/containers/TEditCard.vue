@@ -136,8 +136,8 @@
 </template>
 
 <script>
-import KSelector from './containers/KSelector'
-import KNeedList from './containers/KListCard'
+import KSelector from './KSelector'
+import KNeedList from './KListCard'
 
 export default {
   props: ['index', 'all', 'task'],

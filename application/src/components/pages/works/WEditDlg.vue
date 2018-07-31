@@ -80,7 +80,7 @@
 </template>
 
 <script>
-import TEdit from './TEditCard'
+import TEdit from './containers/TEditCard'
 import TList from './containers/TListCard'
 
 export default {
