@@ -1,7 +1,7 @@
 <template>
   <v-app>
     <app-navigate :checker="nav_drawer"></app-navigate>
-    <v-toolbar color="primary" dark app absolute clipped-left>
+    <v-toolbar color="primary" dark app fixed clipped-left>
       <v-toolbar-title style="width: 400px" class="ml-0 pl-0">
         <v-toolbar-side-icon @click.native="nav_drawer = !nav_drawer">
         </v-toolbar-side-icon>
