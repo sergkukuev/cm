@@ -86,7 +86,7 @@
     </v-data-table>
     <!-- Футер для описания и пагинации -->
     <v-toolbar slot="footer" class="accent elevation-2" flat>
-      <span class="caption font-weight-light">
+      <span class="caption font-weight-light hidden-sm-and-down">
         * - При нажатии на знание отображаются его оценочные уровни
       </span>
       <v-spacer></v-spacer>
