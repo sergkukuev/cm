@@ -1,16 +1,28 @@
 <template>
-  <v-card style="width: 100%" class="elevation-3">
-    <v-card-title class="title font-weight-medium accent" primary-title>
+  <v-card style="width: 100%" class="elevation-2">
+    <v-card-title
+      class="title font-weight-medium accent elevation-2"
+      primary-title
+    >
       Задача {{ index }}
       <v-spacer></v-spacer>
       <!-- Действия с задачей: удалить и закрыть окно -->
       <v-flex align-start text-xs-right>
         <v-tooltip bottom>
-          <v-icon slot="activator" @click="$emit('deleteAction', index)">delete</v-icon>
+          <v-icon slot="activator"
+            @click="$emit('deleteAction', index)"
+          >
+            delete
+          </v-icon>
           <span>Удалить</span>
         </v-tooltip>
         <v-tooltip bottom>
-          <v-icon slot="activator" @click="$emit('closeAction')" class="ml-2">clear</v-icon>
+          <v-icon slot="activator"
+            @click="$emit('closeAction')"
+            class="ml-2"
+          >
+            clear
+          </v-icon>
           <span>Закрыть</span>
         </v-tooltip>
       </v-flex>
