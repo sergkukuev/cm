@@ -1,27 +1,50 @@
-# Application
+# Матрица компетенции
+Приложение создано с целью знакомства со следующим стеком технологий:
+- node.js
+- mongodb (mongoose)
+- vue.js (vuetify)
 
-> Приложение для матрицы компетенции
+## Предварительные действия
+Для запуска приложения необходимо заранее установить:
+- [node.js](https://nodejs.org/en/)
+- [mongodb](https://www.mongodb.com/download-center?jmp=nav#community)
 
-## Build Setup
+**Примечание:** для правильной работы bat файлов база данных (mongodb) должна быть установлена на диск C.
+Общий пусть для запуска базы должен быть равен `C:/mongodb/bin/mongod`
 
+## Сборка
+### Сервисы
+Для каждого сервиса, расположенных в папке ***./services***
 ``` bash
-# install dependencies
+# установка зависимостей
 npm install
 
-# serve with hot reload at localhost:8080
-npm run dev
+# запуск сервиса
+gulp
 
-# build for production with minification
-npm run build
-
-# build for production and view the bundle analyzer report
-npm run build --report
-
-# run e2e tests
-npm run e2e
-
-# run all tests
+# запуск всех тестов
 npm test
 ```
 
-For a detailed explanation on how things work, check out the [guide](http://vuejs-templates.github.io/webpack/) and [docs for vue-loader](http://vuejs.github.io/vue-loader).
+### Приложение
+``` bash
+# установка зависимостей
+npm install
+
+# запуск с "горячим" конфигурированием на localhost:8080 
+npm run dev
+
+# сборка для деплоя
+npm run build
+
+# сборка с аналитическим отчетом
+npm run build --report
+
+# запуск тестов е2е
+npm run e2e
+
+# запуск всех тестов
+npm test
+```
+## Автоматическая сборка
+Собирать приложение также можно с помощью bat файлов `dev` и `devapp`, лежащих в папке ***./run***.
