@@ -8,6 +8,7 @@ var config = {
     app: {
       name: 'service_cm'
     },
+    tokenLife: 400,
     port: process.env.PORT || 3001,
     db: 'mongodb://localhost/service_cm'
   }

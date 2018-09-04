@@ -3,104 +3,118 @@ var express = require('express'),
     mongoose = require('mongoose'),
     knowledge = mongoose.model('Knowledge'), 
     validator = require('./../validators'), 
-    myJSON = require('./../validators/format'),
-    desc = require('./../validators/status');
+    format = require('./../validators/format'),
+    desc = require('./../validators/status'),
+    passport = require('./../passport');
 
 module.exports = function(app) {
     app.use('/api/cm/kns', router);
 };
 
 router.post('/create', function(req, res, next) {
-    // Проверка массива оценок знания. Должно быть четко 4 уровня квалификации
-    if (validator.checkUndefined(req.body.marks))
-        return res.status(400).send(myJSON.BadRequest(desc.NoKey("marks")));
-    else if (!validator.checkMarks(req.body.marks))
-        return res.status(400).send(myJSON.BadRequest("Количество оценок должно быть равным 4"));
-    
-    if (validator.checkUndefined(req.body.name))
-        return res.status(400).send(myJSON.BadRequest(desc.NoKey("name")));
+    passport.checkServiceAuthorization(req, res, function (scope) {
+        // Проверка массива оценок знания. Должно быть четко 4 уровня квалификации
+        if (validator.checkUndefined(req.body.marks))
+            return res.status(400).send(format.T(400, desc.NoKey("marks")));
+        else if (!validator.checkMarks(req.body.marks))
+            return res.status(400).send(format.T(400, "Количество оценок должно быть равным 4"));
+        
+        if (validator.checkUndefined(req.body.name))
+            return res.status(400).send(format.T(400, desc.NoKey("name")));
 
-    let data = new knowledge({
-        name: req.body.name,
-        ctgr: req.body.ctgr,
-        sctgr: req.body.sctgr,
-        marks: req.body.marks
-    });
+        let data = new knowledge({
+            name: req.body.name,
+            ctgr: req.body.ctgr,
+            sctgr: req.body.sctgr,
+            marks: req.body.marks
+        });
 
-    knowledge.create(data, function(err, result) {
-        err ? res.status(400).send(myJSON.BadRequest(err)) :
-            res.status(201).send(myJSON.Data(result));
+        knowledge.create(data, function(err, result) {
+            err ? res.status(400).send(format.T(400, err)) :
+                res.status(201).send(format.Data(result, scope));
+        });
     });
 });
 
 router.get('/', function(req, res, next) {
-    const count = validator.parsePageOrCount(req.query.count); 
-    const page = validator.parsePageOrCount(req.query.page);
-    if (page < 0 || count < 0)
-       return res.status(400).send(myJSON.BadRequest(desc.PCNegative));
+    passport.checkServiceAuthorization(req, res, function (scope) {
+        const count = validator.parsePageOrCount(req.query.count); 
+        const page = validator.parsePageOrCount(req.query.page);
+        if (page < 0 || count < 0)
+            return res.status(400).send(format.T(400, desc.PCNegative));
 
-    knowledge.get(page, count, function(err, result) {
-        err ? res.status(400).send(myJSON.BadRequest(err)) : 
-            (result ? res.status(200).send(myJSON.Data(result)) : res.status(404).send(myJSON.BadRequest(desc.LossData)));
+        knowledge.get(page, count, function(err, result) {
+            err ? res.status(400).send(format.T(400, err)) : 
+                (result ? res.status(200).send(format.Data(result, scope)) : 
+                    res.status(404).send(format.T(404, desc.LossData)));
+        });
     });
 });
 
 router.get('/:id', function(req, res, next) {
-    const id = req.params.id;
-    if (!validator.checkId(id))
-        res.status(400).send(myJSON.BadRequest(desc.InvalidId(id)));
+    passport.checkServiceAuthorization(req, res, function (scope) {
+        const id = req.params.id;
+        if (!validator.checkId(id))
+            res.status(400).send(format.T(400, desc.InvalidId(id)));
 
-    knowledge.getById(id, function(err, result) {
-        err ? res.status(400).send(myJSON.BadRequest(err)) :
-            (result ? res.status(200).send(myJSON.Data(result)) : 
-                res.status(404).send(myJSON.NotFound(desc.NotFound(id))));
+        knowledge.getById(id, function(err, result) {
+            err ? res.status(400).send(format.T(400, err)) :
+                (result ? res.status(200).send(format.Data(result, scope)) : 
+                    res.status(404).send(format.T(404, desc.NotFound(id))));
+        });
     });
 });
 
-router.put('/:id', function(req, res, next) { 
-    const id = req.params.id;
-    if (!validator.checkId(id))
-        return res.status(400).send(myJSON.BadRequest(desc.InvalidId(id)));
-        
-    let data = {};
-    if (!validator.checkUndefined(req.body.marks)) {
-        if (!validator.checkMarks(req.body.marks))
-            return res.status(400).send(myJSON.BadRequest("Количество оценок должно быть равным 4"));
-        data["marks"] = req.body.marks;
-    }
-    if (!validator.checkUndefined(req.body.name))
-        data["name"] = req.body.name;
-    if (!validator.checkUndefined(req.body.ctgr))
-        data["ctgr"] = req.body.ctgr;
-    if (!validator.checkUndefined(req.body.sctgr))
-        data["sctgr"] = req.body.sctgr;
-    // Не пришли данные для обновления 
-    if (Object.keys(data).length == 0)
-        return res.status(400).send(myJSON.BadRequest(desc.NoData));
+router.put('/:id', function(req, res, next) {
+    passport.checkServiceAuthorization(req, res, function (scope) {
+        const id = req.params.id;
+        if (!validator.checkId(id))
+            return res.status(400).send(format.T(400, desc.InvalidId(id)));
+            
+        let data = {};
+        if (!validator.checkUndefined(req.body.marks)) {
+            if (!validator.checkMarks(req.body.marks))
+                return res.status(400).send(format.T(400, "Количество оценок должно быть равным 4"));
+            data["marks"] = req.body.marks;
+        }
+        if (!validator.checkUndefined(req.body.name))
+            data["name"] = req.body.name;
+        if (!validator.checkUndefined(req.body.ctgr))
+            data["ctgr"] = req.body.ctgr;
+        if (!validator.checkUndefined(req.body.sctgr))
+            data["sctgr"] = req.body.sctgr;
+        // Не пришли данные для обновления 
+        if (Object.keys(data).length == 0)
+            return res.status(400).send(format.T(400, desc.NoData));
 
-    knowledge.updateById(id, data, function(err, result) {
-        err ? res.status(400).send(myJSON.BadRequest(err)) : 
-        (result ? res.status(202).send(myJSON.Data(result)) : 
-            res.status(404).send(myJSON.NotFound(desc.NotFound(id))));
+        knowledge.updateById(id, data, function(err, result) {
+            err ? res.status(400).send(format.T(400, err)) : 
+            (result ? res.status(202).send(format.Data(result, scope)) : 
+                res.status(404).send(format.T(404, desc.NotFound(id))));
+        });
     });
 });
 
 router.delete('/', function(req, res, next) {
-	knowledge.delete(function(err, st) {
-        err ? res.status(400).send(myJSON.BadRequest(err)) :
-            res.status(200).send(myJSON.Status("Ok", desc.Deleted(st.result.n)));
-	});
+    passport.checkServiceAuthorization(req, res, function (scope) {
+        knowledge.delete(function(err, st) {
+            err ? res.status(400).send(format.T(400, err)) :
+                res.status(200).send(format.T(200, desc.Deleted(st.result.n)));
+        });
+    });
 });
 
 router.delete('/:id', function(req, res, next) {
-    const id = req.params.id;
-    if (!validator.checkId(id))
-        res.status(400).send(myJSON.BadRequest(desc.InvalidId(id)));
+    passport.checkServiceAuthorization(req, res, function (scope) {
+        const id = req.params.id;
+        if (!validator.checkId(id))
+            res.status(400).send(format.T(400, desc.InvalidId(id)));
 
-	knowledge.deleteById(id, function(err, result) {
-		err ? res.status(400).send(myJSON.BadRequest(err)) :
-            (result ? res.status(200).send(myJSON.Status("Ok", desc.ObjDeleted(id))) :
-                res.status(404).send(myJSON.NotFound(desc.NotFound(id))));
-	});
+        knowledge.deleteById(id, function(err, result) {
+            err ? res.status(400).send(format.T(400, err)) :
+                (result ? res.status(200).send(format.T(200, desc.ObjDeleted(id))) :
+                    res.status(404).send(format.T(404, desc.NotFound(id))));
+        });
+    });
 });
 
