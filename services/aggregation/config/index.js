@@ -6,7 +6,9 @@ var config = {
   development: {
     root: rootPath,
     app: {
-      name: 'aggr'
+      name: 'aggr',
+      id: 'aggr_id',
+      secret: 'aggr_secret'
     },
     port: process.env.PORT || 3000,
     db: 'mongodb://localhost/aggr'
