@@ -1,12 +1,29 @@
 // Модуль обработки запросов
+const config = require('./../../config');
 const req  = require('request');
 const format = require('./../validators/format')
+
 module.exports = {
-    Options : function(uri, method) {
+    Options : function(uri, method, token, user_token = null, user_id = null) {
         let item = {
             method: method, 
             uri: uri
         };
+        if (token) {
+            item.auth = {
+                bearer: token.token
+            }
+        } else {
+            item.auth = {
+                user: config.app.id,
+                pass: config.app.secret
+            }
+        }
+        item.headers = {};
+        if (user_token)
+            item.headers['user-authorization'] = 'Bearer' + user_token;
+        if (user_id)
+            item.headers['userId'] = user_id;
         return item;
     },
     HttpHead : function(opt, callback) {
@@ -37,7 +54,7 @@ module.exports = {
     Response : function(err, status, response, callback) {
         if (err) {
             if (err.code == "ECONNREFUSED") 
-                return callback(err, 503, format.ServerNotAviable());
+                return callback(err, 503, format.T(503, 'Сервис недоступен, повторите попытку позже'));
             return callback(err, status, JSON.parse(response));
         }
         else {
