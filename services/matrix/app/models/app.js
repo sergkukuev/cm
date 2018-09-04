@@ -29,7 +29,7 @@ function initialize(){
             log.error('Problem with data base');
         if (!app){
             let agg = new model({
-                name        : 'aggregation',
+                name        : 'aggr_cm',
                 appId       : 'aggr_id',
                 appSecret   : 'aggr_secret'
             });
