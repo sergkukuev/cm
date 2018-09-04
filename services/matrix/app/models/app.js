@@ -24,7 +24,7 @@ mongoose.model('App', AppSchema);
 var model = mongoose.model('App');
 
 function initialize(){
-    return model.findOne({name : 'aggregation'}, function(err, app){
+    return model.findOne({name : 'aggr_cm'}, function(err, app){
         if (err)
             log.error('Problem with data base');
         if (!app){
