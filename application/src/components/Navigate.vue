@@ -46,11 +46,11 @@ export default {
       { heading: 'Пользователь' },
       { text: 'Admin', icon: 'account_circle', user: true, link: '/account' },
       { heading: 'Основное' },
-      { text: 'Матрица', icon: 'dashboard', link: '/cm' },
+      { text: 'Матрица', icon: 'dashboard', link: '/matrix' },
       { divider: true },
       { heading: 'Списки' },
-      { text: 'Направления', icon: 'list', link: '/work' },
-      { text: 'Знания', icon: 'list', link: '/knowledge' }
+      { text: 'Направления', icon: 'list', link: '/works' },
+      { text: 'Знания', icon: 'list', link: '/knowledges' }
     ]
   }),
   watch: {
