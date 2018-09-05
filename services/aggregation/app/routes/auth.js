@@ -81,7 +81,7 @@ router.get('/code', function(req, res, next) {
 })
 
 // Проверка авторизации пользователя перед выполнением операции
-function CheckAuth(req, res, callback) {
+module.exports.Check = function (req, res, callback) {
     // Формируем и проверяем данные 
     let auth = req.headers.authorization;
     if (!auth)
@@ -101,5 +101,4 @@ function CheckAuth(req, res, callback) {
         return callback(response);  //Успешно пройденная авторизация
     });
 }
-
-module.exports.default = CheckAuth;   // Экспортируем проверку авторизации, чтобы другие маршруты могли ее брать
+// Экспортируем проверку авторизации, чтобы другие маршруты могли ее брать
