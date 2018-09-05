@@ -2,8 +2,8 @@
 // Название сервиса: cm (competency matrix)
 const   port = 3001,
 		host = 'http://localhost:' + port + '/api/cm',
+		token = null,	// Токен сервисной авторизации
 		valid = require('./../validators'),
-		token = null,
         requester = require('./requester');
 
 module.exports = {
@@ -15,8 +15,7 @@ module.exports = {
 			const opt = requester.Options(uri, "POST");
 			requester.HttpPost(opt, data, function(err, status, res) {
 				return requester.Response(err, status, res, function (err, status, res) {
-					const repeat = valid.checkService(status, res, main, 'Matrix', token, data, callback);
-					if (!repeat) 
+					if (valid.ServiceToken(status, res, main, token, data, callback))
 						return callback(err, status, res);
 					return;
 				});
@@ -30,8 +29,7 @@ module.exports = {
 			const opt = requester.Options(uri, "POST");
 			requester.HttpPost(opt, data, function(err, status, res) {
 				return requester.Response(err, status, res, function (err, status, res) {
-					const repeat = valid.checkService(status, res, main, 'Matrix', token, data, callback);
-					if (!repeat)
+					if (valid.ServiceToken(status, res, main, token, data, callback))
 						return callback(err, status, res);
 					return;
 				});
@@ -46,8 +44,7 @@ module.exports = {
 			const opt = requester.Options(uri, "POST");
 			requester.HttpPost(opt, data, function(err, status, res) {
 				return requester.Response(err, status, res, function (err, status, res) {
-					const repeat = valid.checkService(status, res, main, 'Matrix', token, data, callback);
-					if (!repeat)
+					if (valid.ServiceToken(status, res, main, token, data, callback))
 						return callback(err, status, res);
 					return;
 				});
@@ -62,8 +59,7 @@ module.exports = {
 			const opt = requester.Options(uri, "PUT");
 			requester.HttpPut(opt, data, function(err, status, res) {
 				return requester.Response(err, status, res, function(err, status, res) {
-					const repeat = valid.checkService(status, res, main, 'Matrix', token, data, callback);
-					if (!repeat)
+					if (valid.ServiceToken(status, res, main, token, data, callback))
 						return callback(err, status, res);
 					return;
 				});
@@ -77,8 +73,7 @@ module.exports = {
 			const opt = requester.Options(uri, "PUT");
 			requester.HttpPut(opt, data, function(err, status, res) {
 				return requester.Response(err, status, res, function(err, status, res) {
-					const repeat = valid.checkService(status, res, main, 'Matrix', token, data, callback);
-					if (!repeat)
+					if (valid.ServiceToken(status, res, main, token, data, callback))
 						return callback(err, status, res);
 					return;
 				});
@@ -92,8 +87,7 @@ module.exports = {
 			const opt = requester.Options(uri, "PUT");
 			requester.HttpPut(opt, data, function(err, status, res) {
 				return requester.Response(err, status, res, function(err, status, res) {
-					const repeat = valid.checkService(status, res, main, 'Matrix', token, data, callback);
-					if (!repeat)
+					if (valid.ServiceToken(status, res, main, token, data, callback))
 						return callback(err, status, res);
 					return;
 				});
@@ -107,8 +101,7 @@ module.exports = {
 			const opt = requester.Options(uri, "PUT");
 			requester.HttpPut(opt, data, function(err, status, res) {
 				return requester.Response(err, status, res, function(err, status, res) {
-					const repeat = valid.checkService(status, res, main, 'Matrix', token, data, callback);
-					if (!repeat)
+					if (valid.ServiceToken(status, res, main, token, data, callback))
 						return callback(err, status, res);
 					return;
 				});
@@ -123,8 +116,7 @@ module.exports = {
 			const opt = requester.Options(uri, "GET");
 			requester.HttpGet(opt, function(err, status, res) {
 				return requester.Response(err, status, res, function(err, status, res) {
-					const repeat = valid.checkService(status, res, main, 'Matrix', token, data, callback);
-					if (!repeat)
+					if (valid.ServiceToken(status, res, main, token, data, callback))
 						return callback(err, status, res);
 					return;
 				});
@@ -138,8 +130,7 @@ module.exports = {
 			const opt = requester.Options(uri, "GET");
 			requester.HttpGet(opt, function(err, status, res) {
 				return requester.Response(err, status, res, function(err, status, res) {
-					const repeat = valid.checkService(status, res, main, 'Matrix', token, data, callback);
-					if (!repeat)
+					if (valid.ServiceToken(status, res, main, token, data, callback))
 						return callback(err, status, res);
 					return;
 				});
@@ -153,8 +144,7 @@ module.exports = {
 			const opt = requester.Options(uri, "GET");
 			requester.HttpGet(opt, function(err, status, res) {
 				return requester.Response(err, status, res, function(err, status, res) {
-					const repeat = valid.checkService(status, res, main, 'Matrix', token, data, callback);
-					if (!repeat)
+					if (valid.ServiceToken(status, res, main, token, data, callback))
 						return callback(err, status, res);
 					return;
 				});
@@ -168,8 +158,7 @@ module.exports = {
 			const opt = requester.Options(uri, "GET");
 			requester.HttpGet(opt, function(err, status, res) {
 				return requester.Response(err, status, res, function(err, status, res) {
-					const repeat = valid.checkService(status, res, main, 'Matrix', token, data, callback);
-					if (!repeat)
+					if (valid.ServiceToken(status, res, main, token, data, callback))
 						return callback(err, status, res);
 					return;
 				});
@@ -183,8 +172,7 @@ module.exports = {
 			const opt = requester.Options(uri, "GET");
 			requester.HttpGet(opt, function(err, status, res) {
 				return requester.Response(err, status, res, function(err, status, res) {
-					const repeat = valid.checkService(status, res, main, 'Matrix', token, data, callback);
-					if (!repeat)
+					if (valid.ServiceToken(status, res, main, token, data, callback))
 						return callback(err, status, res);
 					return;
 				});
@@ -198,8 +186,7 @@ module.exports = {
 			const opt = requester.Options(uri, "GET");
 			requester.HttpGet(opt, function(err, status, res) {
 				return requester.Response(err, status, res, function(err, status, res) {
-					const repeat = valid.checkService(status, res, main, 'Matrix', token, data, callback);
-					if (!repeat)
+					if (valid.ServiceToken(status, res, main, token, data, callback))
 						return callback(err, status, res);
 					return;
 				});
@@ -214,8 +201,7 @@ module.exports = {
 			const opt = requester.Options(uri, "DELETE");
 			requester.HttpDelete(opt, function(err, status, res) {
 				return requester.Response(err, status, res, function(err, status, res) {
-					const repeat = valid.checkService(status, res, main, 'Matrix', token, data, callback);
-					if (!repeat)
+					if (valid.ServiceToken(status, res, main, token, data, callback))
 						return callback(err, status, res);
 					return;
 				});
@@ -229,8 +215,7 @@ module.exports = {
 			const opt = requester.Options(uri, "DELETE");
 			requester.HttpDelete(opt, function(err, status, res) {
 				return requester.Response(err, status, res, function(err, status, res) {
-					const repeat = valid.checkService(status, res, main, 'Matrix', token, data, callback);
-					if (!repeat)
+					if (valid.ServiceToken(status, res, main, token, data, callback))
 						return callback(err, status, res);
 					return;
 				});
@@ -244,8 +229,7 @@ module.exports = {
 			const opt = requester.Options(uri, "DELETE");
 			requester.HttpDelete(opt, function(err, status, res) {
 				return requester.Response(err, status, res, function(err, status, res) {
-					const repeat = valid.checkService(status, res, main, 'Matrix', token, data, callback);
-					if (!repeat)
+					if (valid.ServiceToken(status, res, main, token, data, callback))
 						return callback(err, status, res);
 					return;
 				});
@@ -259,8 +243,7 @@ module.exports = {
 			const opt = requester.Options(uri, "DELETE");
 			requester.HttpDelete(opt, function(err, status, res) {
 				return requester.Response(err, status, res, function(err, status, res) {
-					const repeat = valid.checkService(status, res, main, 'Matrix', token, data, callback);
-					if (!repeat)
+					if (valid.ServiceToken(status, res, main, token, data, callback))
 						return callback(err, status, res);
 					return;
 				});
@@ -274,8 +257,7 @@ module.exports = {
 			const opt = requester.Options(uri, "DELETE");
 			requester.HttpDelete(opt, function(err, status, res) {
 				return requester.Response(err, status, res, function(err, status, res) {
-					const repeat = valid.checkService(status, res, main, 'Matrix', token, data, callback);
-					if (!repeat)
+					if (valid.ServiceToken(status, res, main, token, data, callback))
 						return callback(err, status, res);
 					return;
 				});
@@ -289,8 +271,7 @@ module.exports = {
 			const opt = requester.Options(uri, "DELETE");
 			requester.HttpDelete(opt, function(err, status, res) {
 				return requester.Response(err, status, res, function(err, status, res) {
-					const repeat = valid.checkService(status, res, main, 'Matrix', token, data, callback);
-					if (!repeat)
+					if (valid.ServiceToken(status, res, main, token, data, callback))
 						return callback(err, status, res);
 					return;
 				});

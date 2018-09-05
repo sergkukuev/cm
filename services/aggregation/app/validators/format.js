@@ -1,10 +1,9 @@
+// Модуль преобразования данных
 module.exports = {
-    // Шаблон с данными (с проверкой на недоступность сервиса)
-    // (для универсальности, в случае добавления новых полей, к примеру токенов для межсервисной авторизации)
-    Data : function(err, data) {
-        let result;
-        err ? (err.code == "ECONNREFUSED" ? result = data : result = err) : 
-            (res ? result = data : result = this.T(404, 'Ресурс не найден'));
+    // Шаблон с данным
+    Data : function(data) {
+        let result; 
+        res ? result = data : result = this.T(404, 'Ресурс не найден');
         return result;
     },
     // Шаблон без данных
@@ -42,9 +41,9 @@ module.exports = {
     }
 }
 
-// Получение категорию статуса по коду состояния 
+// Получение категории статуса по коду состояния 
 function getTypeByCode(code) {
-    let result = '';
+    let result = 'Unknown';
     if (code >= 100 && code < 200)
         result = 'Information';
     else if (code >= 200 && code < 300)
@@ -53,8 +52,6 @@ function getTypeByCode(code) {
         result = 'Redirect';
     else if (code >= 400 && code < 600)
         result = 'Error';
-    else
-        result = 'Unknown';
     return result;
 }
 

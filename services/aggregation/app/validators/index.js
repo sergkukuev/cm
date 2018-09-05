@@ -1,16 +1,19 @@
+// Модуль валидации 
 module.exports = {
-    checkService : function(status, res, method, service, token, info, callback) {
-        if (status == 401 && res.statusText == 'Unauthorized') {
-            log.info(service + 'token not topical.');
+    // Проверка сервисного токена
+    ServiceToken : function(code, res, method, token, info, callback) {
+        let result = false;
+        if (code == 401 && res.statusText == 'Unauthorized') {
+            // Авторизация не удалась, токен не местный
             delete token;
             token = null;
-            method(info, callback);
-            return true;
+            method(info, callback); // Вызов метода после очистки токена
         } else if (typeof(res.service) != 'undefined') {
-            log.info('Set new ' + service + 'token');
-            token = response.service;
-            delete response.service;
+            // Установка нового токена
+            token = res.service;
+            delete res.service;
+            result = true;
         }
-        return false;
+        return result;
     }
 }
