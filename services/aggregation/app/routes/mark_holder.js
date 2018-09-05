@@ -1,66 +1,14 @@
+// Маршруты для обращения к сервису матрицы (БД оценок)
 var express = require('express'),
     router  = express.Router(),
     crd     = require('./../coordinators'),
     format  = require('./../validators/format');
 
 module.exports = function(app) { 
-    app.use('/api', router);
+    app.use('/api/marks', router);
 }
 
-// Маршруты для работ
-router.post('/works/create', function(req, res, next) {
-    let data = {
-        name: req.body.name,
-        tname: req.body.tname,
-        trank: req.body.trank,
-        num_kn: req.body.num_kn,
-        id_kn: req.body.id_kn,
-        marks: req.body.marks
-    };
-
-    crd.CreateWork(data, function(err, st, response) {
-        res.status(st).send(format.Data(err, response));
-    });
-});
-
-router.get('/works', function(req, res, next) {
-    crd.GetWorks(req.query.page, req.query.count, function(err, st, response){
-        res.status(st).send(format.Data(err, response));
-    });
-});
-
-router.get('/works/:id', function(req, res, next) {
-    crd.GetWorkById(req.params.id, function(err, st, response) {
-        res.status(st).send(format.Data(err, response));
-    });
-});
-
-router.get('/works/:id/:id_task/marks', function(req, res, next) {
-
-});
-
-router.put('/works/:id', function(req, res, next) {
-    let data = {
-        name: req.body.name,
-        tname: req.body.tname,
-        trank: req.body.trank,
-        num_kn: req.body.num_kn,
-        id_kn: req.body.id_kn,
-        marks: req.body.marks
-    };
-    
-    crd.UpdateWork(data, function(err, st, response) {
-        res.status(st).send(format.Data(err, response));
-    });
-});
-
-router.delete('/works/:id', function(req, res, next) {
-    crd.DeleteWorkById(req.params.id, function(err, st, response) {
-        res.status(st).send(format.Data(err, response));
-    });
-});
-
-// Маршруты для хранилища оценок 
+// Создания держателя оценок пользователя 
 router.post('/marks/create', function(req, res, next) {
     const data = {
         id_user: req.body.id_user,
@@ -73,12 +21,14 @@ router.post('/marks/create', function(req, res, next) {
     });
 });
 
+// Получение всех оценок пользователей
 router.get('/marks', function(req, res, next) {
     crd.GetHMarks(req.query.page, req.query.count, function(err, st, response) {
         res.status(st).send(format.Data(err, response));
     });
 });
 
+// Получение всех оценок одного пользователя по идентификатору
 router.get('/marks/:id', function(req, res, next) {
     crd.GetHMarkById(req.params.id, function(err1, st1, user) {
         crd.GetKns(0, 0, function(err2, st2, kns) {
@@ -94,6 +44,7 @@ router.get('/marks/:id', function(req, res, next) {
     });
 });
 
+// Обновление оценок
 router.put('/marks/', function(req, res, next) {
     const data = {
         id_user: req.body.id_user,
@@ -106,6 +57,7 @@ router.put('/marks/', function(req, res, next) {
     });
 });
 
+// Удаление оценок пользователя
 router.delete('/marks/:id', function(req, res, next) {
     crd.DeleteHMarkById(req.params.id, function(err, st, response) {
         res.status(st).send(format.Data(err, response));
