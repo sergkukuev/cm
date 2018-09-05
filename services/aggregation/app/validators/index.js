@@ -2,7 +2,7 @@
 module.exports = {
     // Проверка сервисного токена
     ServiceToken : function(code, res, method, token, info, callback) {
-        let result = false;
+        // let result = false;
         if (code == 401 && res.statusText == 'Unauthorized') {
             // Авторизация не удалась, токен не местный
             delete token;
@@ -12,8 +12,8 @@ module.exports = {
             // Установка нового токена
             token = res.service;
             delete res.service;
-            result = true;
+            // result = true;
         }
-        return result;
+        return token;   // result;
     }
 }

@@ -2,9 +2,9 @@
 // Название сервиса: auth
 const   port = 3005,
         host = 'http://localhost:' + port + '/auth',
-        token = null,   // Токен сервисной авторизации
         valid = require('./../validators'),
         requester = require('./requester');
+var     token = null;   // Токен сервисной авторизации
 
 module.exports = {
     // POST REQUEST
@@ -19,7 +19,8 @@ module.exports = {
             };
             requester.HttpPost(opt, data, function(err, status, res) {
                 return requester.Response(err, status, res, function (err, status, res) {
-                    if (valid.ServiceToken(status, res, main, token, data, callback))
+                    token = valid.ServiceToken(status, res, main, token, data, callback);
+                    if (token !== null)
                         return callback(err, status, res);
                     return;
                 });
@@ -37,7 +38,8 @@ module.exports = {
             };
             requester.HttpPost(opt, data, function(err, status, res) {
                 return requester.Response(err, status, res, function (err, status, res) {
-                    if (valid.ServiceToken(status, res, main, token, data, callback))
+                    token = valid.ServiceToken(status, res, main, token, data, callback);
+                    if (token !== null)
                         return callback(err, status, res);
                     return;
                 });
@@ -55,7 +57,8 @@ module.exports = {
             };
             requester.HttpPost(opt, data, function(err, status, res) {
                 return requester.Response(err, status, res, function (err, status, res) {
-                    if (valid.ServiceToken(status, res, main, token, data, callback))
+                    token = valid.ServiceToken(status, res, main, token, data, callback);
+                    if (token !== null)
                         return callback(err, status, res);
                     return;
                 });
@@ -70,7 +73,8 @@ module.exports = {
             const opt = requester.Options(uri, "GET", token, scope.token);
             requester.HttpGet(opt, function(err, status, response) {
                 return requester.Response(err, status, res, function (err, status, res) {
-                    if (valid.ServiceToken(status, res, main, token, scope, callback))
+                    token = valid.ServiceToken(status, res, main, token, scope, callback);
+                    if (token !== null)
                         return callback(err, status, res);
                     return;
                 });

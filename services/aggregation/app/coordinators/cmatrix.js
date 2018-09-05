@@ -2,9 +2,9 @@
 // Название сервиса: cm (competency matrix)
 const   port = 3001,
 		host = 'http://localhost:' + port + '/api/cm',
-		token = null,	// Токен сервисной авторизации
 		valid = require('./../validators'),
-        requester = require('./requester');
+		requester = require('./requester');
+var		token = null;	// Токен сервисной авторизации
 
 module.exports = {
 	// POST REQUEST
@@ -15,7 +15,8 @@ module.exports = {
 			const opt = requester.Options(uri, "POST");
 			requester.HttpPost(opt, data, function(err, status, res) {
 				return requester.Response(err, status, res, function (err, status, res) {
-					if (valid.ServiceToken(status, res, main, token, data, callback))
+					token = valid.ServiceToken(status, res, main, token, data, callback);
+					if (token !== null)
 						return callback(err, status, res);
 					return;
 				});
@@ -29,7 +30,8 @@ module.exports = {
 			const opt = requester.Options(uri, "POST");
 			requester.HttpPost(opt, data, function(err, status, res) {
 				return requester.Response(err, status, res, function (err, status, res) {
-					if (valid.ServiceToken(status, res, main, token, data, callback))
+					token = valid.ServiceToken(status, res, main, token, data, callback);
+					if (token !== null)
 						return callback(err, status, res);
 					return;
 				});
@@ -44,7 +46,8 @@ module.exports = {
 			const opt = requester.Options(uri, "POST");
 			requester.HttpPost(opt, data, function(err, status, res) {
 				return requester.Response(err, status, res, function (err, status, res) {
-					if (valid.ServiceToken(status, res, main, token, data, callback))
+					token = valid.ServiceToken(status, res, main, token, data, callback);
+					if (token !== null)
 						return callback(err, status, res);
 					return;
 				});
@@ -63,7 +66,8 @@ module.exports = {
 			const opt = requester.Options(uri, "PUT");
 			requester.HttpPut(opt, scope.data, function(err, status, res) {
 				return requester.Response(err, status, res, function(err, status, res) {
-					if (valid.ServiceToken(status, res, main, token, scope, callback))
+					token = valid.ServiceToken(status, res, main, token, scope, callback);
+					if (token !== null)
 						return callback(err, status, res);
 					return;
 				});
@@ -81,7 +85,8 @@ module.exports = {
 			const opt = requester.Options(uri, "PUT");
 			requester.HttpPut(opt, scope.data, function(err, status, res) {
 				return requester.Response(err, status, res, function(err, status, res) {
-					if (valid.ServiceToken(status, res, main, token, scope, callback))
+					token = valid.ServiceToken(status, res, main, token, scope, callback);
+					if (token !== null)
 						return callback(err, status, res);
 					return;
 				});
@@ -100,7 +105,8 @@ module.exports = {
 			const opt = requester.Options(uri, "PUT");
 			requester.HttpPut(opt, scope.data, function(err, status, res) {
 				return requester.Response(err, status, res, function(err, status, res) {
-					if (valid.ServiceToken(status, res, main, token, scope, callback))
+					token = valid.ServiceToken(status, res, main, token, scope, callback);
+					if (token !== null)
 						return callback(err, status, res);
 					return;
 				});
@@ -118,7 +124,8 @@ module.exports = {
 			const opt = requester.Options(uri, "PUT");
 			requester.HttpPut(opt, scope.data, function(err, status, res) {
 				return requester.Response(err, status, res, function(err, status, res) {
-					if (valid.ServiceToken(status, res, main, token, scope, callback))
+					token = valid.ServiceToken(status, res, main, token, scope, callback);
+					if (token !== null)
 						return callback(err, status, res);
 					return;
 				});
@@ -137,7 +144,8 @@ module.exports = {
 			const opt = requester.Options(uri, "GET");
 			requester.HttpGet(opt, function(err, status, res) {
 				return requester.Response(err, status, res, function(err, status, res) {
-					if (valid.ServiceToken(status, res, main, token, scope, callback))
+					token = valid.ServiceToken(status, res, main, token, scope, callback);
+					if (token !== null)
 						return callback(err, status, res);
 					return;
 				});
@@ -151,7 +159,8 @@ module.exports = {
 			const opt = requester.Options(uri, "GET");
 			requester.HttpGet(opt, function(err, status, res) {
 				return requester.Response(err, status, res, function(err, status, res) {
-					if (valid.ServiceToken(status, res, main, token, id, callback))
+					token = valid.ServiceToken(status, res, main, token, id, callback);
+					if (token !== null)
 						return callback(err, status, res);
 					return;
 				});
@@ -169,7 +178,8 @@ module.exports = {
 			const opt = requester.Options(uri, "GET");
 			requester.HttpGet(opt, function(err, status, res) {
 				return requester.Response(err, status, res, function(err, status, res) {
-					if (valid.ServiceToken(status, res, main, token, scope, callback))
+					token = valid.ServiceToken(status, res, main, token, scope, callback);
+					if (token !== null)
 						return callback(err, status, res);
 					return;
 				});
@@ -183,7 +193,8 @@ module.exports = {
 			const opt = requester.Options(uri, "GET");
 			requester.HttpGet(opt, function(err, status, res) {
 				return requester.Response(err, status, res, function(err, status, res) {
-					if (valid.ServiceToken(status, res, main, token, id, callback))
+					token = valid.ServiceToken(status, res, main, token, id, callback);
+					if (token !== null)
 						return callback(err, status, res);
 					return;
 				});
@@ -201,7 +212,8 @@ module.exports = {
 			const opt = requester.Options(uri, "GET");
 			requester.HttpGet(opt, function(err, status, res) {
 				return requester.Response(err, status, res, function(err, status, res) {
-					if (valid.ServiceToken(status, res, main, token, scope, callback))
+					token = valid.ServiceToken(status, res, main, token, scope, callback);
+					if (token !== null)
 						return callback(err, status, res);
 					return;
 				});
@@ -215,7 +227,8 @@ module.exports = {
 			const opt = requester.Options(uri, "GET");
 			requester.HttpGet(opt, function(err, status, res) {
 				return requester.Response(err, status, res, function(err, status, res) {
-					if (valid.ServiceToken(status, res, main, token, id, callback))
+					token = valid.ServiceToken(status, res, main, token, id, callback);
+					if (token !== null)
 						return callback(err, status, res);
 					return;
 				});
@@ -230,7 +243,8 @@ module.exports = {
 			const opt = requester.Options(uri, "DELETE");
 			requester.HttpDelete(opt, function(err, status, res) {
 				return requester.Response(err, status, res, function(err, status, res) {
-					if (valid.ServiceToken(status, res, main, token, data, callback))
+					token = valid.ServiceToken(status, res, main, token, data, callback);
+					if (token !== null)
 						return callback(err, status, res);
 					return;
 				});
@@ -244,7 +258,8 @@ module.exports = {
 			const opt = requester.Options(uri, "DELETE");
 			requester.HttpDelete(opt, function(err, status, res) {
 				return requester.Response(err, status, res, function(err, status, res) {
-					if (valid.ServiceToken(status, res, main, token, id, callback))
+					token = valid.ServiceToken(status, res, main, token, id, callback);
+					if (token !== null)
 						return callback(err, status, res);
 					return;
 				});
@@ -258,7 +273,8 @@ module.exports = {
 			const opt = requester.Options(uri, "DELETE");
 			requester.HttpDelete(opt, function(err, status, res) {
 				return requester.Response(err, status, res, function(err, status, res) {
-					if (valid.ServiceToken(status, res, main, token, data, callback))
+					token = valid.ServiceToken(status, res, main, token, data, callback);
+					if (token !== null)
 						return callback(err, status, res);
 					return;
 				});
@@ -272,7 +288,8 @@ module.exports = {
 			const opt = requester.Options(uri, "DELETE");
 			requester.HttpDelete(opt, function(err, status, res) {
 				return requester.Response(err, status, res, function(err, status, res) {
-					if (valid.ServiceToken(status, res, main, token, id, callback))
+					token = valid.ServiceToken(status, res, main, token, id, callback);
+					if (token !== null)
 						return callback(err, status, res);
 					return;
 				});
@@ -286,7 +303,8 @@ module.exports = {
 			const opt = requester.Options(uri, "DELETE");
 			requester.HttpDelete(opt, function(err, status, res) {
 				return requester.Response(err, status, res, function(err, status, res) {
-					if (valid.ServiceToken(status, res, main, token, data, callback))
+					token = valid.ServiceToken(status, res, main, token, data, callback);
+					if (token !== null)
 						return callback(err, status, res);
 					return;
 				});
@@ -300,7 +318,8 @@ module.exports = {
 			const opt = requester.Options(uri, "DELETE");
 			requester.HttpDelete(opt, function(err, status, res) {
 				return requester.Response(err, status, res, function(err, status, res) {
-					if (valid.ServiceToken(status, res, main, token, id, callback))
+					token = valid.ServiceToken(status, res, main, token, id, callback);
+					if (token !== null)
 						return callback(err, status, res);
 					return;
 				});
