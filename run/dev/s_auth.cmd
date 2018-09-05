@@ -1,0 +1,2 @@
+CD ./../services/auth
+gulp
