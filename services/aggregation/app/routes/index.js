@@ -6,50 +6,6 @@ var express = require('express'),
 module.exports = function(app) { 
     app.use('/api', router);
 }
-// Маршруты для знаний
-router.post('/kns/create', function(req, res, next) {
-    const data = {
-        name: req.body.name, 
-        ctgr: req.body.ctgr,
-        sctgr: req.body.sctgr,
-        marks: req.body.marks
-    };
-    
-    crd.CreateKn(data, function(err, st, response) {
-        res.status(st).send(format.Data(err, response));
-    });
-});
-
-router.get('/kns', function(req, res, next) {
-    crd.GetKns(req.query.page, req.query.count, function(err, st, response){
-        res.status(st).send(format.Data(err, response));
-    });
-});
-
-router.get('/kns/:id', function(req, res, next) {
-    crd.GetKnById(req.params.id, function(err, st, response) {
-        res.status(st).send(format.Data(err, response));
-    });
-});
-
-router.put('/kns/:id', function(req, res, next) {
-    let data = {
-        name: req.body.name,
-        ctgr: req.body.ctgr, 
-        sctgr: req.body.sctgr,
-        marks: req.body.marks
-    };
-    
-    crd.UpdateKn(req.params.id, data, function(err, st, response) {
-        res.status(st).send(format.Data(err, response));
-    });
-});
-
-router.delete('/kns/:id', function(req, res, next) {
-    crd.DeleteKnById(req.params.id, function(err, st, response) {
-        res.status(st).send(format.Data(err, response));
-    });
-});
 
 // Маршруты для работ
 router.post('/works/create', function(req, res, next) {
