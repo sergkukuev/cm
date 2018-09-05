@@ -61,10 +61,10 @@ function findStatusByCode(code) {
     let index = 0;
     for (; index < HTTP_state.length && !bFind; index++)
         if (HTTP_state[index].code == code)
-            flag = true;
+            bFind = true;
 
     let result;
-    index == HTTP_state.length ? result = 'Unknown Error' : result = HTTP_state[index].text;
+    index == HTTP_state.length ? result = 'Unknown Error' : result = HTTP_state[index - 1].text;
     return result; 
 }
 
