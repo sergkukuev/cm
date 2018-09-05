@@ -27,7 +27,7 @@ module.exports = {
             item.headers['userId'] = user_id;
         return item;
     },
-    // Формирование запросов
+    // Запросы 
     HttpHead : function(opt, callback) {
         req.head(opt.uri, opt, function(err, res, body) {
             err ? callback(err, null, null) : callback(null, res.statusCode, body);
@@ -53,17 +53,16 @@ module.exports = {
             err ? callback(err, null, null) : callback(null, res.statusCode, body);
         });
     },
-    // Запрос
+    // Выдача ответа
     Response : function(err, status, response, callback) {
         if (err) {
+            // Проверка на недоступность сервера
             if (err.code == "ECONNREFUSED") {
                 const msg = 'Сервис недоступен, повторите попытку позже';
                 return callback(err, 503, format.T(503, msg));
             }
-            return callback(err, status, JSON.parse(response));
         }
-        else {
-            response ? callback(err, status, JSON.parse(response)) : callback(err, status, null);
-        }
+        return response ? callback(err, status, format.Data(JSON.parse(response))) : 
+            callback(err, status, null);
     }
 }
