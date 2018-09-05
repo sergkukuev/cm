@@ -51,7 +51,7 @@ module.exports = {
             const opt = requester.Options(uri, "POST", token);
             const data = {
                 grant_type: 'refresh_token',
-                refresh_token: scope.ref_token
+                refresh_token: scope.refresh_token
             };
             requester.HttpPost(opt, data, function(err, status, res) {
                 return requester.Response(err, status, res, function (err, status, res) {
@@ -70,7 +70,7 @@ module.exports = {
             const opt = requester.Options(uri, "GET", token, scope.token);
             requester.HttpGet(opt, function(err, status, response) {
                 return requester.Response(err, status, res, function (err, status, res) {
-                    if (valid.ServiceToken(status, res, main, token, data, callback))
+                    if (valid.ServiceToken(status, res, main, token, scope, callback))
                         return callback(err, status, res);
                     return;
                 });

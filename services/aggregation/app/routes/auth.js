@@ -45,7 +45,7 @@ router.post('/auth', function(req, res, next) {
         return res.status(401).send(format.T(401, 'No token'));
 
     const data = {
-        ref_token: auth.split(' ')[1]
+        refresh_token: auth.split(' ')[1]
     };
     return crd.GetTokenByToken(data, function(err, status, response) {
         if (err)
