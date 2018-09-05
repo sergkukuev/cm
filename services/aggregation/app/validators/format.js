@@ -3,7 +3,7 @@ module.exports = {
     // Шаблон с данным
     Data : function(data) {
         let result; 
-        res ? result = data : result = this.T(404, 'Ресурс не найден');
+        res ? result = data : result = this.T(404, 'Resource not Found');
         return result;
     },
     // Шаблон без данных
