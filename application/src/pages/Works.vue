@@ -64,9 +64,10 @@
 </template>
 
 <script>
-import crud from './index.js'
-import WorkTable from './containers/WDataTable'
-import WorkDialog from './WEditDlg'
+import WorkTable from '@/components/pages/works/containers/WDataTable'
+import WorkDialog from '@/components/pages/works/WEditDlg'
+
+import crud from '@/api/works'
 
 export default {
   components: {
