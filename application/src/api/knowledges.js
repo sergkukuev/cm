@@ -3,6 +3,7 @@ import {api} from './index.js'
 const success = 'Операция прошла успешно'
 
 /* В context уходит:  kns - список всех знаний
+                      knowledge - отдельное знание (getById)
                       last.text - последнее описание выполнения операции
                       code - код выполнения
 */
@@ -24,9 +25,22 @@ export function save (context, data) {
 // Получение списка знаний
 export function get (context) {
   let path = '/kns'
-  console.log('aaa')
   api.get(path).then((res) => {
     context.kns = res.data.content
+    context.last.text = success
+    context.code = res.status
+  }, (err) => {
+    console.log(err.response.data)
+    context.last.text = err.response.data.description.message
+    context.code = err.response.status
+  })
+}
+
+// Получение знания по id
+export function getById (context, id) {
+  let path = '/kns/' + id
+  api.get(path).then((res) => {
+    context.knowledge = res.data.content
     context.last.text = success
     context.code = res.status
   }, (err) => {
@@ -79,4 +93,4 @@ export function remove (context, item) {
   })
 }
 
-export default { save, get, update, remove }
+export default { save, get, update, remove, getById }
