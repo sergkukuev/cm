@@ -10,33 +10,52 @@
     >
     </works-dialog>
     <!-- Шапка страницы -->
-    <v-toolbar
-      class="secondary elevation-2 mb-1 font-weight-light"
-    >
-      <v-toolbar-title class="title font-weight-regular">
-        Список направлений
+    <v-toolbar class="secondary elevation-2 mb-1 font-weight-light" height=60>
+      <v-toolbar-title
+        :class="['title', 'font-weight-regular',
+          search.activator ? 'hidden-xs-only' : '']"
+      >
+        Направления
       </v-toolbar-title>
-      <v-divider vertical  class="ml-3"></v-divider>
-      <v-tooltip bottom>
-        <v-btn slot="activator" @click="dialog = true" icon class="ml-2">
-          <v-icon>add</v-icon>
-        </v-btn>
-        <span>Добавить</span>
-      </v-tooltip>
-      <!-- <v-alert :value="alert" color="primary" outline icon="priority_high">
-        {{ snack.text }}
-      </v-alert> -->
-      <v-spacer></v-spacer>
+      <v-spacer :class="search.activator ? 'hidden-xs-only' : ''"></v-spacer>
+      <!-- Поиск -->
       <v-text-field
-        v-model="search"
+        v-show="search.activator"
+        v-model="search.field"
         prepend-inner-icon="search"
-        clearable
+        flat
         solo
-        background-color="white"
+        background-color="transparent"
         label="Поиск"
         hide-details
       >
       </v-text-field>
+      <v-btn v-show="search.activator"
+        @click="search_reload"
+        color="red darken-1"
+        flat
+        icon
+        left
+      >
+        <v-icon>clear</v-icon>
+      </v-btn>
+      <!-- <v-divider vertical  class="ml-3 mr-3"></v-divider> -->
+      <!-- Отображение ошибок -->
+      <v-tooltip bottom class="mr-2" v-show="last.code >= 300">
+        <v-icon slot="activator" color="error" medium>error</v-icon>
+        <span>{{ last.text }}</span>
+      </v-tooltip>
+      <!-- Кнопка дополнительных действий -->
+      <more-action
+        v-show="!search.activator"
+        :direction="'left'"
+        :position="'left'"
+        :color="['black', 'secondary']"
+        @A-add="dialog = true"
+        @A-refresh="$emit()"
+        @A-search="search_reload"
+      >
+      </more-action>
     </v-toolbar>
     <!-- Таблица с данными -->
     <works-table slot="works-table"
@@ -47,7 +66,7 @@
       @removeItem="delete_item"
     >
     </works-table>
-    <!-- Snackbar -->
+    <!-- Snackbars -->
     <v-snackbar
       v-model="snack.activator"
       :timeout="snack.timer"
@@ -55,7 +74,7 @@
       bottom
       right
     >
-      {{ snack.text }}
+      {{ last.text }}
       <v-btn flat @click="snack.activator = false">
         <v-icon>clear</v-icon>
       </v-btn>
@@ -66,28 +85,38 @@
 <script>
 import WorkTable from '@/components/pages/works/containers/WDataTable'
 import WorkDialog from '@/components/pages/works/WEditDlg'
+import Actions from '@/components/MoreAction'
 
 import crud from '@/api/works'
 
 export default {
   components: {
+    'more-action': Actions,
     'works-dialog': WorkDialog,
     'works-table': WorkTable
   },
   data () {
     return {
       dialog: false,
-      search: '',
+      // Поиск
+      search: {
+        activator: false,
+        field: ''
+      },
       loading: true, // Статус загрузки
       snack: {
         activator: false, // Активатор snackbar
         color: 'info',
-        text: 'Здесь лежит описание последней ошибки или операции',
         timer: 5000
       },
       // Данные
       works: [], // Все доступные знания
       work: {}, // Дефолтное значение
+      // Параметры последнего ответа
+      last: {
+        text: 'Здесь лежит описание последней ошибки или операции',
+        code: 0 // Код последней операции
+      },
       code: 0 // Код 0 - состояние ожидания действий
     }
   },
@@ -98,19 +127,21 @@ export default {
       // 300- 399 Перенаправление
       // 400 - 499 Ошибка клиента
       // 500 - 599 Ошибка сервера
+      if (value !== 0) {
+        this.loading = false // Пришел ответ от сервера
+        this.last.code = value
+      }
       if (value >= 100 && value < 200) {
-        this.loading = false
-        this.render_snack('info', this.snack.text)
+        this.render_snack('info', this.last.text)
       } else if (value >= 200 && value < 300) {
         // Ресурс создан или обновлен
         if (value === 201 || value === 202) {
           this.close_dialog()
         }
-        this.loading = false
-        this.render_snack('success', this.snack.text)
+        this.render_snack('success', this.last.text)
       } else if (value >= 400 && value < 600) {
         this.loading = false
-        this.render_snack('error', this.snack.text)
+        this.render_snack('error', this.last.text)
       }
       this.code = 0 // Сброс кода в ожидание
     }
@@ -118,6 +149,10 @@ export default {
   methods: {
     save_item (work) {
       crud.save(this, crud.format(work))
+    },
+    get_items () {
+      this.loading = true
+      crud.get(this)
     },
     update_item (item) {
       this.dialog = true
@@ -133,20 +168,25 @@ export default {
       this.dialog = false
       this.clear_default()
     },
+    search_reload () {
+      this.search.field = ''
+      this.search.activator = !this.search.activator
+    },
     clear_default () {
       this.work = {
         name: '',
         tasks: []
       }
     },
+    // Отображение snackbar
     render_snack (color, text) {
       this.snack.color = color
-      this.snack.text = text
+      this.last.text = text
       this.snack.activator = true
     }
   },
   mounted: function () {
-    crud.get(this)
+    this.get_items()
     this.clear_default()
   }
 }
