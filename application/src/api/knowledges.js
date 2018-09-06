@@ -9,7 +9,7 @@ const success = 'Операция прошла успешно'
 
 // Сохранение знания
 export function save (context, data) {
-  let path = './kns/create'
+  let path = '/kns/create'
   api.post(path, data).then((res) => {
     context.kns.push(res.data.content) // Вставка в массив, чтобы не делать дополнительный запрос на получение изменений
     context.last.text = success
@@ -26,7 +26,6 @@ export function get (context) {
   let path = '/kns'
   console.log('aaa')
   api.get(path).then((res) => {
-    console.log(context.kns)
     context.kns = res.data.content
     context.last.text = success
     context.code = res.status
@@ -51,6 +50,7 @@ export function update (context, id, item) {
   })
 }
 
+// Обновление на клиенте без дополнительного запроса
 function localUpdate (arr, item) {
   let bUpd = false
   for (let i = 0; i < arr.length && !bUpd; i++) {
