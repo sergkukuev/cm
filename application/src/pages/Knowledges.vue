@@ -63,8 +63,8 @@
       :knowledges="kns"
       :loading="loading"
       :search="search.field"
-      @editItem="update_item"
-      @removeItem="delete_item"
+      @I-edit="update_item"
+      @I-remove="delete_item"
     >
     </kns-table>
     <!-- Snackbars -->

@@ -33,22 +33,36 @@
           <td class="hidden-xs-only">{{ props.item.ctgr }}</td>
           <td class="hidden-xs-only">{{ props.item.sctgr }}</td>
           <td class="text-xs-left" style="width: 5%">
-            <v-tooltip bottom>
+            <v-icon slot="activator"
+              @click="$emit('I-edit', props.item)"
+              small class="mr-2"
+            >
+              edit
+            </v-icon>
+            <v-icon slot="activator"
+              @click="$emit('I-remove', props.item)"
+              small
+            >
+              delete
+            </v-icon>
+            <!-- <v-tooltip bottom>
               <v-icon slot="activator"
-                @click="$emit('editItem', props.item)"
-                small class="mr-2">
+                @click="$emit('I-edit', props.item)"
+                small class="mr-2"
+              >
                 edit
               </v-icon>
               <span>Изменить</span>
             </v-tooltip>
             <v-tooltip bottom>
               <v-icon slot="activator"
-                @click="$emit('removeItem', props.item)"
-                small>
+                @click="$emit('I-remove', props.item)"
+                small
+              >
                 delete
               </v-icon>
               <span>Удалить</span>
-            </v-tooltip>
+            </v-tooltip> -->
           </td>
         </tr>
       </template>
