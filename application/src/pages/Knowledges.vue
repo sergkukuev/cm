@@ -1,71 +1,63 @@
+<!-- -->
 <template>
   <v-layout align-start wrap>
     <!-- Диалог для изменения и добавления знаний -->
     <kns-dialog slot="kns-dialog"
       :default="knowledge"
       :wdialog="dialog"
-      @nochangeAction="no_change"
-      @saveAction="save_item"
-      @cancelAction="close_dialog"
+      @A-nochange="no_change"
+      @A-save="save_item"
+      @A-cancel="close_dialog"
     >
     </kns-dialog>
     <!-- Шапка страницы -->
-    <v-toolbar class="secondary elevation-2 mb-1 font-weight-light">
+    <v-toolbar class="secondary elevation-2 mb-1 font-weight-light" height=60>
       <v-toolbar-title
         :class="['title', 'font-weight-regular',
           search.activator ? 'hidden-xs-only' : '']"
       >
-        Знания сила, кочка могила
+        Знания
       </v-toolbar-title>
-      <!-- Кнопки тулбара (добавить, обновить, поиск и т.д.) -->
-      <v-spacer></v-spacer>
-      <v-tooltip bottom class="mr-2" v-show="last_code >= 300">
-        <v-icon slot="activator" color="error" medium>error</v-icon>
-        <span>{{ text }}</span>
-      </v-tooltip>
+      <v-spacer :class="search.activator ? 'hidden-xs-only' : ''"></v-spacer>
+      <!-- Поиск -->
       <v-text-field
         v-show="search.activator"
         v-model="search.field"
         prepend-inner-icon="search"
-        clearable
+        flat
         solo
-        background-color="white"
+        background-color="transparent"
         label="Поиск"
         hide-details
       >
       </v-text-field>
+      <v-btn v-show="search.activator"
+        @click="search_reload"
+        color="red darken-1"
+        flat
+        icon
+        left
+      >
+        <v-icon>clear</v-icon>
+      </v-btn>
       <!-- <v-divider vertical  class="ml-3 mr-3"></v-divider> -->
-      <v-tooltip bottom>
-        <v-btn slot="activator"
-          @click="search.activator = !search.activator"
-          icon
-        >
-          <v-icon v-if="search.activator">clear</v-icon>
-          <v-icon v-else>search</v-icon>
-        </v-btn>
-        <span v-if="search.activator">Закрыть</span>
-        <span v-else>Поиск</span>
+      <!-- Отображение ошибок -->
+      <v-tooltip bottom class="mr-2" v-show="last.code >= 300">
+        <v-icon slot="activator" color="error" medium>error</v-icon>
+        <span>{{ last.text }}</span>
       </v-tooltip>
-      <!-- Кнопка действий в тулбаре -->
-      <kns-action
+      <!-- Кнопка дополнительных действий -->
+      <more-action
+        v-show="!search.activator"
         :direction="'left'"
         :position="'left'"
         :color="['black', 'secondary']"
         @A-add="dialog = true"
         @A-refresh="get_items"
-        @A-search="$emit()"
+        @A-search="search_reload"
       >
-      </kns-action>
+      </more-action>
     </v-toolbar>
-    <!-- Кнопка действий вне тулбара
-    <kns-action v-if="$vuetify.breakpoint.xs"
-        :floating="true"
-        :color="'secondary'"
-        :direct="'right'"
-        @refreshAction="get_items"
-        @addAction="dialog = true"
-      >
-      </kns-action> -->
     <!-- Таблица данных -->
     <kns-table slot="kns-table"
       :knowledges="kns"
@@ -83,7 +75,7 @@
       bottom
       right
     >
-      {{ text }}
+      {{ last.text }}
       <v-btn flat @click="snack.activator = false">
         <v-icon>clear</v-icon>
       </v-btn>
@@ -92,7 +84,7 @@
 </template>
 
 <script>
-import KTable from '@/components/tables/KnsAction'
+import KTable from '@/components/tables/KnsWithAction'
 import KDialog from '@/components/dialogs/KnEdit'
 import Actions from '@/components/MoreAction'
 
@@ -100,13 +92,14 @@ import crud from '@/api/knowledges'
 
 export default {
   components: {
-    'kns-action': Actions,
+    'more-action': Actions,
     'kns-dialog': KDialog,
     'kns-table': KTable
   },
   data () {
     return {
       dialog: false,
+      // Поиск
       search: {
         activator: false,
         field: ''
@@ -120,9 +113,11 @@ export default {
       // Данные
       kns: [], // Все доступные знания
       knowledge: {}, // Дефолтное знание
-      // Параметры ответа
-      text: 'Здесь лежит описание последней ошибки или операции',
-      last_code: 0, // Код последней операции
+      // Параметры последнего ответа
+      last: {
+        text: 'Здесь лежит описание последней ошибки или операции',
+        code: 0 // Код последней операции
+      },
       code: 0 // Код 0 - состояние ожидания ввода
     }
   },
@@ -135,7 +130,7 @@ export default {
       // 500 - 599 Ошибка сервера
       if (value !== 0) {
         this.loading = false // Пришел ответ от сервера
-        this.last_code = value
+        this.last.code = value
       }
       if (value >= 100 && value < 200) {
         this.render_snack('info', this.text)
@@ -173,6 +168,10 @@ export default {
       this.dialog = false
       this.clear_default()
     },
+    search_reload () {
+      this.search.field = ''
+      this.search.activator = !this.search.activator
+    },
     clear_default () {
       this.knowledge = {
         name: '',
@@ -184,7 +183,7 @@ export default {
     // Отображение snackbar
     render_snack (color, text) {
       this.snack.color = color
-      this.text = text
+      this.last.text = text
       this.snack.activator = true
     }
   },
@@ -194,9 +193,3 @@ export default {
   }
 }
 </script>
-
-<style>
-.toolbar {
-    height: 1000px;
-  }
-</style>
