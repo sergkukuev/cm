@@ -1,7 +1,4 @@
-<<<<<<< HEAD
 <!-- Компонент: кнопка дополнительных действий -->
-=======
->>>>>>> 895e95589647bbeba8490d65d3b593c9f31ee461
 <template>
   <v-speed-dial v-model="fab"
     transition="scale-transition"
@@ -11,19 +8,11 @@
     :left="left"
     :right="right"
   >
-<<<<<<< HEAD
-    <v-btn slot="activator" flat icon :color="fab ? 'red darken-1' : c_btn">
-      <v-icon v-if="!fab">more_vert</v-icon>
-      <v-icon v-else>clear</v-icon>
-    </v-btn>
-    <v-card :color="c_card" flat height=45>
-=======
     <v-btn slot="activator" flat icon :color="fab ? 'red darken-1' : color[0]">
       <v-icon v-if="!fab">more_vert</v-icon>
       <v-icon v-else>clear</v-icon>
     </v-btn>
     <v-card :color="color[1]" flat height=45>
->>>>>>> 895e95589647bbeba8490d65d3b593c9f31ee461
       <v-layout align-start justify-center row>
         <v-btn flat icon color="grey darken-3" @click="$emit('A-search')">
           <v-icon>search</v-icon>
@@ -41,11 +30,7 @@
 
 <script>
 export default {
-<<<<<<< HEAD
-  props: ['direction', 'position', 'c_btn', 'c_card'],
-=======
   props: ['direction', 'position', 'color'],
->>>>>>> 895e95589647bbeba8490d65d3b593c9f31ee461
   data () {
     return {
       fab: false, // Нажатие speed-dial
