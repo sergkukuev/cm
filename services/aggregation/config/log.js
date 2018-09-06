@@ -6,6 +6,7 @@ function getLogger(module) {
     return new winston.Logger({
         transports : [
             new winston.transports.Console({
+                timestamp: true,
                 colorize: true,
                 level: 'debug',
                 label: path
