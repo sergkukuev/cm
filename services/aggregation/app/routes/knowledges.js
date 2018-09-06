@@ -16,23 +16,25 @@ router.post('/create', function(req, res, next) {
         sctgr: req.body.sctgr,
         marks: req.body.marks
     };
-    
     crd.CreateKn(data, function(err, st, response) {
-        res.status(st).send(format.Data(response));
+        err ? res.status(st).send(format.T(st, err)) : 
+            res.status(st).send(format.Data(response));
     });
 });
 
 // Получение всех знаний из базы
 router.get('/', function(req, res, next) {
     crd.GetKns(req.query.page, req.query.count, function(err, st, response){
-        res.status(st).send(format.Data(response));
+        err ? res.status(st).send(format.T(st, err)) : 
+            res.status(st).send(format.Data(response));
     });
 });
 
 // Получение знания по id
 router.get('/:id', function(req, res, next) {
     crd.GetKnById(req.params.id, function(err, st, response) {
-        res.status(st).send(format.Data(response));
+        err ? res.status(st).send(format.T(st, err)) : 
+            res.status(st).send(format.Data(response));
     });
 });
 
@@ -44,22 +46,24 @@ router.put('/:id', function(req, res, next) {
         sctgr: req.body.sctgr,
         marks: req.body.marks
     };
-    
     crd.UpdateKn(req.params.id, data, function(err, st, response) {
-        res.status(st).send(format.Data(response));
+        err ? res.status(st).send(format.T(st, err)) : 
+            res.status(st).send(format.Data(response));
     });
 });
 
 // Удаление всех знаний из базы
-router.delete('/', function(err, st, res) {
+router.delete('/', function(req, res, next) {
     crd.DeleteKns(function(err, st, response) {
-        res.status(st).send(format.Data(response));
+        err ? res.status(st).send(format.T(st, err)) : 
+            res.status(st).send(format.Data(response));
     });
 });
 
 // Удаление знания по id
 router.delete('/:id', function(req, res, next) {
     crd.DeleteKnById(req.params.id, function(err, st, response) {
-        res.status(st).send(format.Data(response));
+        err ? res.status(st).send(format.T(st, err)) : 
+            res.status(st).send(format.Data(response));
     });
 });
