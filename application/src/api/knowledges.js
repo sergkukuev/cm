@@ -3,7 +3,7 @@ import {api} from './index.js'
 const success = 'Операция прошла успешно'
 
 /* В context уходит:  kns - список всех знаний
-                      text - описание выполнения операции
+                      last.text - последнее описание выполнения операции
                       code - код выполнения
 */
 
@@ -12,11 +12,11 @@ export function save (context, data) {
   let path = './kns/create'
   api.post(path, data).then((res) => {
     context.kns.push(res.data.content) // Вставка в массив, чтобы не делать дополнительный запрос на получение изменений
-    context.text = success
+    context.last.text = success
     context.code = res.status
   }, (err) => {
     console.log(err.response.data)
-    context.text = err.response.data.description.message
+    context.last.text = err.response.data.description.message
     context.code = err.response.status
   })
 }
@@ -28,11 +28,11 @@ export function get (context) {
   api.get(path).then((res) => {
     console.log(context.kns)
     context.kns = res.data.content
-    context.text = success
+    context.last.text = success
     context.code = res.status
   }, (err) => {
     console.log(err.response.data)
-    context.text = err.response.data.description.message
+    context.last.text = err.response.data.description.message
     context.code = err.response.status
   })
 }
@@ -42,11 +42,11 @@ export function update (context, id, item) {
   let path = '/kns/' + id
   api.put(path, item).then((res) => {
     localUpdate(context.kns, res.data.content) // Вставка изменений в элемент массива, чтобы не делать дополнительный запрос на получение изменений
-    context.text = success
+    context.last.text = success
     context.code = res.status
   }, (err) => {
     console.log(err.response.data)
-    context.text = err.response.data.description.message
+    context.last.text = err.response.data.description.message
     context.code = err.response.status
   })
 }
@@ -70,11 +70,11 @@ export function remove (context, item) {
   api.delete(path).then((res) => {
     const index = context.kns.indexOf(item)
     context.kns.splice(index, 1) // Удаляем из массива, чтобы не делать дополнительный запрос на получение изменений
-    context.text = success
+    context.last.text = success
     context.code = res.status
   }, (err) => {
     console.log(err.response.data)
-    context.text = err.response.data.description.message
+    context.last.text = err.response.data.description.message
     context.code = err.response.status
   })
 }

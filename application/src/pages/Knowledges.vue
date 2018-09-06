@@ -133,15 +133,15 @@ export default {
         this.last.code = value
       }
       if (value >= 100 && value < 200) {
-        this.render_snack('info', this.text)
+        this.render_snack('info', this.last.text)
       } else if (value >= 200 && value < 300) {
         // Добавление или редактирование прошло успешно
         if (value === 201 || value === 202) {
           this.close_dialog()
         }
-        this.render_snack('success', this.text)
+        this.render_snack('success', this.last.text)
       } else if (value >= 400 && value < 600) {
-        this.render_snack('error', this.text)
+        this.render_snack('error', this.last.text)
       }
       this.code = 0 // Сброс кода в ожидание
     }
