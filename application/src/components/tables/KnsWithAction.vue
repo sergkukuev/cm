@@ -17,8 +17,7 @@
           class="accent text-xs-left font-weight-medium"
           v-for="header in props.headers"
           :key="header.text"
-          :class="['column sortable', pagination.descending ?
-            'desc' : 'asc', header.value === pagination.sortBy ? 'active' : '']"
+          :class="header_class(header.value)"
           @click="sort_by(header.value, header.sortable)"
         >
           {{ header.text }}
@@ -31,8 +30,8 @@
       <template slot="items" slot-scope="props">
         <tr @click="click_item(props)" :class="props.expanded ? 'grey lighten-3' : ''">
           <td style="width: 50%">{{ props.item.name }}</td>
-          <td>{{ props.item.ctgr }}</td>
-          <td>{{ props.item.sctgr }}</td>
+          <td class="hidden-xs-only">{{ props.item.ctgr }}</td>
+          <td class="hidden-xs-only">{{ props.item.sctgr }}</td>
           <td class="text-xs-left" style="width: 5%">
             <v-tooltip bottom>
               <v-icon slot="activator"
@@ -128,6 +127,7 @@ export default {
         sortBy: 'name',
         descending: false
       },
+      // Заголовки
       headers: [
         { text: 'Наименование', align: 'left', value: 'name', sortable: true },
         { text: 'Категория', value: 'ctgr', sortable: true },
@@ -167,6 +167,19 @@ export default {
           this.pagination.descending = false
         }
       }
+    },
+    header_class (value) {
+      let result = []
+      result.push('column sortable')
+      this.pagination.descending ? result.push('desc') : result.push('asc')
+      if (value === this.pagination.sortBy) {
+        result.push('active')
+      }
+      // Установка дополнительных параметров класса
+      if (value === 'ctgr' || value === 'sctgr') {
+        result.push('hidden-xs-only')
+      }
+      return result
     }
   }
 }
