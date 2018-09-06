@@ -93,9 +93,9 @@ export default {
     save_action () {
       let data = this.diff_compare(this.format(), this.default)
       if (JSON.stringify(data) !== '{}') {
-        this.$emit('saveAction', this.default.id, data)
+        this.$emit('A-save', this.default.id, data)
       } else {
-        this.$emit('nochangeAction')
+        this.$emit('A-nochange')
       }
     },
     cancel_action () {
@@ -105,9 +105,9 @@ export default {
           'Вы уверены, что хотите выйти из режима редактирования?',
           'Все несохраненные данные будут потеряны.'
         ]
-        confirm(msg[0] + '\n' + msg[1]) && this.$emit('cancelAction')
+        confirm(msg[0] + '\n' + msg[1]) && this.$emit('A-cancel')
       } else {
-        this.$emit('cancelAction')
+        this.$emit('A-cancel')
       }
     },
     copy (from) {
