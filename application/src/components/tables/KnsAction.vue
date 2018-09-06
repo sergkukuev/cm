@@ -29,7 +29,7 @@
       </template>
       <!-- Слот с данными -->
       <template slot="items" slot-scope="props">
-        <tr @click="click_item(props)">
+        <tr @click="click_item(props)" :class="props.expanded ? 'grey lighten-3' : ''">
           <td style="width: 50%">{{ props.item.name }}</td>
           <td>{{ props.item.ctgr }}</td>
           <td>{{ props.item.sctgr }}</td>
@@ -133,9 +133,7 @@ export default {
         { text: 'Категория', value: 'ctgr', sortable: true },
         { text: 'Подкатегория', value: 'sctgr', sortable: true },
         { text: 'Действия', sortable: false }
-      ],
-      // TODO: Сделать подсветку
-      highlight: '' // Подсветка выбранного элемента
+      ]
     }
   },
   watch: {
@@ -159,7 +157,6 @@ export default {
   methods: {
     click_item (props) {
       props.expanded = !props.expanded
-      // props.expanded ? this.highlight = 'background' : this.highlight = ''
     },
     sort_by (column, sortable) {
       if (sortable) {

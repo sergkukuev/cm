@@ -27,7 +27,7 @@
 </template>
 
 <script>
-import {api} from './../../../../../router/api.js'
+import {api} from './../../../../../api'
 
 export default {
   props: ['knowledges'],

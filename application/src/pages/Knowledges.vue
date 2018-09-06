@@ -15,7 +15,7 @@
         :class="['title', 'font-weight-regular',
           search.activator ? 'hidden-xs-only' : '']"
       >
-        Знания
+        Знания сила, кочка могила
       </v-toolbar-title>
       <!-- Кнопки тулбара (добавить, обновить, поиск и т.д.) -->
       <v-spacer></v-spacer>
@@ -47,16 +47,17 @@
         <span v-else>Поиск</span>
       </v-tooltip>
       <!-- Кнопка действий в тулбаре -->
-      <kns-action v-if="!$vuetify.breakpoint.xs"
-        :floating="false"
-        :color="'secondary'"
-        :direct="'left'"
-        @refreshAction="get_items"
-        @addAction="dialog = true"
+      <kns-action
+        :direction="'left'"
+        :position="'left'"
+        :color="['black', 'secondary']"
+        @A-add="dialog = true"
+        @A-refresh="get_items"
+        @A-search="$emit()"
       >
       </kns-action>
     </v-toolbar>
-    <!-- Кнопка действий вне тулбара -->
+    <!-- Кнопка действий вне тулбара
     <kns-action v-if="$vuetify.breakpoint.xs"
         :floating="true"
         :color="'secondary'"
@@ -64,7 +65,7 @@
         @refreshAction="get_items"
         @addAction="dialog = true"
       >
-      </kns-action>
+      </kns-action> -->
     <!-- Таблица данных -->
     <kns-table slot="kns-table"
       :knowledges="kns"
@@ -195,7 +196,7 @@ export default {
 </script>
 
 <style>
-  .toolbar {
-    height: 200px;
+.toolbar {
+    height: 1000px;
   }
 </style>

@@ -81,6 +81,7 @@ router.get('/code', function(req, res, next) {
 })
 
 // Проверка авторизации пользователя перед выполнением операции
+// Экспортируем, чтобы другие маршруты могли ее брать
 module.exports.Check = function (req, res, callback) {
     // Формируем и проверяем данные 
     let auth = req.headers.authorization;
@@ -101,4 +102,3 @@ module.exports.Check = function (req, res, callback) {
         return callback(response);  //Успешно пройденная авторизация
     });
 }
-// Экспортируем проверку авторизации, чтобы другие маршруты могли ее брать

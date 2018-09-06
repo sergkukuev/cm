@@ -20,7 +20,7 @@
 </template>
 
 <script>
-import NavBar from './components/Navigate'
+import NavBar from '@/components/Navigate'
 
 export default {
   name: 'Application',

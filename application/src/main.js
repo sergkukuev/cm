@@ -16,7 +16,7 @@ Vue.use(VueCookie)
 Vue.use(Vuetify, {
   theme: {
     primary: colors.grey.darken3,
-    secondary: colors.amber.accent3,
+    secondary: colors.grey.lighten1,
     accent: colors.amber.lighten4,
     background: colors.grey.lighten4
   }
