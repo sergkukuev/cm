@@ -1,3 +1,4 @@
+<!-- Диалог редактирования/добавления знания -->
 <template>
   <v-dialog v-model="dialog" max-width="1000px" persistent>
     <v-card>
