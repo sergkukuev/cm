@@ -1,14 +1,14 @@
 <template>
   <v-layout align-start wrap>
     <!-- Диалог для изменения и добавления направлений -->
-    <works-dialog slot="works-dialog"
+    <!--<works-dialog slot="works-dialog"
       :wdialog="dialog"
       :default="work"
       @nochangeAction="no_change"
       @saveAction="save_item"
       @cancelAction="close_dialog"
     >
-    </works-dialog>
+    </works-dialog>-->
     <!-- Шапка страницы -->
     <v-toolbar class="secondary elevation-2 mb-1 font-weight-light" height=60>
       <v-toolbar-title
@@ -61,9 +61,9 @@
     <works-table slot="works-table"
       :works="works"
       :loading="loading"
-      :search="search"
-      @editItem="update_item"
-      @removeItem="delete_item"
+      :search="search.field"
+      @I-edit="update_item"
+      @I-remove="delete_item"
     >
     </works-table>
     <!-- Snackbars -->
@@ -83,7 +83,7 @@
 </template>
 
 <script>
-import WorkTable from '@/components/pages/works/containers/WDataTable'
+import WorkTable from '@/components/tables/WorksView'
 import WorkDialog from '@/components/pages/works/WEditDlg'
 import Actions from '@/components/MoreAction'
 
@@ -148,7 +148,7 @@ export default {
   },
   methods: {
     save_item (work) {
-      crud.save(this, crud.format(work))
+      crud.save(this, work)
     },
     get_items () {
       this.loading = true
