@@ -42,7 +42,7 @@
       </v-btn>
       <!-- <v-divider vertical  class="ml-3 mr-3"></v-divider> -->
       <!-- Отображение ошибок -->
-      <v-tooltip bottom class="mr-2" v-show="last.code >= 300">
+      <v-tooltip bottom class="mr-2" v-show="last.code >= 400">
         <v-icon slot="activator" color="error" medium>error</v-icon>
         <span>{{ last.text }}</span>
       </v-tooltip>
