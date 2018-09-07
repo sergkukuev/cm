@@ -1,3 +1,4 @@
+<!-- Диалог редактирования выбранной задачи -->
 <template>
   <!-- Карточка редактирования задачи -->
   <v-card style="width: 100%" class="elevation-2">
@@ -9,23 +10,26 @@
       <v-spacer></v-spacer>
       <!-- Действия с задачей: удалить и закрыть окно -->
       <v-flex align-start text-xs-right>
-        <v-tooltip bottom>
-          <v-icon slot="activator"
-            @click="$emit('deleteAction', index)"
-          >
-            delete
-          </v-icon>
-          <span>Удалить</span>
-        </v-tooltip>
-        <v-tooltip bottom>
-          <v-icon slot="activator"
-            @click="$emit('closeAction')"
-            class="ml-2"
-          >
-            clear
-          </v-icon>
-          <span>Закрыть</span>
-        </v-tooltip>
+        <v-icon
+          color="green darken-1"
+          @click="$emit('A-add')"
+          class="mr-2"
+        >
+          add
+        </v-icon>
+        <v-icon
+          color="grey darken-3"
+          @click="$emit('A-delete', index)"
+        >
+          delete
+        </v-icon>
+        <v-icon
+          color="red darken-1"
+          @click="$emit('A-close')"
+          class="ml-2"
+        >
+          clear
+        </v-icon>
       </v-flex>
     </v-card-title>
     <v-divider></v-divider>
@@ -98,12 +102,10 @@
     </v-card-text>
     <v-divider v-if="all != 0"></v-divider>
     <!-- Список выбранных требуемых знаний -->
-    <kns-need-list
-      v-if="all != 0"
-      :knowledges="task.need"
-      @deleteMark="delete_mark"
-    >
-    </kns-need-list>
+    <v-card-text style="height: 300px" v-if="all != 0">
+      <kns-need-list :knowledges="task.need" @A-delete="delete_mark">
+      </kns-need-list>
+    </v-card-text>
     <v-divider></v-divider>
     <!-- Кнопки переключения между задачами -->
     <v-card-actions>
@@ -113,7 +115,7 @@
           :disabled="index <= 1"
           icon
           large
-          @click="$emit('prevAction')"
+          @click="$emit('A-prev')"
         >
           <v-icon>keyboard_arrow_left</v-icon>
         </v-btn>
@@ -124,7 +126,7 @@
           :disabled="index >= all"
           icon
           large
-          @click="$emit('nextAction')"
+          @click="$emit('A-next')"
         >
           <v-icon>keyboard_arrow_right</v-icon>
         </v-btn>
@@ -135,8 +137,8 @@
 </template>
 
 <script>
-import KSelector from '@/components/dialogs/KnsSelector'
-import KNeedList from './KListCard'
+import KSelector from './KnsSelector'
+import KNeedList from '@/components/lists/KNeedList'
 
 export default {
   props: ['index', 'all', 'task'],
