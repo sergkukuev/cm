@@ -71,27 +71,4 @@ export function remove (context, item) {
   })
 }
 
-// Преобразование данных к виду отправки на сервер
-// Временная (надо дописать сервер)
-export function format (work) {
-  let res = { // Структура отправки
-    tname: [],
-    trank: [],
-    num_kn: [],
-    id_kn: [],
-    marks: []
-  }
-  res['name'] = work.name
-  work.tasks.forEach(task => {
-    res.tname.push(task.name)
-    res.trank.push(task.rank.value)
-    res.num_kn.push(task.need.length)
-    task.need.forEach(knowledge => {
-      res.id_kn.push(knowledge.id)
-      res.marks.push(knowledge.mark.value)
-    })
-  })
-  return res
-}
-
-export default { save, get, update, remove, format }
+export default { save, get, update, remove }
