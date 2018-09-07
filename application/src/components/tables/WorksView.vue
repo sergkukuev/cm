@@ -228,6 +228,10 @@ export default {
     },
     selected_item (index) {
       this.selected = index
+      // Сброс количества ошибок знаний
+      if (this.selected === -1) {
+        this.kns_errors = 0
+      }
     },
     sort_by (column, sortable) {
       if (sortable) {
