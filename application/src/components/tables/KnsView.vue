@@ -1,3 +1,4 @@
+<!-- Компонент: таблица всех существующих знаний. Содержит клавиши действий -->
 <template>
   <v-layout fill-height column>
     <v-data-table

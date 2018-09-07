@@ -84,7 +84,7 @@
 </template>
 
 <script>
-import KTable from '@/components/tables/KnsWithAction'
+import KTable from '@/components/tables/KnsView'
 import KDialog from '@/components/dialogs/KnEdit'
 import Actions from '@/components/MoreAction'
 
