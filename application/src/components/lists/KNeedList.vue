@@ -1,16 +1,20 @@
+<!-- Компонент: список требуемых знаний -->
 <template>
-  <!-- Список требуемых знаний для задачи в элемент card -->
-  <v-card-text style="height: 300px">
-    <v-layout row wrap :class="frame"
-      justify-center v-if="knowledges.length == 0"
+  <div>
+    <v-layout v-if="knowledges.length === 0"
+      justify-center
+      :class="frame_style"
+      row
+      wrap
     >
-      <span>{{ no_data }}</span>
+      <span>Требуемые знания отсутствуют</span>
     </v-layout>
-    <v-layout row wrap
-      v-else
+    <v-layout v-else
+      :class="frame_style"
       v-for="knowledge in knowledges"
       :key="knowledge.id"
-      :class="frame"
+      row
+      wrap
     >
       <v-flex d-flex xs12 md9 mt-2>
         <span>{{ knowledge.name }}</span>
@@ -37,19 +41,28 @@
             - {{mark}}<br></span>
         </v-tooltip>
       </v-flex>
-      <v-flex d-flex xs4 md1 align-center text-xs-right>
-        <v-tooltip bottom>
+      <v-flex xs4 md1 align-center text-xs-right>
+        <v-btn class="mx-1"
+          @click="$emit('A-delete', knowledges.indexOf(knowledge))"
+          color="grey darken-2"
+          icon
+          flat
+        >
+          <v-icon>delete</v-icon>
+        </v-btn>
+        <!-- Стоял еще в v-flex 'd-flex'
+          <v-tooltip bottom>
           <v-icon slot="activator"
             class="mx-2"
-            @click="$emit('deleteMark', knowledges.indexOf(knowledge))"
+            @click="$emit('A-delete', knowledges.indexOf(knowledge))"
           >
             delete
           </v-icon>
           <span>Удалить</span>
-        </v-tooltip>
+        </v-tooltip> -->
       </v-flex>
     </v-layout>
-  </v-card-text>
+  </div>
 </template>
 
 <script>
@@ -62,9 +75,20 @@ export default {
         { text: 'базовый', value: 2 },
         { text: 'продвинутый', value: 3 },
         { text: 'экспертный', value: 4 }
-      ],
-      frame: 'background subheading font-weight-light mb-2 py-2 pl-3',
-      no_data: 'Требуемые знания отсутствуют'
+      ]
+    }
+  },
+  computed: {
+    // Стиль одного элемента списка
+    frame_style () {
+      let result = ['background',
+        'subheading',
+        'font-weight-light',
+        'mb-2',
+        'py-2',
+        'pl-3'
+      ]
+      return result
     }
   }
 }
