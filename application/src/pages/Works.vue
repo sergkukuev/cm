@@ -1,14 +1,15 @@
+<!-- Страница всех доступных направлений -->
 <template>
   <v-layout align-start wrap>
     <!-- Диалог для изменения и добавления направлений -->
-    <!--<works-dialog slot="works-dialog"
+    <works-dialog slot="works-dialog"
       :wdialog="dialog"
       :default="work"
-      @nochangeAction="no_change"
-      @saveAction="save_item"
-      @cancelAction="close_dialog"
+      @A-nochange="no_change"
+      @A-save="save_item"
+      @A-cancel="close_dialog"
     >
-    </works-dialog>-->
+    </works-dialog>
     <!-- Шапка страницы -->
     <v-toolbar class="secondary elevation-2 mb-1 font-weight-light" height=60>
       <v-toolbar-title
@@ -52,7 +53,7 @@
         :position="'left'"
         :color="['black', 'secondary']"
         @A-add="dialog = true"
-        @A-refresh="$emit()"
+        @A-refresh="get_items"
         @A-search="search_reload"
       >
       </more-action>
@@ -84,7 +85,7 @@
 
 <script>
 import WorkTable from '@/components/tables/WorksView'
-import WorkDialog from '@/components/pages/works/WEditDlg'
+import WorkDialog from '@/components/dialogs/WorkEdit'
 import Actions from '@/components/MoreAction'
 
 import crud from '@/api/works'
@@ -140,7 +141,6 @@ export default {
         }
         this.render_snack('success', this.last.text)
       } else if (value >= 400 && value < 600) {
-        this.loading = false
         this.render_snack('error', this.last.text)
       }
       this.code = 0 // Сброс кода в ожидание

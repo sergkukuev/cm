@@ -63,7 +63,7 @@
           <v-spacer></v-spacer>
           <v-btn
             class="transparent text--primary font-weight-regular elevation-0"
-            @click="$emit('cancelAction')"
+            @click="$emit('A-cancel')"
           >
             Отмена
           </v-btn>
@@ -114,7 +114,7 @@ export default {
   },
   methods: {
     save_work () {
-      this.$emit('saveAction', this.work)
+      this.$emit('A-save', this.work)
     },
     add_task () {
       this.index++
