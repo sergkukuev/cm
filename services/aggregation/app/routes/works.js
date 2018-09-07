@@ -10,31 +10,44 @@ module.exports = function(app) {
 
 // Создание работы
 router.post('/create', function(req, res, next) {
+    // Структура отправки на сервис
     let data = {
-        name: req.body.name,
-        tname: req.body.tname,
-        trank: req.body.trank,
-        num_kn: req.body.num_kn,
-        id_kn: req.body.id_kn,
-        marks: req.body.marks
+        tname: [],
+        trank: [],
+        num_kn: [],
+        id_kn: [],
+        marks: []
     };
-
+    // Преобразование
+    data['name'] = work.name;
+    req.body.tasks.forEach(task => {
+      data.tname.push(task.name);
+      data.trank.push(task.rank.value);
+      data.num_kn.push(task.need.length);
+      task.need.forEach(knowledge => {
+        data.id_kn.push(knowledge.id);
+        data.marks.push(knowledge.mark.value);
+      });
+    });
     crd.CreateWork(data, function(err, st, response) {
-        res.status(st).send(format.Data(err, response));
+        err ? res.status(st).send(format.T(st, err)) : 
+            res.status(st).send(format.Data(response));
     });
 });
 
 // Получение списка всех работ
 router.get('/', function(req, res, next) {
     crd.GetWorks(req.query.page, req.query.count, function(err, st, response){
-        res.status(st).send(format.Data(err, response));
+        err ? res.status(st).send(format.T(st, err)) : 
+            res.status(st).send(format.Data(response));
     });
 });
 
 // Получение работы по id
 router.get('/:id', function(req, res, next) {
     crd.GetWorkById(req.params.id, function(err, st, response) {
-        res.status(st).send(format.Data(err, response));
+        err ? res.status(st).send(format.T(st, err)) : 
+            res.status(st).send(format.Data(response));
     });
 });
 
@@ -53,15 +66,16 @@ router.put('/:id', function(req, res, next) {
         id_kn: req.body.id_kn,
         marks: req.body.marks
     };
-    
     crd.UpdateWork(data, function(err, st, response) {
-        res.status(st).send(format.Data(err, response));
+        err ? res.status(st).send(format.T(st, err)) : 
+            res.status(st).send(format.Data(response));
     });
 });
 
 // Удаление работы
 router.delete('/:id', function(req, res, next) {
     crd.DeleteWorkById(req.params.id, function(err, st, response) {
-        res.status(st).send(format.Data(err, response));
+        err ? res.status(st).send(format.T(st, err)) : 
+            res.status(st).send(format.Data(response));
     });
 });
