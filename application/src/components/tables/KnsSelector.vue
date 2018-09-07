@@ -3,16 +3,15 @@
     <v-data-table
       style="width: 100%"
       :headers="headers"
-      :items="kns"
+      :items="knowledges"
       :search="search"
       v-model="selected"
       select-all
       :pagination.sync="pagination"
-      :hide-headers="hide"
       hide-actions
       class="elevation-2"
       no-results-text="По данному запросу результатов не найдено"
-      no-data-text="message"
+      no-data-text="Нет доступных данных"
     >
       <!-- Слот с заголовками -->
       <template slot="headers" slot-scope="props">
@@ -30,10 +29,8 @@
           <th
             v-for="header in props.headers"
             :key="header.text"
-            :class="['column sortable', pagination.descending ?
-              'desc' : 'asc', header.value === pagination.sortBy ?
-              'active' : '']"
-            @click="sort_by(header.value)"
+            :class="header_class(header.value)"
+            @click="sort_by(header.value, header.sortable)"
           >
             {{ header.text }}
             <v-icon small>arrow_upward</v-icon>
@@ -43,7 +40,7 @@
       <!-- Слот с данными -->
       <template slot="items" slot-scope="props">
         <tr :active="props.selected"
-          @click="props.selected = !props.selected"
+          @click="click_item(props)"
         >
           <td>
             <v-checkbox
@@ -62,15 +59,15 @@
               {{i + 1}} - <strong>{{ level[i] }}</strong> - {{mark}}<br>
             </span>
           </v-tooltip>
-          <td>{{ props.item.ctgr }}</td>
-          <td>{{ props.item.sctgr }}</td>
+          <td class="hidden-xs-only">{{ props.item.ctgr }}</td>
+          <td class="hidden-sm-and-down">{{ props.item.sctgr }}</td>
         </tr>
       </template>
       <template slot="no-data">
         <div class="text-xs-center">
-          <v-progress-circular indeterminate color="primary" v-if="!answer">
+          <v-progress-circular indeterminate color="primary" v-if="!loading">
           </v-progress-circular>
-          <span v-else>{{ text }}</span>
+          <span v-else>Нет доступных данных</span>
         </div>
       </template>
     </v-data-table>
@@ -78,13 +75,12 @@
     <v-toolbar slot="footer"
       class="accent elevation-2"
       dense flat
-      v-if="!hide"
     >
-            <span class="caption font-weight-light hidden-sm-and-down">
+      <span class="caption font-weight-light hidden-sm-and-down">
         * - При наведении курсора на знание отображаются оценочные уровни
       </span>
       <v-spacer></v-spacer>
-      <div v-if="kns.length !== 0">
+      <div v-if="knowledges.length !== 0">
         <span class="caption font-weigth-regular">
           {{ startPage }} - {{ stopPage }} из {{ pagination.totalItems }}
           <!-- Страница {{ pagination.page }} из {{ pages }} -->
@@ -112,7 +108,7 @@
 
 <script>
 export default {
-  props: ['knowledges', 'selected', 'search', 'loading'],
+  props: ['knowledges', 'exists', 'search', 'loading'],
   data () {
     return {
       // Начальные значения пагинации
@@ -122,6 +118,9 @@ export default {
         sortBy: 'name',
         descending: false
       },
+      level: ['начальный', 'базовый', 'продвинутый', 'экспертный'],
+      selected: [], // Выбранные знания
+      // Заголовки
       headers: [
         { text: 'Наименование', align: 'left', value: 'name', sortable: true },
         { text: 'Категория', value: 'ctgr', sortable: true },
@@ -132,6 +131,14 @@ export default {
   watch: {
     knowledges (value) {
       this.pagination.totalItems = value.length
+    },
+    selected (value) {
+      this.$emit('A-selected', value)
+    },
+    exists (value) {
+      if (this.exists !== undefined) {
+        this.selected = value.slice()
+      }
     }
   },
   computed: {
@@ -148,16 +155,36 @@ export default {
     }
   },
   methods: {
-    toggle_all () {
-      this.selected.length ? this.selected = [] : this.selected = this.kns.slice()
+    click_item (props) {
+      props.selected = !props.selected
     },
-    sort_by (column) {
-      if (this.pagination.sortBy === column) {
-        this.pagination.descending = !this.pagination.descending
-      } else {
-        this.pagination.sortBy = column
-        this.pagination.descending = false
+    toggle_all () {
+      this.selected.length ? this.selected = [] : this.selected = this.knowledges.slice()
+    },
+    sort_by (column, sortable) {
+      if (sortable) {
+        if (this.pagination.sortBy === column) {
+          this.pagination.descending = !this.pagination.descending
+        } else {
+          this.pagination.sortBy = column
+          this.pagination.descending = false
+        }
       }
+    },
+    header_class (value) {
+      let result = []
+      result.push('column sortable')
+      this.pagination.descending ? result.push('desc') : result.push('asc')
+      if (value === this.pagination.sortBy) {
+        result.push('active')
+      }
+      // Установка дополнительных параметров класса
+      if (value === 'ctgr') {
+        result.push('hidden-xs-only')
+      } else if (value === 'sctgr') {
+        result.push('hidden-sm-and-down')
+      }
+      return result
     }
   }
 }

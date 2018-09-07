@@ -76,22 +76,20 @@
         </v-flex>
         <!-- Диалоговое окно-селектор знаний -->
         <v-flex d-flex xs11 sm4>
-          <v-dialog v-model="dialog" max-width="800px">
-            <v-btn
-              block
-              slot="activator"
-              class="accent text--primary font-weight-regular mt-3 mb-0"
-            >
-              Выбрать
-            </v-btn>
-            <kns-selector
-              :open="dialog"
-              :exists="task.need"
-              @selectedAction="selected_action"
-              @cancelAction="dialog = false"
-            >
-            </kns-selector>
-          </v-dialog>
+          <v-btn
+            block
+            @click="dialog = true"
+            class="accent text--primary font-weight-regular mt-3 mb-0"
+          >
+            Выбрать
+          </v-btn>
+          <kns-selector
+            :wdialog="dialog"
+            :exists="task.need"
+            @A-selected="selected_action"
+            @A-cancel="dialog = false"
+          >
+          </kns-selector>
         </v-flex>
       </v-layout>
     </v-card-text>
@@ -137,7 +135,7 @@
 </template>
 
 <script>
-import KSelector from './KSelector'
+import KSelector from '@/components/dialogs/KnsSelector'
 import KNeedList from './KListCard'
 
 export default {
