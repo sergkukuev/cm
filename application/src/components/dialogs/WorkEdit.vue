@@ -1,3 +1,4 @@
+<!-- Диалог редактирования/добавления направления -->
 <template>
   <div class="text-xs-center d-flex">
     <!-- Диалоговое окно направления -->
@@ -8,10 +9,11 @@
           :index="index"
           :all="work.tasks.length"
           :task="work.tasks[index - 1]"
-          @deleteAction="delete_task"
-          @prevAction="index--"
-          @nextAction="index++"
-          @closeAction="tdialog = false"
+          @A-add="add_task"
+          @A-delete="delete_task"
+          @A-prev="index--"
+          @A-next="index++"
+          @A-close="tdialog = false"
         >
         </task-edit-card>
       </v-dialog>
@@ -20,7 +22,7 @@
           class="title accent elevation-2 font-weight-regular"
           primary-title
         >
-          Добавление направления
+          {{ title_dialog }}
         </v-card-title>
         <!-- Параметры направления-->
         <v-card-text class="font-weight-light">
@@ -51,12 +53,14 @@
         </v-card-text>
         <v-divider></v-divider>
         <!-- Список задач -->
-        <task-list-card
-          :tasks="work.tasks"
-          @editAction="edit_task"
-          @deleteAction="delete_task"
-        >
-        </task-list-card>
+        <v-card-text style="height: 300px">
+          <task-list-card
+            :tasks="work.tasks"
+            @A-edit="edit_task"
+            @A-delete="delete_task"
+          >
+          </task-list-card>
+        </v-card-text>
         <v-divider></v-divider>
         <!-- Действия окна: отмена и сохранить -->
         <v-card-actions>
@@ -80,15 +84,15 @@
 </template>
 
 <script>
-import TEdit from './containers/editing/TEditCard'
-import TList from './containers/editing/TListCard'
+import TEdit from './TaskEdit'
+import TList from '@/components/lists/TasksList'
 
 export default {
   components: {
     'task-list-card': TList,
     'task-edit-card': TEdit
   },
-  props: ['wdialog'],
+  props: ['default', 'wdialog'],
   data () {
     return {
       tdialog: false,
@@ -110,6 +114,11 @@ export default {
       if (value < 0 || value > this.work.tasks.length) {
         value < 0 ? this.index = 0 : this.index = this.work.tasks.length
       }
+    }
+  },
+  computed: {
+    title_dialog () {
+      return this.default.id === undefined ? 'Добавление направления' : 'Редактирование направления'
     }
   },
   methods: {
@@ -135,7 +144,7 @@ export default {
     },
     deafult_task () {
       return {
-        name: 'Безымянная задача',
+        name: 'Безымянная задача ' + this.index,
         rank: {
           value: 3
         },
