@@ -8,10 +8,13 @@
             Список доступных знаний
           </span>
           <v-spacer></v-spacer>
+          <!-- Поиск -->
           <v-text-field
-            class="mb-2 mt-1"
             v-model="search"
-            append-icon="search"
+            prepend-inner-icon="search"
+            flat
+            solo
+            background-color="transparent"
             label="Поиск"
             hide-details
           >
