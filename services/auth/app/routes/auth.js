@@ -1,55 +1,64 @@
 const   express   = require('express'),
         router    = express.Router(),
-        validator = require('./../validators/login'),
-        format    = require('./../validators/format'),
+        log       = require('./../../config/log')(module),
+        valid     = require('./../validators'),
         passport  = require('./../passport');
 
 module.exports = (app) => {
     app.use('/auth', router);
 };
 
-router.get('/authorization', function(req, res, next){
-  res.render('auth', {
-    response_type : req.query.response_type,
-    redirect_uri  : req.query.redirect_uri,
-    app_id        : req.query.app_id
-  });
+router.get('/authorization', function(req, res) {
+    log.info(`START - ${req.originalUrl} - ${req.method} - ${req.ip}`);
+    res.render('auth', {
+        response_type : valid.ResponseType(req.query.response_type),
+        redirect_uri  : valid.Validity(req.query.redirect_uri),
+        app_id        : valid.Validity(req.query.app_id)
+    });
 });
 
-router.post('/login', function(req, res, next){
+router.post('/login', function(req, res, next) {
+    log.info(`START - ${req.originalUrl} - ${req.method} - ${req.ip}`);
     const data = {
-        responseType  : validator.checkResponseType(req.body.response_type),
-        appId         : validator.checkAvailability(req.body.app_id),
-        redirect_uri  : validator.checkAvailability(req.body.redirect_uri),
-        login         : req.body.login,
-        password      : req.body.password
+        response_type : valid.ResponseType(req.body.response_type),
+        appId         : valid.Validity(req.body.app_id),
+        redirect_uri  : valid.Validity(req.body.redirect_uri),
+        login         : valid.Validity(req.body.login),
+        password      : valid.Validity(req.body.password)
     };
-    if (!data.appId || !data.redirect_uri || !data.responseType)
-        return res.status(401).send(format.T(401, "One of parametrs is undefined"));
+    if (!data.appId || !data.redirect_uri || !data.response_type)
+        return next(TError('Some query parameters are not defined', 401));
     if (!data.login || !data.password) {
-        return res.status(401).render('auth',{
-            response_type : data.responseType,
+        log.warn('Login or password isn\'t defined. Redirect to the authorization page')
+        return res.status(401).render('auth', {
+            response_type : data.response_type,
             redirect_uri : data.redirect_uri,
             app_id : data.appId
         });
     }
-    return passport.getUserCode(data, function(err, status, result){
-        if (err)
-            return res.status(status).send(format.T(status, err));
+    return passport.GetUserCode(data, function(err, status, result) {
+        if (err) {
+            err.status = err.status || status;
+            return next(err);
+        }
+        log.info(`SUCCESS - ${req.originalUrl} - ${req.method} - ${req.ip}`);
         const url = data.redirect_uri + "?code=" + result;
         return res.redirect(302, url);
     });
 });
 
 router.post('/token', function(req, res, next) {
+    log.info(`START - ${req.originalUrl} - ${req.method} - ${req.ip}`);
     const header_auth = req.headers['authorization'];
-    
     if (header_auth && typeof(header_auth) !== 'undefined') {
-        return passport.checkServiceAuthorization(header_auth, function(err, status, scope) {
-            if (err)
-                return res.status(status).send(format.T(status, err));
-            if (!scope)
-                return res.status(status).send(format.T(status, 'Scope is undefined'));   
+        return passport.CheckServiceAuth(header_auth, function(err, status, scope) {
+            if (err) {
+                err.status = err.status || status;
+                return next(err);
+            }
+            if (!scope) {
+                return next(TError('Scope is undefined', status || err.status));
+            }
             let type = req.body.grant_type;
             if (type === 'authorization_code') {
                 return codeAuthorization(req, res, next, scope);
@@ -58,93 +67,117 @@ router.post('/token', function(req, res, next) {
             } else if (type === 'password') {
                 return passAuthorization(req, res, next, scope);
             } else {
-                return res.status(400).send(format.T(400, 'Parametr "grant_type" is undefined'));
+                return next(TError('Parametr "grant_type" is undefined', 400));
             }
         });
-    } else
-        return res.status(401).send(format.T(401, 'Header "Authorization" is undefined'));
+    } else {
+        return next(TError('Header "Authorization" is undefined', 401));  
+    }
 });
 
 router.get('/userId', function(req, res, next) {
+    log.info(`START - ${req.originalUrl} - ${req.method} - ${req.ip}`);
     const header_auth = req.headers['authorization'];
 
     if (header_auth && typeof(header_auth) !== 'undefined') {
-        return passport.checkServiceAuthorization(header_auth, function(err, status, scope) {
-            if (err)
-                return res.status(status).send(format.T(status, err));
-            if (!scope)
-                return res.status(status).send(format.T(status, 'Scope is null'));
+        return passport.CheckServiceAuth(header_auth, function(err, status, scope) {
+            if (err) {
+                err.status = err.status || status;
+                return next(err)
+            }
+            if (!scope) {
+                return next(TError('Scope is null', status || err.status));
+            }
             const user_auth = req.headers['user-authorization'];
             if (user_auth && typeof(user_auth) !== 'undefined') {
-                return passport.checkUserByBearer(user_auth, function(err, status, user) {
-                    if (err)
-                        return res.status(status).send(format.T(status, err));
-                    if (!user)
-                        return res.status(status).send(format.T(status, 'User is null'));
+                return passport.CheckUserByBearer(user_auth, function(err, status, user) {
+                    if (err) {
+                        err.status = err.status || status;
+                        return next(err)
+                    }
+                    if (!user) {
+                        return next(TError('User is null', status || err.status));
+                    }
+                    log.info(`SUCCESS - ${req.originalUrl} - ${req.method} - ${req.ip}`);
                     return res.status(200).send({id : user.id});
                 });
             }
-            return res.status(401).send(format.T(401, 'Header "user-authorization" is undefined'));
+            return next(TError('Header "user-authorization" is undefined', 401));
         });
-    } else
-        return res.status(401).send(format.T(401, 'Header "Authorization" is undefined'));
+    }
+    return next(TError('Header "Authorization" is undefined', 401));
 });
 
+// Авторизация по коду
 function codeAuthorization(req, res, next, service_scope) {
     const code = req.body.code;
-
-    if (!code || typeof(code) == 'undefined')
-        return res.status(400).send(format.T(400, 'Bad request login or password is undefined'));
-    return passport.setUserTokenByCode(code, function(err, status, user_scope) {
-        if (err)
-            return res.status(status).send(format.T(status, err));
+    if (valid.Validity(code) == null)
+        return next(TError('Bad request login or password is undefined', 400));
+    return passport.SetUTokenByCode(code, function(err, status, user_scope) {
+        if (err) {
+            err.status = err.status || status;
+            return next(err);
+        }
         if (!user_scope)
-            return res.status(status).send(format.T(status, 'User for this password and login is not found'));
-        const data = { content : user_scope };
-        if (service_scope !== true)
-            data.service = service_scope;
-        return res.status(200).send(data);
+            return next(TError('User for this password and login is not found', status));
+        
+        log.info(`SUCCESS - ${req.originalUrl} - ${req.method} - ${req.ip}`);
+        return res.status(200).send(TData(user_scope, service_scope));
     });
 }
 
+// Авторизация по паролю
 function passAuthorization(req, res, next, service_scope) {
     const data = {
         login: req.body.login, 
         pass: req.body.password
     };
-    if (!data.login || !data.pass || typeof(data.login) == 'undefined' || typeof(data.pass) == 'undefined') {
-        return res.status(400).send(format.T(400, 'Login or password is undefined'));
-    }
-    return passport.setUserTokenByPass(data, function(err, status, user_scope) {
-        if (err)
-            return res.status(status).send(format.T(status, err));
-        if (!user_scope) {
-            return res.status(status).send(format.T(status, 'User for this login and password is not found'));
+    if (valid.Validity(data.login) == null || valid.Validity(data.pass) == null)
+        return next(TError('Bad request login or password is undefined', 400));
+    return passport.SetUTokenByPass(data, function(err, status, user_scope) {
+        if (err) {
+            err.status = err.status || status;
+            return next(err);
         }
-        let item = {
-            content: user_scope
-        };
-
-        if (service_scope !== true)
-            item.service = service_scope;
-        return res.status(200).send(item);
+        if (!user_scope)
+            return next(TError('User for this password and login is not found', status));
+        
+        log.info(`SUCCESS - ${req.originalUrl} - ${req.method} - ${req.ip}`);
+        return res.status(200).send(TData(user_scope, service_scope));
     });
 }
 
+// Авторизация по токену
 function refreshTokenAuthorization(req, res, next, service_scope) {
     const token = req.body.refresh_token;
-    if (!token || typeof(token) == 'undefined')
-        return res.status(400).send(format.T(400, 'Token is undefined'));
-    return passport.setUserTokenByToken(token, function(err, status, user_scope) {
-        if (err)
-            return res.status(status).send(format.T(status, err));
+    if (valid.Validity(token) == null)
+        return next(TError('Token is undefined', 400));
+    return passport.SetUTokenByToken(token, function(err, status, user_scope) {
+        if (err) {
+            err.status = err.status || status;
+            return next(err);
+        }
         if (!user_scope)
-            return res.status(status).send(format.T(status, 'Scope is null'));
-        const data = {content : user_scope};
-        if (service_scope !== true)
-            data.service = service_scope;
-        return res.status(200).send(data);
+            return next(TError('User for this password and login is not found', status));
+        
+        log.info(`SUCCESS - ${req.originalUrl} - ${req.method} - ${req.ip}`);
+        return res.status(200).send(TData(user_scope, service_scope));
     });
+}
+
+// Формирование ошибки
+function TError(message, status) {
+    let err = new Error(message);
+    err.status = status;
+    return err;
+}
+
+// Формирование ответа
+function TData(content, service) {
+    let data = { content: content };
+    if (service !== true)
+        data.service = service;
+    return data;
 }
 
 /*const mongoose = require('mongoose');
