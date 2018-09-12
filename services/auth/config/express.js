@@ -6,6 +6,7 @@ var express         = require('express'),
     compress        = require('compression'),
     methodOverride  = require('method-override'),
     log             = require('./log')(module),
+    client          = require('./client'),
     cors            = require('cors');
 
 module.exports = function(app, config) {

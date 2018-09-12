@@ -1,4 +1,4 @@
-const   client  = require('./../app/models/client').clientModel, 
+const   client  = require('./../app/models/client').model, 
         log     = require('./log')(module);
 
 // Удаление клиент-агрегатора
