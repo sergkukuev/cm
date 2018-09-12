@@ -8,7 +8,7 @@ function getLogger(module) {
             new winston.transports.Console({
                 timestamp: true,
                 colorize: true,
-                level: 'debug',
+                level: 'debug', // Уровни вывода: error, warn, info, verbose, debug, silly
                 label: path
             })
         ]
