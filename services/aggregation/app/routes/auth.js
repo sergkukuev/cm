@@ -15,6 +15,7 @@ router.post('/auth', function(req, res, next) {
         password: req.body.password
     };
     return crd.GetTokenByPass(data, function(err, status, response) {
+    	console.log('privet');
         if (err) 
             return res.status(status).send(response);
         else
