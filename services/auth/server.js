@@ -2,56 +2,58 @@ var express	 = require('express'),
 	config 	 = require('./config'),
 	log 	 = require('./config/log')(module),
 	mongoose = require('mongoose'),
-	raedline = require('readline');
+	readline = require('readline');
 
 var app = express();
 module.exports = require('./config/express') (app, config);
 
-app.listen(config.port, function(){
-	log.info('Service listening on port ' + config.port);
+app.listen(config.port, function() {
+	log.info('Listening on port', config.port);
 });
 
 // Подключение к БД
 mongoose.connect(config.db);
 var db = mongoose.connection;
-var limit = 20,	// Кол-во допустимых попыток подключения 
+var limit = 60,	// Кол-во допустимых попыток подключения
 	n = 1;		// Количество подключений
 
 db.on('error', function(err) {
-	log.warn('Connection error:', err.message);
+	log.error(`FAILED - MongoError - ${err.message}`);
+	log.debug(err.stack);
 });
 
 db.once('open', function callback() {
-	log.info("Successful connection to MongoDB!");
+	log.info('SUCCESS - Mongo connected');
 });
 
 // Создание интерфейса для ответа из командной строки
-const rl = raedline.createInterface({
+const rl = readline.createInterface({
 	input: process.stdin,
 	output: process.stdout
 });
 
-const interval = 10000; // 10с
+const interval = 5000; // 5c
 var timer = setInterval(dbChecker, interval);
 
 // Чекер подключения
 function dbChecker () {
 	if (db.readyState == 0 && limit > n) {
-		log.info('Trying to connect to server (' + ++n + ')');
+		++n;
+		log.warn('Trying reconnect ' + n + '...');
 		mongoose.connect(config.db);	// Попытка восстановления подключения к БД
 	} else if (n == limit) {
 		n++;	// Пропуск подключения
 	} else if (n == limit + 1) {
-		rl.question('\nExceeded the number of atempts to connect.' + 
-			' Refresh connection counter? (y/n) ', (answer) => {
+		let err = new Error('Exceeded attempts');
+		log.error(`FAILED - MongoError - ${err.message}`);
+		rl.question('\nTry again ? (y/n) ', (answer) => {
 			if (answer == 'y' || answer == 'Y') {
 				n = 0;	// Сброс счетчика и перезапуск чекера подключения
 				while (timer[0] != null) { }	// Цикл ожидания команды clearInterval
 				timer = setInterval(dbChecker, interval);
 			}
 			else {
-				log.error('Service couldn\'t restore the connection to MongoDB.' +
-					' Please, fix the connection problems and restart the service.');
+				log.error(`FATALERROR - Please, correct the problem and restart the service`);
 				n++;
 			}
 		});

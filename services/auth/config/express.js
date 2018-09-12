@@ -44,29 +44,31 @@ module.exports = function(app, config) {
     });
 
     // Завершающий обработчик запросов
-    app.use(function(err, request, response, next) {
+    app.use(function(err, req, res, next) {
         let item = {
             status: err.name || 'Error',
             code: err.status || 500,
             message: err.message || 'Unknown error'
         };
+        log.error(`${item.message} - ${item.code} - ${req.originalUrl} - ${req.method} - ${req.ip}`);
+        log.debug(err.stack);
         // Обработка уникальных случаев повторной инициализации функций:
         // res.status()
-        if (typeof(response.status) != 'function') {
+        if (typeof(res.status) != 'function') {
             log.warn('Выявлена попытка повторной инициализации объекта \'status\'');
-            response.status = item.code; 
+            res.status = item.code; 
         } else {
-            response.status(item.code);
+            res.status(item.code);
         }
         // Заголовок не пустой, значит запрос уже был отправлен где-то раньше
-        if (response._header != null)
+        if (res._header != null)
             log.warn('Выявлена попытка повторного вызова объекта \'send\'');
         else {
             // res.send()
-            if (typeof(response.status) != 'function') {
+            if (typeof(res.status) != 'function') {
                 log.error('Повторная инициализация объекта \'send\'');
             }
-            response.send(item);
+            res.send(item);
         }
     });
 
