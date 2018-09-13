@@ -10,7 +10,7 @@ client.remove(function(err) {
     }
     // Пересоздание
     let aggregator = new client({
-        name        : 'aggr_cm',
+        name        : 'aggregator',
         appId       : 'aggr_id',
         appSecret   : 'aggr_secret'
     });

@@ -6,7 +6,7 @@ var config = {
   development: {
     root: rootPath,
     app: {
-      name: 'aggr',
+      name: 'aggregator',
       id: 'aggr_id',
       secret: 'aggr_secret'
     },
