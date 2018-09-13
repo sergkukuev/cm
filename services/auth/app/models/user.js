@@ -55,7 +55,7 @@ User.statics.create = function(user, callback) {
     return user.save(callback);
 }
 
-// Расшифровка пароля
+// Зашифровка пароля
 User.methods.encryptPassword = function(password) {
   return crypto.createHmac('sha1', this.salt).update(password).digest("hex");
 }
@@ -63,6 +63,20 @@ User.methods.encryptPassword = function(password) {
 // Проверка пароля пользователя
 User.methods.verify = function(password){
     return this.encryptPassword(password) === this.hPassword;
+}
+
+// Удаление пользователя по идентификатору
+User.methods.deleteById = function(id, callback) {
+    return this.findByIdAndRemove(id, function(err, user) {
+        err ? callback(err, null) : (user ? callback(null, Format(user)) : callback(null, null));
+    })
+}
+
+// Удаление всех пользователей
+User.methods.delete = function(callback) {
+    return this.remove({}, function(err, result) {
+        err ? callback(err, null) : (result ? callback(null, result) : callback(null, null));
+    })
 }
 
 // Получить идентификатор
@@ -75,6 +89,25 @@ User.virtual('password').set(function(password){
     this.salt = crypto.randomBytes(32).toString('base64');
     this.hPassword = this.encryptPassword(password);
 });
+
+// Формат на выдачу элемента
+function Format(user) {
+    let item = {
+        id      : user._id,
+        login   : user.login,
+        group   : user.group,
+        created : user.created
+    };
+	let flag = false;
+	for (let element in item)
+		if (element == undefined || element == null)
+			flag = true;
+
+	// Хоть одно поле нераспознано, кидаем пустой JSON
+	if (flag)
+		item = null;
+    return item;
+}
 
 mongoose.model('User', User);
 
