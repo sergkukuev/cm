@@ -69,7 +69,7 @@ module.exports = {
     // GET REQUEST
     GetUserInfo : function(scope, callback) {
         let main = function (scope, callback) {
-            const uri = host + '/userId';
+            const uri = host + '/user/id';
             const opt = requester.Options(uri, "GET", token, scope.token);
             requester.HttpGet(opt, function(err, status, response) {
                 return requester.Response(err, status, res, function (err, status, res) {
