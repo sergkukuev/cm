@@ -1,3 +1,4 @@
+// Маршруты авторизации
 const   express   = require('express'),
         router    = express.Router(),
         log       = require('./../../config/log')(module),
@@ -8,6 +9,7 @@ module.exports = (app) => {
     app.use('/auth', router);
 };
 
+// Авторизация через GUI API
 router.get('/authorization', function(req, res) {
     log.info(`START - ${req.originalUrl} - ${req.method} - ${req.ip}`);
     res.render('auth', {
@@ -17,6 +19,7 @@ router.get('/authorization', function(req, res) {
     });
 });
 
+// Получить код пользователя
 router.post('/login', function(req, res, next) {
     log.info(`START - ${req.originalUrl} - ${req.method} - ${req.ip}`);
     const data = {
@@ -47,10 +50,11 @@ router.post('/login', function(req, res, next) {
     });
 });
 
+// Получить токен авторизации
 router.post('/token', function(req, res, next) {
     log.info(`START - ${req.originalUrl} - ${req.method} - ${req.ip}`);
     const header_auth = req.headers['authorization'];
-    if (header_auth && typeof(header_auth) !== 'undefined') {
+    if (valid.Validity(header_auth) != null) {
         return passport.CheckServiceAuth(header_auth, function(err, status, scope) {
             if (err) {
                 err.status = err.status || status;
@@ -67,7 +71,7 @@ router.post('/token', function(req, res, next) {
             } else if (type === 'password') {
                 return passAuthorization(req, res, next, scope);
             } else {
-                return next(TError('Parametr "grant_type" is undefined', 400));
+                return next(TError('Parameter "grant_type" is undefined', 400));
             }
         });
     } else {
@@ -75,11 +79,12 @@ router.post('/token', function(req, res, next) {
     }
 });
 
-router.get('/userId', function(req, res, next) {
+// Получить идентификатор пользователя по токену
+router.get('/user/id', function(req, res, next) {
     log.info(`START - ${req.originalUrl} - ${req.method} - ${req.ip}`);
     const header_auth = req.headers['authorization'];
 
-    if (header_auth && typeof(header_auth) !== 'undefined') {
+    if (valid.Validity(header_auth) != null) {
         return passport.CheckServiceAuth(header_auth, function(err, status, scope) {
             if (err) {
                 err.status = err.status || status;
@@ -89,7 +94,7 @@ router.get('/userId', function(req, res, next) {
                 return next(TError('Scope is null', status || err.status));
             }
             const user_auth = req.headers['user-authorization'];
-            if (user_auth && typeof(user_auth) !== 'undefined') {
+            if (valid.Validity(user_auth) != null) {
                 return passport.CheckUserByBearer(user_auth, function(err, status, user) {
                     if (err) {
                         err.status = err.status || status;
@@ -105,11 +110,12 @@ router.get('/userId', function(req, res, next) {
             return next(TError('Header "user-authorization" is undefined', 401));
         });
     }
-    return next(TError('Header "Authorization" is undefined', 401));
+    return next(TError('Header "authorization" is undefined', 401));
 });
 
 // Авторизация по коду
 function codeAuthorization(req, res, next, service_scope) {
+    log.info('START - Code authorization');
     const code = req.body.code;
     if (valid.Validity(code) == null)
         return next(TError('Bad request login or password is undefined', 400));
@@ -128,6 +134,7 @@ function codeAuthorization(req, res, next, service_scope) {
 
 // Авторизация по паролю
 function passAuthorization(req, res, next, service_scope) {
+    log.info('START - Password authorization');
     const data = {
         login: req.body.login, 
         pass: req.body.password
@@ -149,6 +156,7 @@ function passAuthorization(req, res, next, service_scope) {
 
 // Авторизация по токену
 function refreshTokenAuthorization(req, res, next, service_scope) {
+    log.info('START - Token authorization');
     const token = req.body.refresh_token;
     if (valid.Validity(token) == null)
         return next(TError('Token is undefined', 400));
@@ -180,7 +188,8 @@ function TData(content, service) {
     return data;
 }
 
-/*const mongoose = require('mongoose');
+// TODO: ПРИВЕСТИ В НОРМАЛЬНЫЙ ВИД ВСЕ ЭТУ ФИГНЮ
+/* const mongoose = require('mongoose');
 router.get('/users', function(req, res, next) {
     let model = require('./../models/user').model;
     model.getAll(function(err, result) {
@@ -188,11 +197,19 @@ router.get('/users', function(req, res, next) {
     });
 });
 
-router.post('/user/create', function(req, res, next){
+router.delete('/users', function(req, res, next) {
+    let user = mongoose.model('User');
+    user.remove({}, function(err, result) {
+        err ? res.status(400).send(err) : res.status(200).send(result);
+    });
+});
+
+router.post('/users/create', function(req, res, next){
     let User = mongoose.model('User');
     let user = new User({
         login: req.body.login,
-        password: req.body.password
+        password: req.body.password,
+        group: 'Admin'
     });
 
     User.create(user, function(err, result) {
@@ -215,4 +232,4 @@ router.get('/refresh_tokens', function(req, res, next) {
     model.getAll(function(err, result) {
         res.status(200).send(result);
     });
-});*/
+}); */
