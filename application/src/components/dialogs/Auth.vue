@@ -51,9 +51,9 @@ export default {
   data () {
     return {
       dialog: true,
-      login: 'admin',
+      login: '',
       password: {
-        value: 'admin',
+        value: '',
         show: false
       }
     }
