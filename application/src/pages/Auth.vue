@@ -10,6 +10,7 @@
 
 <script>
 import Auth from '@/components/dialogs/Auth'
+import {user} from '@/api/authenticate'
 import crud from '@/api/auth'
 
 export default {
@@ -19,9 +20,6 @@ export default {
   data () {
     return {
       dialog: true,
-      // Данные авторизации
-      login: '',
-      access_token: '',
       // Параметры последнего ответа
       last: {
         text: 'Здесь лежит описание последней ошибки или операции',
@@ -42,14 +40,12 @@ export default {
         this.loading = false // Пришел ответ от сервера
         this.last.code = value
       }
+      if (value >= 200 && value < 300) {
+        window.location.reload() // Придумать ход изящнеее
+      } else if (value >= 400 && value < 600) {
+        // TODO: Можно что-то сделать
+      }
       this.code = 0 // Сброс кода в ожидание
-    },
-    // Сохраняем данные авторизации в куки
-    login (value) {
-      this.$cookie.set('login', value)
-    },
-    access_token (value) {
-      this.$cookie.set('access_token', value)
     }
   },
   methods: {
@@ -60,7 +56,15 @@ export default {
       }
       this.loading = true
       crud.auth(this, data)
+    },
+    redirect () {
+      if (user.authenticated) {
+        window.location = 'http://localhost:8080/#/matrix'
+      }
     }
+  },
+  mounted: function () {
+    this.redirect()
   }
 }
 </script>

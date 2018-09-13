@@ -17,7 +17,14 @@
             <v-list-tile-title>{{ item.text }}</v-list-tile-title>
           </v-list-tile-content>
           <v-list-tile-action>
-            <v-btn color="red" dark small>Выйти</v-btn>
+            <v-btn
+              color="red"
+              dark
+              small
+              @click="logout"
+            >
+              Выйти
+            </v-btn>
           </v-list-tile-action>
         </v-list-tile>
         <v-divider v-else-if="item.divider" :key="i" dark class="my-3">
@@ -38,13 +45,14 @@
 </template>
 
 <script>
+
 export default {
-  props: ['checker'],
+  props: ['checker', 'login'],
   data: () => ({
     drawer: null,
     menu: [
       { heading: 'Пользователь' },
-      { text: 'Admin', icon: 'account_circle', user: true, link: '/account' },
+      { text: this.login, icon: 'account_circle', user: true, link: '/account' },
       { heading: 'Основное' },
       { text: 'Матрица', icon: 'dashboard', link: '/matrix' },
       { divider: true },
@@ -56,14 +64,17 @@ export default {
   watch: {
     checker (value) {
       this.drawer = !this.drawer
-    },
-    user (value) {
-
     }
   },
   methods: {
     redirect (link) {
       window.location = 'http://localhost:8080/#' + link
+    },
+    logout () {
+      // Очистка куки от параметров
+      this.$cookie.delete('login')
+      this.$cookie.delete('access_token')
+      window.location.reload() // Подумать над другим вариантом
     }
   }
 }

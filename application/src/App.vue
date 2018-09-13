@@ -1,9 +1,9 @@
 <template>
   <v-app>
-    <app-navigate :checker="nav_drawer"></app-navigate>
+    <app-navigate v-if="show_navigate" :checker="drawer" :login="get_login"></app-navigate>
     <v-toolbar color="primary" dark app fixed clipped-left>
       <v-toolbar-title style="width: 400px" class="ml-0 pl-0">
-        <v-toolbar-side-icon @click.native="nav_drawer = !nav_drawer">
+        <v-toolbar-side-icon v-if="show_navigate" @click.native="drawer = !drawer">
         </v-toolbar-side-icon>
         <span class="title ml-2 mr-5">
           Матрица&nbsp;
@@ -20,6 +20,7 @@
 </template>
 
 <script>
+import {user} from '@/api/authenticate'
 import NavBar from '@/components/Navigate'
 
 export default {
@@ -29,7 +30,15 @@ export default {
   },
   data () {
     return {
-      nav_drawer: false
+      drawer: false
+    }
+  },
+  computed: {
+    show_navigate () {
+      return user.authenticated
+    },
+    get_login () {
+      return this.$cookie.get('login')
     }
   }
 }

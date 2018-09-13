@@ -7,6 +7,7 @@ import router from './router.js'
 
 import VueCookie from 'vue-cookie'
 import Vuetify from 'vuetify'
+import {Authenticate} from './api/authenticate'
 // Helpers
 import colors from 'vuetify/es5/util/colors'
 import('../node_modules/vuetify/dist/vuetify.min.css')
@@ -22,6 +23,7 @@ Vue.use(Vuetify, {
   }
 })
 Vue.config.productionTip = false
+Authenticate() // Проверка авторизации при старте страницы
 
 /* eslint-disable no-new */
 new Vue({
