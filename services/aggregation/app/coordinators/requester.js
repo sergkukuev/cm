@@ -62,6 +62,9 @@ module.exports = {
                 return callback(err, 503, format.T(503, msg));
             }
         }
+        if (status >= 400 && status <= 600) {
+            return callback(response, status, JSON.parse(response));
+        }
         return response ? callback(err, status, format.Data(JSON.parse(response))) : 
             callback(err, status, null);
     }
