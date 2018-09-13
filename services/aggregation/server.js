@@ -6,6 +6,6 @@ var app = express();
 
 module.exports = require('./config/express') (app, config);
 
-app.listen(config.port, function(){
-	log.info('Агрегатор запущен на порту ' + config.port);
+app.listen(config.port, function() {
+	log.info('Listening on port', config.port);
 });
