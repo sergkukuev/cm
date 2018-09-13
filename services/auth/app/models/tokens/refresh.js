@@ -1,6 +1,7 @@
-const mongoose  = require('mongoose');
-const Schema  = mongoose.Schema;
+const mongoose    = require('mongoose'),
+      Schema      = mongoose.Schema;
 
+// Модель токена обновления
 var RToken = new Schema({
     userID: {
         type: String,
@@ -17,20 +18,18 @@ var RToken = new Schema({
     },
 });
 
-RToken.statics.getAll = function(callback) {
+// Получить все токены обновления
+RToken.statics.get = function(callback) {
     return this.find(function(err, tokens) {
         if (err)
-            callback(err, null);
-        else {
-            if (tokens) {
-                let result = [];
-                for (let i = 0; i < tokens.length; i++)
-                    result[i] = tokens[i];
-                callback(null, result);
-            }
-            else
-                callback(null, null);
+            return callback(err, null);
+        if (tokens) {
+            let result = [];
+            for (let i = 0; i < tokens.length; i++)
+                result[i] = tokens[i];
+            return callback(null, result);
         }
+        return callback(null, null);
     });
 }
 

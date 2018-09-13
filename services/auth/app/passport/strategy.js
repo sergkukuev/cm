@@ -16,7 +16,7 @@ module.exports = {
 				return done(err, 500, null);
 			} else if (!user) {
 				return done(new Error('User not found'), 500, null);
-			} else if (!user.checkPassword(password)) {
+			} else if (!user.verify(password)) {
 				return done(new Error('Password is wrong'), 400, null);
 			}
 			// Обновление кода
@@ -175,7 +175,7 @@ module.exports = {
 				return done(err, 500);
 			if (!user)
 				return done(new Error('User with this login and password not found'), 401, false);
-			if (!user.checkPassword(data.pass))
+			if (!user.verify(data.pass))
 				return done(new Error('Wrong password for this user'), 400, false);
 			// Удаление старых токенов
 			RToken.remove({userID: user.userID}, function(err) {

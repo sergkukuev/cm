@@ -1,6 +1,7 @@
-const mongoose  = require('mongoose');
-const Schema  = mongoose.Schema;
+const mongoose  = require('mongoose'),
+      Schema    = mongoose.Schema;
 
+// Модель токена доступа
 var AToken = new Schema({
     userID: {
         type: String,
@@ -21,37 +22,33 @@ var AToken = new Schema({
     }
 });
 
-AToken.statics.getByUserId = function(data, callback) {
-    return this.find({userID: data}, function(err, tokens) {
+// Получить токены доступа по идентификатору пользователя
+AToken.statics.getByUserId = function(id, callback) {
+    return this.find({userID: id}, function(err, tokens) {
         if (err)
-            callback(err, null);
-        else {
-            if (tokens) {
-                let result = [];
-                for (let i = 0; i < tokens.length; i++)
-                    result[i] = tokens[i];
-                callback(null, result);
-            }
-            else
-                callback(null, null);
+            return callback(err, null);
+        if (tokens) {
+            let result = [];
+            for (let i = 0; i < tokens.length; i++)
+                result[i] = tokens[i];
+            return callback(null, result);
         }
+        return callback(null, null);
     });
 }
 
-AToken.statics.getAll = function(callback) {
+// Получить все имеющиеся токены доступа
+AToken.statics.get = function(callback) {
     return this.find(function(err, tokens) {
         if (err)
-            callback(err, null);
-        else {
-            if (tokens) {
-                let result = [];
-                for (let i = 0; i < tokens.length; i++)
-                    result[i] = tokens[i];
-                callback(null, result);
-            }
-            else
-                callback(null, null);
+            return callback(err, null);
+        if (tokens) {
+            let result = [];
+            for (let i = 0; i < tokens.length; i++)
+                result[i] = tokens[i];
+            return callback(null, result);
         }
+        return callback(null, null);
     });
 }
 
