@@ -20,5 +20,4 @@ export function Authenticate () {
     }
   }
   login && access ? user.authenticated = true : user.authenticated = false
-  console.log(user)
 }
