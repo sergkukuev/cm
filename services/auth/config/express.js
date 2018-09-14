@@ -56,18 +56,18 @@ module.exports = function(app, config) {
         // Обработка уникальных случаев повторной инициализации функций:
         // res.status()
         if (typeof(res.status) != 'function') {
-            log.warn('Выявлена попытка повторной инициализации объекта \'status\'');
+            log.warn('Attempt to reinitialize an object \'status\'');
             res.status = item.code; 
         } else {
             res.status(item.code);
         }
         // Заголовок не пустой, значит запрос уже был отправлен где-то раньше
         if (res._header != null)
-            log.warn('Выявлена попытка повторного вызова объекта \'send\'');
+            log.warn('Attempt to reinitialize an object \'send\'');
         else {
             // res.send()
             if (typeof(res.status) != 'function') {
-                log.error('Повторная инициализация объекта \'send\'');
+                log.error('Attempt to reinitialize an object \'send\'');
             }
             res.send(item);
         }
