@@ -1,6 +1,6 @@
 <template>
   <v-app>
-    <app-navigate v-if="show_navigate" :checker="drawer" :login="get_login"></app-navigate>
+    <app-navigate v-if="show_navigate" :checker="drawer" @A-logout="drawer = false"></app-navigate>
     <v-toolbar color="primary" dark app fixed clipped-left>
       <v-toolbar-title style="width: 400px" class="ml-0 pl-0">
         <v-toolbar-side-icon v-if="show_navigate" @click.native="drawer = !drawer">
@@ -36,9 +36,6 @@ export default {
   computed: {
     show_navigate () {
       return user.authenticated
-    },
-    get_login () {
-      return this.$cookie.get('login')
     }
   }
 }

@@ -1,5 +1,12 @@
 <template>
-  <v-navigation-drawer v-model="drawer" fixed clipped class="background" app>
+  <v-navigation-drawer v-model="drawer"
+    app
+    fixed
+    :clipped="nav_clipped"
+    disable-resize-watcher
+    disable-route-watcher
+    class="background"
+  >
     <v-list dense class="background">
       <template v-for="(item, i) in menu">
         <v-layout v-if="item.heading" :key="i" row align-center>
@@ -47,12 +54,12 @@
 <script>
 
 export default {
-  props: ['checker', 'login'],
+  props: ['checker'],
   data: () => ({
-    drawer: null,
+    drawer: false,
     menu: [
       { heading: 'Пользователь' },
-      { text: this.login, icon: 'account_circle', user: true, link: '/account' },
+      { text: 'Default User', icon: 'account_circle', user: true, link: '/account' },
       { heading: 'Основное' },
       { text: 'Матрица', icon: 'dashboard', link: '/matrix' },
       { divider: true },
@@ -64,18 +71,33 @@ export default {
   watch: {
     checker (value) {
       this.drawer = !this.drawer
+      if (this.drawer) this.set_login()
+    }
+  },
+  computed: {
+    nav_clipped () {
+      return this.$vuetify.breakpoint.lgAndUp
     }
   },
   methods: {
     redirect (link) {
       window.location = 'http://localhost:8080/#' + link
     },
+    set_login () {
+      let login = this.$cookie.get('login')
+      if (!login) login = 'Default User'
+      this.menu[1].text = login
+    },
     logout () {
       // Очистка куки от параметров
       this.$cookie.delete('login')
       this.$cookie.delete('access_token')
+      this.$emit('A-logout')
       window.location.reload() // Подумать над другим вариантом
     }
+  },
+  mounted: function () {
+    this.set_login()
   }
 }
 </script>
