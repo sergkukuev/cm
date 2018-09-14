@@ -1,11 +1,13 @@
 // Модуль обработки запросов
-const config = require('./../../config');
-const req  = require('request');
-const format = require('./../validators/format')
+const   config  = require('./../../config'),
+        req     = require('request'),
+        format  = require('./../validators/format'),
+        log     = require('./../../config/log')(module);
 
 module.exports = {
     // Установка опций перед запросом
     Options : function(uri, method, token, user_token = null, user_id = null) {
+        log.info('START - Set request options');
         let item = {
             method: method, 
             uri: uri
@@ -55,6 +57,7 @@ module.exports = {
     },
     // Выдача ответа
     Response : function(err, status, response, callback) {
+        log.info('START - Creating response');
         if (err) {
             // Проверка на недоступность сервера
             if (err.code == "ECONNREFUSED") {
