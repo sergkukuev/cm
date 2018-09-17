@@ -8,7 +8,7 @@ const bearerType = /bearer/i;
 module.exports = {
     // Проверка сервисной авторизации
     CheckServiceAuth : function(header_authorization, callback) {
-        log.info('START - Checker service authorization');
+        log.info('Checker service authorization');
         const type = basicType.test(header_authorization);
         if (type)
             return checkBasicAuth(header_authorization, callback);
@@ -18,7 +18,7 @@ module.exports = {
     },
     // Проверка авторизации пользователя
     CheckUserByBearer : function(header_text , callback) {
-        log.info('START - Checker user authorization by bearer token');
+        log.info('Checker user authorization by bearer token');
         if (!bearerType.test(header_text))
             return callback(new Error('Isn\'t Bearer token'), 400, null);
         const token = getBearer(header_text);
@@ -35,7 +35,7 @@ module.exports = {
     */
     // Получение кода пользователя для авторизации
     GetUserCode : function (data, callback) {
-        log.info('START - Get user code for auth');
+        log.info('Get user code for auth');
         const validator = checkResType(data.response_type, 'code');
         if (!validator)
             return callback(new Error('Invalid response type'), 400, null);
@@ -52,7 +52,7 @@ module.exports = {
     },
     // Пересоздание токенов пользователя по коду
     SetUTokenByCode : function(code, callback) {
-        log.info('START - Set user tokens by code');
+        log.info('Set user tokens by code');
         return strategy.UTokenByCode(code, function(err, status, scope) {
             if (err)
                 return callback(err, status, null);
@@ -63,7 +63,7 @@ module.exports = {
     },
     // Пересоздание токенов пользователя по паролю
     SetUTokenByPass : function(data, callback) {
-        log.info('START - Set user tokens by password');
+        log.info('Set user tokens by password');
         return strategy.UTokenByPass(data, function(err, status, scope) {
             if (err)
                 return callback(err, status, null);
@@ -74,7 +74,7 @@ module.exports = {
     },
     // Пересоздание токенов пользователя по токену
     SetUTokenByToken : function(token, callback) {
-        log.info('START - Set user tokens by token');
+        log.info('Set user tokens by token');
         return strategy.UTokenByToken(token, function(err, status, scope) {
             if (err)
                 return callback(err, status, null);
