@@ -1,5 +1,6 @@
 const   basic       = require('basic-auth'),
         strategy    = require('./strategy'),
+        cs          = require('./../../config').security,
         log         = require('./../../config/log')(module);
 
 const basicType  = /basic/i;
@@ -109,7 +110,13 @@ function checkBearerAuth(header_authorization, callback) {
     return strategy.CheckServiceAToken(serviceToken, function(err, status, result) {
         if (err)
             return callback(err, status, null);
-        return callback(null, status, result);
+        if (!result)
+            return callback(new Error('Invalid token'), 400, null);
+        let response = {
+            token: serviceToken,
+            expires_in : cs.serviceTokenLife
+        };
+        return callback(null, status, response);
     });
 }
 
