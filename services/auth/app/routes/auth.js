@@ -6,7 +6,7 @@ const   express   = require('express'),
         passport  = require('./../passport');
 
 module.exports = (app) => {
-    app.use('/auth', router);
+    app.use('/api/auth', router);
 };
 
 // Авторизация через GUI API
@@ -115,7 +115,7 @@ router.get('/user/id', function(req, res, next) {
 
 // Авторизация по коду
 function codeAuthorization(req, res, next, service_scope) {
-    log.info('START - Code authorization');
+    log.info('Code authorization');
     const code = req.body.code;
     if (valid.Validity(code) == null)
         return next(TError('Bad request login or password is undefined', 400));
@@ -134,7 +134,7 @@ function codeAuthorization(req, res, next, service_scope) {
 
 // Авторизация по паролю
 function passAuthorization(req, res, next, service_scope) {
-    log.info('START - Password authorization');
+    log.info('Password authorization');
     const data = {
         login: req.body.login, 
         pass: req.body.password
@@ -156,7 +156,7 @@ function passAuthorization(req, res, next, service_scope) {
 
 // Авторизация по токену
 function refreshTokenAuthorization(req, res, next, service_scope) {
-    log.info('START - Token authorization');
+    log.info('Token authorization');
     const token = req.body.refresh_token;
     if (valid.Validity(token) == null)
         return next(TError('Token is undefined', 400));

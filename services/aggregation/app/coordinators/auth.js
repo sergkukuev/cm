@@ -1,7 +1,7 @@
 // Обработки запросов сервиса авторизации
 // Название сервиса: auth
 const   port = 3005,
-        host = 'http://localhost:' + port + '/auth',
+        host = 'http://localhost:' + port + '/api/auth',
         requester = require('./requester');
 // Токен сервисной авторизации + функция проверки
 var checker = require('./../validators/token'), 

@@ -1,105 +1,99 @@
 // Маршруты для обращения к сервису авторизации
 var express = require('express'),
     router  = express.Router(),
-    crd     = require('./../coordinators'),
-    format  = require('./../validators/format');
+    crd     = require('./../coordinators');
 
 module.exports = function(app) { 
-    app.use('/api', router);
+    app.use('/api/auth', router);
 }
 
 // Авторизация логин/пароль
-router.post('/auth', function(req, res, next) {
+router.post('/', function(req, res, next) {
+    log.info(`START - ${req.originalUrl} - ${req.method} - ${req.ip}`);
     const data = {
         login: req.body.login,
         password: req.body.password
     };
     return crd.GetTokenByPass(data, function(err, status, response) {
-    	console.log('privet');
-        if (err) 
-            return res.status(status).send(response);
-        else
-            return res.status(200).send(response);
+        if (err) {
+            err.status = err.status || status;
+            return next(err);
+        }
+        log.info(`SUCCESS - ${req.originalUrl} - ${req.method} - ${req.ip}`);
+        return res.status(status).send(response);
+    });
+});
+
+// Авторизация по токену
+router.post('/token', function(req, res, next) {
+    log.info(`START - ${req.originalUrl} - ${req.method} - ${req.ip}`);
+    let auth = req.headers.authorization;
+    const data = {
+        refresh_token: auth.split(' ')[1]
+    };
+    return crd.GetTokenByToken(data, function(err, status, response) {
+        if (err) {
+            err.status = err.status || status;
+            return next(err);
+        }
+        log.info(`SUCCESS - ${req.originalUrl} - ${req.method} - ${req.ip}`);
+        response.entryData = data;  // Добавляем значение токена
+        return res.status(status).send(response);
     });
 });
 
 // OAUTH2 авторизация (через внешний ресурс)
 // Данные агрегатора
-const app = {
+const application = {
     id: require('./../../config').app.id,
     secret: require('./../../config').app.secret
 };
 
-// Переадресация на сторонний ресурс
+// Переадресация на фрейм сервиса авторизации
 router.get('/oauth2', function(req, res, next) {
-    const authUrl = 'http://localhost:3005/auth/authorization?';
+    log.info(`START - ${req.originalUrl} - ${req.method} - ${req.ip}`);
+    const authUrl = 'http://localhost:3005/api/auth/authorization?';
     const redUrl = 'http://localhost:3000/api/code';
-    const params = ['response_type=code', 'app_id=' + app.id, 'redirect_uri=' + redUrl];
+    const params = ['response_type=code', 'app_id=' + application.id, 'redirect_uri=' + redUrl];
     const uri = authUrl + params.join('&');
     return res.status(302).redirect(uri);
 });
 
-// Получение токена авторизации
-router.post('/auth', function(req, res, next) {
-    let auth = req.headers.authorization;
-    if (!auth)
-        return res.status(401).send(format.T(401, 'No token'));
-
-    const data = {
-        refresh_token: auth.split(' ')[1]
-    };
-    return crd.GetTokenByToken(data, function(err, status, response) {
-        if (err)
-            return res.status(status).send(response);
-        else {
-            const scope = {
-                status: status,
-                response: response,
-                entryData: data
-            };
-            return res.status(200).send(scope);
-        }
-    });
-});
-
-// Получение кода для авторизации
+// Авторизация по коду
 router.get('/code', function(req, res, next) {
-    const code = req.query.code;
-    if (!code || typeof(code) == 'undefined' || code.length == 0)
-        return res.status(500).send(format.T(500, 'Authorization service didn\'t send code'));
-    const scope = {
-        code: code
+    log.info(`START - ${req.originalUrl} - ${req.method} - ${req.ip}`);
+    const data = {
+        code: req.query.code
     };
-    crd.GetTokenByCode(scope, function(err, status, response) {
-        if (err)
-            return res.status(status).send(response);
-        else {
-            let result = JSON.parse(response);
-            result.status = status;
-            return res.status(200).send(result);
+    crd.GetTokenByCode(data, function(err, status, response) {
+        if (err) {
+            err.status = err.status || status;
+            return next(err);
         }
+        log.info(`SUCCESS - ${req.originalUrl} - ${req.method} - ${req.ip}`);
+        return res.status(status).send(response);
     });
 })
 
 // Проверка авторизации пользователя перед выполнением операции
 // Экспортируем, чтобы другие маршруты могли ее брать
-module.exports.Check = function (req, res, callback) {
-    // Формируем и проверяем данные 
-    let auth = req.headers.authorization;
-    if (!auth)
-        return res.status(401).send(format.T(401, 'No token'));
+module.exports.Check = function (authorization, callback) {
+    log.info('Checking authorization');
+    if (!authorization)
+        return callback(new Error('No token'), 401, null);
     const data = {
-        token: auth.split(' ')[1]
+        token: authorization.split(' ')[1]
     };
     if (!data.token || data.token.length == 0 || typeof(data.token) === 'undefined')
-        return res.status(401).send(format.T(401, 'Invalid token'));
+        return callback(new Error('Invalid token'), 401, null);
 
     // Запрос на проверку авторизации пользователя
     return crd.GetUserInfo(data, function(err, status, response) {
         if (err)
-            return res.status(status).send(err);
+            return callback(err, status, null);
         if (status !== 200) // Пользователь не прошел авторизацию
-            return res.status(status).send(response);
-        return callback(response);  //Успешно пройденная авторизация
+            return callback(new Error('Access denied'), status, null);
+        log.info('Successful authorization');
+        return callback(null, status, response);  //Успешно пройденная авторизация
     });
 }
