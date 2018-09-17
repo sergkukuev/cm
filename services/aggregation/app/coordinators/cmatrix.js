@@ -2,9 +2,10 @@
 // Название сервиса: cm (competency matrix)
 const   port = 3001,
 		host = 'http://localhost:' + port + '/api/cm',
-		valid = require('./../validators'),
 		requester = require('./requester');
-var		token = null;	// Токен сервисной авторизации
+// Токен сервисной авторизации + функция проверки
+var checker = require('./../validators/token'), 
+    token   = null;
 
 module.exports = {
 	// POST REQUEST
@@ -14,12 +15,10 @@ module.exports = {
 			const uri = host + '/kns/create';
 			const opt = requester.Options(uri, "POST");
 			requester.HttpPost(opt, data, function(err, status, res) {
-				return requester.Response(err, status, res, function (err, status, res) {
-					token = valid.ServiceToken(status, res, main, token, data, callback);
-					if (token !== null)
-						return callback(err, status, res);
-					return;
-				});
+				token = checker(status, res, data, main, token, callback);
+                if (token !== null)
+                    return callback(err, status, res);
+                return;
 			});
 		}
 		return main(data, callback);
@@ -29,12 +28,10 @@ module.exports = {
 			const uri = host + '/works/create';
 			const opt = requester.Options(uri, "POST");
 			requester.HttpPost(opt, data, function(err, status, res) {
-				return requester.Response(err, status, res, function (err, status, res) {
-					token = valid.ServiceToken(status, res, main, token, data, callback);
-					if (token !== null)
-						return callback(err, status, res);
-					return;
-				});
+				token = checker(status, res, data, main, token, callback);
+                if (token !== null)
+                    return callback(err, status, res);
+                return;
 			});
 		}
 		return main(data, callback);
@@ -45,12 +42,10 @@ module.exports = {
 			const uri = host + '/users/create';
 			const opt = requester.Options(uri, "POST");
 			requester.HttpPost(opt, data, function(err, status, res) {
-				return requester.Response(err, status, res, function (err, status, res) {
-					token = valid.ServiceToken(status, res, main, token, data, callback);
-					if (token !== null)
-						return callback(err, status, res);
-					return;
-				});
+				token = checker(status, res, data, main, token, callback);
+                if (token !== null)
+                    return callback(err, status, res);
+                return;
 			});
 		}
 		return main(data, callback);
@@ -65,12 +60,10 @@ module.exports = {
 			const uri = host + '/kns/' + scope.id;
 			const opt = requester.Options(uri, "PUT");
 			requester.HttpPut(opt, scope.data, function(err, status, res) {
-				return requester.Response(err, status, res, function(err, status, res) {
-					token = valid.ServiceToken(status, res, main, token, scope, callback);
-					if (token !== null)
-						return callback(err, status, res);
-					return;
-				});
+				token = checker(status, res, scope, main, token, callback);
+                if (token !== null)
+                    return callback(err, status, res);
+                return;
 			});
 		}
 		return main(scope, callback);
@@ -84,12 +77,10 @@ module.exports = {
 			const uri = host + '/works/' + scope.id;
 			const opt = requester.Options(uri, "PUT");
 			requester.HttpPut(opt, scope.data, function(err, status, res) {
-				return requester.Response(err, status, res, function(err, status, res) {
-					token = valid.ServiceToken(status, res, main, token, scope, callback);
-					if (token !== null)
-						return callback(err, status, res);
-					return;
-				});
+				token = checker(status, res, scope, main, token, callback);
+                if (token !== null)
+                    return callback(err, status, res);
+                return;
 			});
 		}
 		return main(scope, callback);
@@ -104,12 +95,10 @@ module.exports = {
 			const uri = host + '/works/' + scope.id_work + '/tasks/' + scope.id_task;
 			const opt = requester.Options(uri, "PUT");
 			requester.HttpPut(opt, scope.data, function(err, status, res) {
-				return requester.Response(err, status, res, function(err, status, res) {
-					token = valid.ServiceToken(status, res, main, token, scope, callback);
-					if (token !== null)
-						return callback(err, status, res);
-					return;
-				});
+				token = checker(status, res, scope, main, token, callback);
+                if (token !== null)
+                    return callback(err, status, res);
+                return;
 			});
 		}
 		return main(scope, callback);
@@ -123,12 +112,10 @@ module.exports = {
 			const uri = host + '/users/' + id;
 			const opt = requester.Options(uri, "PUT");
 			requester.HttpPut(opt, scope.data, function(err, status, res) {
-				return requester.Response(err, status, res, function(err, status, res) {
-					token = valid.ServiceToken(status, res, main, token, scope, callback);
-					if (token !== null)
-						return callback(err, status, res);
-					return;
-				});
+				token = checker(status, res, scope, main, token, callback);
+                if (token !== null)
+                    return callback(err, status, res);
+                return;
 			});
 		}
 		return main(scope, callback);
@@ -143,12 +130,10 @@ module.exports = {
 			const uri = host + '/kns?page=' + scope.page + '&count=' + scope.count;
 			const opt = requester.Options(uri, "GET");
 			requester.HttpGet(opt, function(err, status, res) {
-				return requester.Response(err, status, res, function(err, status, res) {
-					token = valid.ServiceToken(status, res, main, token, scope, callback);
-					if (token !== null)
-						return callback(err, status, res);
-					return;
-				});
+				token = checker(status, res, scope, main, token, callback);
+                if (token !== null)
+                    return callback(err, status, res);
+                return;
 			});
 		}
 		return main(scope, callback);
@@ -158,12 +143,10 @@ module.exports = {
 			const uri = host + '/kns/' + id;
 			const opt = requester.Options(uri, "GET");
 			requester.HttpGet(opt, function(err, status, res) {
-				return requester.Response(err, status, res, function(err, status, res) {
-					token = valid.ServiceToken(status, res, main, token, id, callback);
-					if (token !== null)
-						return callback(err, status, res);
-					return;
-				});
+				token = checker(status, res, id, main, token, callback);
+                if (token !== null)
+                    return callback(err, status, res);
+                return;
 			});
 		}
 		return main(id, callback);
@@ -177,12 +160,10 @@ module.exports = {
 			const uri = host + '/works?page=' + scope.page + '&count=' + scope.count;
 			const opt = requester.Options(uri, "GET");
 			requester.HttpGet(opt, function(err, status, res) {
-				return requester.Response(err, status, res, function(err, status, res) {
-					token = valid.ServiceToken(status, res, main, token, scope, callback);
-					if (token !== null)
-						return callback(err, status, res);
-					return;
-				});
+				token = checker(status, res, scope, main, token, callback);
+                if (token !== null)
+                    return callback(err, status, res);
+                return;
 			});
 		}
 		return main(scope, callback);
@@ -192,12 +173,10 @@ module.exports = {
 			const uri = host + '/works/' + id;
 			const opt = requester.Options(uri, "GET");
 			requester.HttpGet(opt, function(err, status, res) {
-				return requester.Response(err, status, res, function(err, status, res) {
-					token = valid.ServiceToken(status, res, main, token, id, callback);
-					if (token !== null)
-						return callback(err, status, res);
-					return;
-				});
+				token = checker(status, res, id, main, token, callback);
+                if (token !== null)
+                    return callback(err, status, res);
+                return;
 			});
 		}
 		return main(id, callback);
@@ -211,12 +190,10 @@ module.exports = {
 			const uri = host + '/users?page=' + scope.page + '&count=' + scope.count;
 			const opt = requester.Options(uri, "GET");
 			requester.HttpGet(opt, function(err, status, res) {
-				return requester.Response(err, status, res, function(err, status, res) {
-					token = valid.ServiceToken(status, res, main, token, scope, callback);
-					if (token !== null)
-						return callback(err, status, res);
-					return;
-				});
+				token = checker(status, res, scope, main, token, callback);
+                if (token !== null)
+                    return callback(err, status, res);
+                return;
 			});
 		}
 		return main(scope, callback);
@@ -226,12 +203,10 @@ module.exports = {
 			const uri = host + '/users/' + id;
 			const opt = requester.Options(uri, "GET");
 			requester.HttpGet(opt, function(err, status, res) {
-				return requester.Response(err, status, res, function(err, status, res) {
-					token = valid.ServiceToken(status, res, main, token, id, callback);
-					if (token !== null)
-						return callback(err, status, res);
-					return;
-				});
+				token = checker(status, res, id, main, token, callback);
+                if (token !== null)
+                    return callback(err, status, res);
+                return;
 			});
 		}
 		return main(id, callback);
@@ -242,12 +217,10 @@ module.exports = {
 			const uri = host + '/kns';
 			const opt = requester.Options(uri, "DELETE");
 			requester.HttpDelete(opt, function(err, status, res) {
-				return requester.Response(err, status, res, function(err, status, res) {
-					token = valid.ServiceToken(status, res, main, token, data, callback);
-					if (token !== null)
-						return callback(err, status, res);
-					return;
-				});
+				token = checker(status, res, data, main, token, callback);
+                if (token !== null)
+                    return callback(err, status, res);
+                return;
 			});
 		}
 		return main(callback);
@@ -257,12 +230,10 @@ module.exports = {
 			const uri = host + '/kns/' + id;
 			const opt = requester.Options(uri, "DELETE");
 			requester.HttpDelete(opt, function(err, status, res) {
-				return requester.Response(err, status, res, function(err, status, res) {
-					token = valid.ServiceToken(status, res, main, token, id, callback);
-					if (token !== null)
-						return callback(err, status, res);
-					return;
-				});
+				token = checker(status, res, id, main, token, callback);
+                if (token !== null)
+                    return callback(err, status, res);
+                return;
 			});
 		}
 		return main(id, callback);
@@ -272,12 +243,10 @@ module.exports = {
 			const uri = host + '/works';
 			const opt = requester.Options(uri, "DELETE");
 			requester.HttpDelete(opt, function(err, status, res) {
-				return requester.Response(err, status, res, function(err, status, res) {
-					token = valid.ServiceToken(status, res, main, token, data, callback);
-					if (token !== null)
-						return callback(err, status, res);
-					return;
-				});
+				token = checker(status, res, data, main, token, callback);
+                if (token !== null)
+                    return callback(err, status, res);
+                return;
 			});
 		}
 		return main(callback);
@@ -287,12 +256,10 @@ module.exports = {
 			const uri = host + '/works/' + id;
 			const opt = requester.Options(uri, "DELETE");
 			requester.HttpDelete(opt, function(err, status, res) {
-				return requester.Response(err, status, res, function(err, status, res) {
-					token = valid.ServiceToken(status, res, main, token, id, callback);
-					if (token !== null)
-						return callback(err, status, res);
-					return;
-				});
+				token = checker(status, res, id, main, token, callback);
+                if (token !== null)
+                    return callback(err, status, res);
+                return;
 			});
 		}
 		return main(id, callback);
@@ -302,12 +269,10 @@ module.exports = {
 			const uri = host + '/users';
 			const opt = requester.Options(uri, "DELETE");
 			requester.HttpDelete(opt, function(err, status, res) {
-				return requester.Response(err, status, res, function(err, status, res) {
-					token = valid.ServiceToken(status, res, main, token, data, callback);
-					if (token !== null)
-						return callback(err, status, res);
-					return;
-				});
+				token = checker(status, res, data, main, token, callback);
+                if (token !== null)
+                    return callback(err, status, res);
+                return;
 			});
 		}
 		return main(callback);
@@ -317,12 +282,10 @@ module.exports = {
 			const uri = host + '/users/' + id;
 			const opt = requester.Options(uri, "DELETE");
 			requester.HttpDelete(opt, function(err, status, res) {
-				return requester.Response(err, status, res, function(err, status, res) {
-					token = valid.ServiceToken(status, res, main, token, id, callback);
-					if (token !== null)
-						return callback(err, status, res);
-					return;
-				});
+				token = checker(status, res, id, main, token, callback);
+                if (token !== null)
+                    return callback(err, status, res);
+                return;
 			});
 		}
 		return main(id, callback);

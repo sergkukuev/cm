@@ -3,7 +3,9 @@
 const   port = 3005,
         host = 'http://localhost:' + port + '/auth',
         requester = require('./requester');
-var     token = require('./token');   // Токен сервисной авторизации
+// Токен сервисной авторизации + функция проверки
+var checker = require('./../validators/token'), 
+    token   = null;
 
 module.exports = {
     // POST REQUEST
@@ -17,11 +19,10 @@ module.exports = {
                 password: scope.password
             };
             requester.HttpPost(opt, data, function(err, status, res) {
-                return requester.Response(err, status, res, function (err, status, res) {
-                    if (token.Check(status, res, main, data, callback))
-                        return callback(err, status, res);
-                    return;
-                });
+                token = checker(status, res, data, main, token, callback);
+                if (token !== null)
+                    return callback(err, status, res);
+                return;
             });
         }
         return main(scope, callback);
@@ -35,11 +36,10 @@ module.exports = {
                 code: scope.code
             };
             requester.HttpPost(opt, data, function(err, status, res) {
-                return requester.Response(err, status, res, function (err, status, res) {
-                    if (token.Check(status, res, main, data, callback))
-                        return callback(err, status, res);
-                    return;
-                });
+                token = checker(status, res, data, main, token, callback);
+                if (token !== null)
+                    return callback(err, status, res);
+                return;
             });
         }
         return main(scope, callback);
@@ -53,11 +53,10 @@ module.exports = {
                 refresh_token: scope.refresh_token
             };
             requester.HttpPost(opt, data, function(err, status, res) {
-                return requester.Response(err, status, res, function (err, status, res) {
-                    if (token.Check(status, res, main, data, callback))
-                        return callback(err, status, res);
-                    return;
-                });
+                token = checker(status, res, data, main, token, callback);
+                if (token !== null)
+                    return callback(err, status, res);
+                return;
             });
         }
         return main(scope, callback);
@@ -68,11 +67,10 @@ module.exports = {
             const uri = host + '/user/id';
             const opt = requester.Options(uri, "GET", token, scope.token);
             requester.HttpGet(opt, function(err, status, res) {
-                return requester.Response(err, status, res, function (err, status, res) {
-                    if (token.Check(status, res, main, scope, callback))
-                        return callback(err, status, res);
-                    return;
-                });
+                token = checker(status, res, scope, main, token, callback);
+                if (token !== null)
+                    return callback(err, status, res);
+                return;
             });
         }
         return main(scope, callback);

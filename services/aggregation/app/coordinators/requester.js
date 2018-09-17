@@ -1,13 +1,12 @@
 // Модуль обработки запросов
 const   config  = require('./../../config'),
         req     = require('request'),
-        format  = require('./../validators/format'),
         log     = require('./../../config/log')(module);
 
 module.exports = {
     // Установка опций перед запросом
     Options : function(uri, method, token, user_token = null, user_id = null) {
-        log.info('START - Set request options');
+        log.info('Set request options');
         let item = {
             method: method, 
             uri: uri
@@ -31,44 +30,54 @@ module.exports = {
     },
     // Запросы 
     HttpHead : function(opt, callback) {
+        log.info('Head request');
         req.head(opt.uri, opt, function(err, res, body) {
-            err ? callback(err, null, null) : callback(null, res.statusCode, body);
+            err ? Response(err, res.statusCode, null, callback) : 
+                Response(null, res.statusCode, body, callback);
         });
     }, 
     HttpGet : function(opt, callback) {
+        log.info('Get request');
         req.get(opt.uri, opt, function(err, res, body) {
-            err ? callback(err, null, null) : callback(null, res.statusCode, body);
+            err ? Response(err, res.statusCode, null, callback) : 
+                Response(null, res.statusCode, body, callback);
         });
     },
     HttpPost : function(opt, data, callback) {
+        log.info('Post request');
         req.post(opt.uri, opt, function(err, res, body) {
-            err ? callback(err, null, null) : callback(null, res.statusCode, body);
+            err ? Response(err, res.statusCode, null, callback) : 
+                Response(null, res.statusCode, body, callback);
         }).form(data);
     }, 
     HttpPut : function(opt, data, callback) {
+        log.info('Put request');
         req.put(opt.uri, opt, function(err, res, body) {
-            err ? callback(err, null, null) : callback(null, res.statusCode, body);
+            err ? Response(err, res.statusCode, null, callback) : 
+                Response(null, res.statusCode, body, callback);
         }).form(data);
     },
     HttpDelete : function(opt, callback) {
+        log.info('Delete request');
         req.delete(opt.uri, opt, function(err, res, body) {
-            err ? callback(err, null, null) : callback(null, res.statusCode, body);
+            err ? Response(err, res.statusCode, null, callback) : 
+                Response(null, res.statusCode, body, callback);
         });
-    },
-    // Выдача ответа
-    Response : function(err, status, response, callback) {
-        log.info('START - Creating response');
-        if (err) {
-            // Проверка на недоступность сервера
-            if (err.code == "ECONNREFUSED") {
-                const msg = 'Сервис недоступен, повторите попытку позже';
-                return callback(err, 503, format.T(503, msg));
-            }
-        }
-        if (status >= 400 && status <= 600) {
-            return callback(response, status, JSON.parse(response));
-        }
-        return response ? callback(err, status, format.Data(JSON.parse(response))) : 
-            callback(err, status, null);
     }
+}
+
+// Выдача ответа
+function Response(err, status, response, callback) {
+    if (err) {
+        // Проверка на недоступность сервера
+        if (err.code == "ECONNREFUSED") {
+            return callback(new Error('Service unavailable, try again later'), 503, null);
+        }
+        return callback(err, status, null)
+    }
+    // Если ошибка не пришла в структуру, ловим через код-статус
+    if (status >= 400 && status <= 600) {
+        return callback(response, status, JSON.parse(response));    // TODO: Проверить запросы и исправить выдачу ответа
+    }
+    return callback(null, status, JSON.parse(response));
 }
