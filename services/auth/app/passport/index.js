@@ -108,14 +108,14 @@ function checkBasicAuth(header_authorization, callback) {
 function checkBearerAuth(header_authorization, callback) {
     const serviceToken = getBearer(header_authorization);
     return strategy.CheckServiceAToken(serviceToken, function(err, status, result) {
-        if (err)
-            return callback(err, status, null);
-        if (!result)
-            return callback(new Error('Invalid token'), 400, null);
         let response = {
             token: serviceToken,
             expires_in : cs.serviceTokenLife
         };
+        if (err)
+            return callback(err, status, response);
+        if (!result)
+            return callback(new Error('Invalid token'), 400, response);
         return callback(null, status, response);
     });
 }

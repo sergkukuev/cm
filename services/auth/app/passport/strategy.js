@@ -51,8 +51,11 @@ module.exports = {
 		return AToken.findOne({token : accessToken}, function(err, token) {
 			if (err)
 				return done(err, 500);
-			else if (!token)
-				return done(new Error('Application with this access token not found'), 401, false);
+			else if (!token) {
+				let err = new Error('Application with this access token not found');
+				err.name = 'ServiceTokenError';
+				return done(err, 401, false);
+			}
 
 			const timeLife = (Date.now() - token.created) / 1000;	// Вычисление времени жизни токена
 			if (timeLife > cs.serviceTokenLife) {	// Сравнение с конфигурацией
@@ -60,7 +63,9 @@ module.exports = {
 					if (err)
 						return done(err, 500, false);
 				});
-				return done(new Error('Access token is expired'), 401, false);
+				let err = new Error('Access token is expired');
+				err.name = 'ServiceTokenError';
+				return done(err, 401, false);
 			}
 
 			const appId = token.userID;
@@ -79,10 +84,15 @@ module.exports = {
 		return Client.findOne({appId : appId}, function(err, app_cli) {
 			if (err)
 				return done(err, 500);
-			else if (!app_cli)
-				return done(new Error('Application with this appId and appSecret not found'), 401, false);
-			else if (app_cli.appSecret != appSecret)
-				return done(new Error('Application with this appId and appSecret not found'), 401, false);
+			else if (!app_cli) {
+				let err = new Error('Application with this appId and appSecret not found');
+				err.name = 'ServiceTokenError';
+				return done(err, 401, false);
+			} else if (app_cli.appSecret != appSecret) {
+				let err = new Error('Application with this appId and appSecret not found');
+				err.name = 'ServiceTokenError';
+				return done(err, 401, false);
+			}
 			return done(null, null, app_cli);
 		});
 	},
@@ -91,8 +101,11 @@ module.exports = {
 		return Client.findOne({appId: appId}, function (err, app_cli) {
 			if (err)
 				return done(err, 500);
-			else if (!app_cli)
-				return done(new Error('Application with this appId not found'), 401);
+			else if (!app_cli) {
+				let err = new Error('Application with this appId not found');
+				err.name = 'ServiceTokenError';
+				return done(err, 401);
+			}
 			return done(null, 200, true);
 		});
 	},
