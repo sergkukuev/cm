@@ -5,10 +5,12 @@ module.exports = function (code, response, data, method, token, callback) {
         delete token;
         token = null;
         method(data, callback);
-    } else if (typeof(response.service) != 'undefined') {
-        // Установка нового токена
-        token = response.service;
-        delete response.service;
+    } else if (response != null) {  // Проверка пустого ответа
+        if (typeof(response.service) != 'undefined') {
+            // Установка нового токена
+            token = response.service.token;
+            delete response.service;
+        }
     }
     return token;
 }
