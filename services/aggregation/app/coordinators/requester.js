@@ -68,16 +68,19 @@ module.exports = {
 
 // Выдача ответа
 function Response(err, status, response, callback) {
+    log.info('Creating response');
+    if (response != null)
+        response = JSON.parse(response);    // Ответ почему то приходит в виде строки
     if (err) {
         // Проверка на недоступность сервера
         if (err.code == "ECONNREFUSED") {
-            return callback(new Error('Service unavailable, try again later'), 503, null);
+            return callback(new Error('Service unavailable, try again later'), 503, response);
         }
-        return callback(err, status, null)
+        return callback(err, status, response);
     }
     // Если ошибка не пришла в структуру, ловим через код-статус
     if (status >= 400 && status <= 600) {
-        return callback(response, status, JSON.parse(response));    // TODO: Проверить запросы и исправить выдачу ответа
+        return callback(new Error(response.message), status, response);
     }
-    return callback(null, status, JSON.parse(response));
+    return callback(null, status, response);
 }
