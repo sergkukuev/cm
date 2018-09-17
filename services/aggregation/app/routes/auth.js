@@ -1,7 +1,8 @@
 // Маршруты для обращения к сервису авторизации
 var express = require('express'),
     router  = express.Router(),
-    crd     = require('./../coordinators');
+    crd     = require('./../coordinators'),
+    log     = require('./../../config/log')(module);
 
 module.exports = function(app) { 
     app.use('/api/auth', router);
