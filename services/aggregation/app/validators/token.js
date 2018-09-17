@@ -8,7 +8,7 @@ module.exports = function (code, response, data, method, token, callback) {
     } else if (response != null) {  // Проверка пустого ответа
         if (typeof(response.service) != 'undefined') {
             // Установка нового токена
-            token = response.service.token;
+            token = response.service;
             delete response.service;
         }
     }
