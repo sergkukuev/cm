@@ -10,8 +10,7 @@ var config = {
       id: 'aggr_id',
       secret: 'aggr_secret'
     },
-    port: process.env.PORT || 3000,
-    db: 'mongodb://localhost/aggr'
+    port: process.env.PORT || 3000
   }
 };
 
