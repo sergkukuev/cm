@@ -49,7 +49,8 @@ module.exports = function(app, config) {
         let item = {
             status: err.name || 'Error',
             code: err.status || 500,
-            message: err.message || 'Unknown error'
+            message: err.message || 'Unknown error',
+            service: err.service || 'undefined'
         };
         log.error(`${item.message} - ${item.code} - ${req.originalUrl} - ${req.method} - ${req.ip}`);
         log.debug(err.stack);

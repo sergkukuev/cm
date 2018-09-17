@@ -58,10 +58,11 @@ router.post('/token', function(req, res, next) {
         return passport.CheckServiceAuth(header_auth, function(err, status, scope) {
             if (err) {
                 err.status = err.status || status;
+                err.service = scope;    // Добавление данных о межсервисной авторизации
                 return next(err);
             }
             if (!scope) {
-                return next(TError('Scope is undefined', status || err.status));
+                return next(TError('Scope is null', status || err.status));
             }
             let type = req.body.grant_type;
             if (type === 'authorization_code') {
@@ -71,11 +72,11 @@ router.post('/token', function(req, res, next) {
             } else if (type === 'password') {
                 return passAuthorization(req, res, next, scope);
             } else {
-                return next(TError('Parameter "grant_type" is undefined', 400));
+                return next(TError('Parameter "grant_type" is undefined', 400, scope));
             }
         });
     } else {
-        return next(TError('Header "Authorization" is undefined', 401));  
+        return next(TError('Header "authorization" is undefined', 401));  
     }
 });
 
@@ -83,11 +84,11 @@ router.post('/token', function(req, res, next) {
 router.get('/user/id', function(req, res, next) {
     log.info(`START - ${req.originalUrl} - ${req.method} - ${req.ip}`);
     const header_auth = req.headers['authorization'];
-
     if (valid.Validity(header_auth) != null) {
         return passport.CheckServiceAuth(header_auth, function(err, status, scope) {
             if (err) {
                 err.status = err.status || status;
+                err.service = scope;
                 return next(err)
             }
             if (!scope) {
@@ -98,16 +99,17 @@ router.get('/user/id', function(req, res, next) {
                 return passport.CheckUserByBearer(user_auth, function(err, status, user) {
                     if (err) {
                         err.status = err.status || status;
+                        err.service = scope;
                         return next(err)
                     }
                     if (!user) {
-                        return next(TError('User is null', status || err.status));
+                        return next(TError('User is null', status || err.status, scope));
                     }
                     log.info(`SUCCESS - ${req.originalUrl} - ${req.method} - ${req.ip}`);
                     return res.status(200).send({id : user.id});
                 });
             }
-            return next(TError('Header "user-authorization" is undefined', 401));
+            return next(TError('Header "user-authorization" is undefined', 401, scope));
         });
     }
     return next(TError('Header "authorization" is undefined', 401));
@@ -118,14 +120,15 @@ function codeAuthorization(req, res, next, service_scope) {
     log.info('Code authorization');
     const code = req.body.code;
     if (valid.Validity(code) == null)
-        return next(TError('Bad request login or password is undefined', 400));
+        return next(TError('Bad request login or password is undefined', 400, service_scope));
     return passport.SetUTokenByCode(code, function(err, status, user_scope) {
         if (err) {
             err.status = err.status || status;
+            err.service = service_scope;
             return next(err);
         }
         if (!user_scope)
-            return next(TError('User for this password and login is not found', status));
+            return next(TError('User for this password and login is not found', status, service_scope));
         
         log.info(`SUCCESS - ${req.originalUrl} - ${req.method} - ${req.ip}`);
         return res.status(200).send(TData(user_scope, service_scope));
@@ -140,14 +143,15 @@ function passAuthorization(req, res, next, service_scope) {
         pass: req.body.password
     };
     if (valid.Validity(data.login) == null || valid.Validity(data.pass) == null)
-        return next(TError('Bad request login or password is undefined', 400));
+        return next(TError('Bad request login or password is undefined', 400, service_scope));
     return passport.SetUTokenByPass(data, function(err, status, user_scope) {
         if (err) {
             err.status = err.status || status;
+            err.service = service_scope;
             return next(err);
         }
         if (!user_scope)
-            return next(TError('User for this password and login is not found', status));
+            return next(TError('User for this password and login is not found', status, service_scope));
         
         log.info(`SUCCESS - ${req.originalUrl} - ${req.method} - ${req.ip}`);
         return res.status(200).send(TData(user_scope, service_scope));
@@ -159,14 +163,15 @@ function refreshTokenAuthorization(req, res, next, service_scope) {
     log.info('Token authorization');
     const token = req.body.refresh_token;
     if (valid.Validity(token) == null)
-        return next(TError('Token is undefined', 400));
+        return next(TError('Token is undefined', 400, service_scope));
     return passport.SetUTokenByToken(token, function(err, status, user_scope) {
         if (err) {
             err.status = err.status || status;
+            err.service = service_scope;
             return next(err);
         }
         if (!user_scope)
-            return next(TError('User for this password and login is not found', status));
+            return next(TError('User for this password and login is not found', status, service_scope));
         
         log.info(`SUCCESS - ${req.originalUrl} - ${req.method} - ${req.ip}`);
         return res.status(200).send(TData(user_scope, service_scope));
@@ -174,9 +179,10 @@ function refreshTokenAuthorization(req, res, next, service_scope) {
 }
 
 // Формирование ошибки
-function TError(message, status) {
+function TError(message, status, service = undefined) {
     let err = new Error(message);
     err.status = status;
+    err.service = service;
     return err;
 }
 
