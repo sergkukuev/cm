@@ -28,7 +28,7 @@ router.post('/create', function(req, res, next) {
             // Проверка массива оценок знания. Должно быть четко 4 уровня квалификации
             if (validator.IsUndefined(req.body.marks))
                 return next(T.Error(NoKey("marks"), 400, scope));
-            else if (!validator.CheckMarks(req.body.marks))
+            else if (!CheckMarks(req.body.marks))
                 return next(T.Error('Number of marks must be 4', 400, scope));
             
             if (validator.IsUndefined(req.body.name))
@@ -148,7 +148,7 @@ router.put('/:id', function(req, res, next) {
             
             let data = {};
             if (!validator.IsUndefined(req.body.marks)) {
-                if (!validator.CheckMarks(req.body.marks))
+                if (!CheckMarks(req.body.marks))
                     return next(T.Error('Numbers of marks must be 4', 400, scope));
                 data["marks"] = req.body.marks;
             }
@@ -246,6 +246,16 @@ router.delete('/:id', function(req, res, next) {
         return next(T.Error('Header "authorization" is undefined', 401));  
     }
 });
+
+// Проверка массива оценок
+function CheckMarks(marks) {
+    // Оценок должно быть 4
+    // 'undefined' проверяется перед добавленим в базу
+    if (marks.length == 4 && (marks instanceof Array))
+        return true;
+    else
+        return false;
+}
 
 // Описатели распространенных ошибок
 // Отсутствие ключа

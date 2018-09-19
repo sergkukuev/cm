@@ -32,15 +32,6 @@ module.exports = {
         let mongoose = require('mongoose');
         return mongoose.Types.ObjectId.isValid(id);
     },
-    // Проверка массива оценок
-    CheckMarks : function(marks) {
-        // Оценок должно быть 4
-        // 'undefined' проверяется перед добавленим в базу
-        if (marks.length == 4 && (marks instanceof Array))
-            return true;
-        else
-            return false;
-    },
     // Проверка повторения элемента в массиве
     RepeatOfArray : function(elem, array) { 
         let flag = false;
