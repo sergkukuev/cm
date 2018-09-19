@@ -1,32 +1,37 @@
+// Преобразование данных
 module.exports = {
-    // Шаблон с данными
-    // (для универсальности, в случае добавления новых полей, к примеру токенов для межсервисной авторизации)
-    Data : function(data, scope) {
-        let result = {
-            content: data,
-            service: scope
-        };
-        return result;
+    // Формирование данных перед отправкой
+    // Формирование ошибки
+    Error : function(message, status, service = undefined) {
+        let err = new Error(message);
+        err.status = status;
+        if (service)
+            err.service = service;
+        return err;
     },
-    // Шаблон без данных
-    T : function(code, desc) {
-        let stText = findStatusByCode(code);
-        let typeText = getTypeByCode(code);
-        
-        let item = {
-            status: code,
-            statusText: stText,
-            description: { 
-                name: "ServiceAnswer",
-                message: desc,
-                status: typeText
-            }
-        };
-        return item;
+    // Формирование ответа
+    Data : function(content, service) {
+        let data = { content: content };
+        if (service !== true)
+            data.service = service;
+        return data;
+    },
+    // Описатели распространенных ошибок
+    // Отсутствие ключа
+    NoKey : function(key) {
+        return 'Missing key \'' + key + '\'';
+    },
+    // Некорректный идентификатор
+    InvalidId : function(id) {
+        return 'Identifier \'' + id + '\' is invalid';
+    },
+    // Объект не найден по данному идентификатору
+    NotFound : function(id) {
+        return 'Object by \'' + id + '\' not found';
     }
 }
 
-// Получение категорию статуса по коду состояния 
+/* // Получение категорию статуса по коду состояния 
 function getTypeByCode(code) {
     let result = '';
     if (code >= 100 && code < 200)
@@ -106,4 +111,4 @@ const HTTP_state = [
     { code: 503, text: 'Service Unavailable' },
     { code: 504, text: 'Gateway Timeout' },
     { code: 505, text: 'HTTP Version Not Supported' }
-];
+]; */

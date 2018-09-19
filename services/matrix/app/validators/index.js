@@ -1,55 +1,51 @@
 module.exports = {
-    // Проверка номера страницы и количество данных на странице
-    parsePageOrCount : function(string) {
-        if (string) {
-            let res = Number(parseInt(string));
-            if (isNaN(res))
-                return 0;   // Дефолтное значение
-            return res;
-        }
-        return 0;
+    // Проверка валидности параметра
+    Validity : function(text) {
+        if (!text || typeof(text) == "undefined" || text.length == 0)
+            text = null;
+        return text;
     },
-    // Проверка челочисленного значения
-    checkInt : function(string) {
-        if (string) {
-            let res = Number(parseInt(string));
-            if (isNaN(res))
-                return undefined;
-            return res;
+    // Преобразование int
+    CastInt : function(value, def = undefined) {
+        if (value) {
+            let numeric = Number(parseInt(value));
+            if (isNaN(numeric))
+                return def; // Значение по умолчанию
+            return numeric;
         }
-        return undefined;
-    },
-    // Проверка корректности ID объекта
-    checkId : function(id) {
-        let mongoose = require('mongoose');
-        return mongoose.Types.ObjectId.isValid(id);
-    }, 
-    // Проверка строки на пустоту
-    checkEmptyStr : function(str) {
-        if (str.trim() == '')
-            return true;
-        else    
-            return false;
+        return def;
     },
     // Проверка строки на 'undefined'
-    checkUndefined : function(str) {
-        if (str == undefined)
-            return true;
-        else
-            return false;
+    IsUndefined : function(value) {
+        let result;
+        value == undefined ? result = true : result = false;
+        return result;
     },
-    // Проверка массива marks (если marks = undefined, то просто скипаем, данная ошибка обрабатывается при попытке добавления в базу)
-    checkMarks : function(marks) {
+    // Проверка строки на пустоту
+    IsEmptyStr : function(string) {
+        let result;
+        string.trim() == '' ? result = true : result = false;
+        return result;
+    },
+    // Проверка корректности ID объекта
+    VerifyId : function(id) {
+        let mongoose = require('mongoose');
+        return mongoose.Types.ObjectId.isValid(id);
+    },
+    // Проверка массива оценок
+    CheckMarks : function(marks) {
+        // Оценок должно быть 4
+        // 'undefined' проверяется перед добавленим в базу
         if (marks.length == 4 && (marks instanceof Array))
             return true;
         else
             return false;
     },
-    // Проверка знаний в задаче на повторения
-    checkKnRepeat : function(id, kns) { // Идентификатор и массив, где проверяется 
+    // Проверка повторения элемента в массиве
+    RepeatOfArray : function(elem, array) { 
         let flag = false;
-        for (let i = 0; i < kns.length; i++) {
-            if (id == kns[i])
+        for (let i = 0; i < array.length; i++) {
+            if (elem == array[i])
                 flag++;
         }
         return flag - 1;
