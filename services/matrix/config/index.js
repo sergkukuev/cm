@@ -9,7 +9,7 @@ var config = {
           name: 'matrix_cm'
         },
         security: {
-            USLife: 1800 // время жизни сервисного токена (30 минут)
+            STLife: 1800 // время жизни сервисного токена (30 минут)
         },
         port: process.env.PORT || 3001,
         db: 'mongodb://localhost/service_cm'
