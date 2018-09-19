@@ -1,5 +1,7 @@
-const 	basic   	= require('basic-auth'),
-		strategy 	= require('./strategy'),
+const 	log         = require('./../../config/log')(module),
+        basic   	= require('basic-auth'),
+        strategy 	= require('./strategy'),
+        life        = require('./../../config').security.USLife,
       	basicType 	= /basic/i,
       	bearerType 	= /bearer/i;
 
@@ -40,7 +42,7 @@ function checkBearerAuth(header_authorization, callback) {
     return strategy.CheckServiceAToken(serviceToken, function(err, status, result) {
         let response = {
             token: serviceToken,
-            expires_in : cs.serviceTokenLife
+            expires_in : life
         };
         if (err)
             return callback(err, status, response);

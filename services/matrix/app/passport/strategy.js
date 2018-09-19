@@ -58,7 +58,7 @@ module.exports = {
 	SetNewAToken : function(application, done) {
 		let tokenValue = crypto.randomBytes(32).toString('base64');
 		let token = new AToken({
-			userID	: application.id,
+			appId	: application.id,
 			token 	: tokenValue
 		});
 		return token.save(function(err, token) {
