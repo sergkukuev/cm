@@ -6,7 +6,7 @@ var config = {
     development: {
         root: rootPath,
         app: {
-          name: 'service_cm'
+          name: 'matrix_cm'
         },
         security: {
             USLife: 1800 // время жизни сервисного токена (30 минут)

@@ -1,7 +1,7 @@
 const 	log         = require('./../../config/log')(module),
         basic   	= require('basic-auth'),
         strategy 	= require('./strategy'),
-        life        = require('./../../config').security.USLife,
+        life        = require('./../../config').security.STLife,
       	basicType 	= /basic/i,
       	bearerType 	= /bearer/i;
 

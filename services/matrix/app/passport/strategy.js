@@ -1,5 +1,5 @@
 const crypto 	= require('crypto'),
-      life 		= require('./../../config').security.USLife,
+      life 		= require('./../../config').security.STLife,
       Client 	= require('./../models/client').model,
       AToken 	= require('./../models/tokens/access').model;
 
