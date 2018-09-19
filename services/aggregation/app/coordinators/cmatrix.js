@@ -127,7 +127,9 @@ module.exports = {
 			count: count
 		};
 		let main = function(scope, callback) {
-			const uri = host + '/kns?page=' + scope.page + '&count=' + scope.count;
+			const uri = host + '/kns';
+			if (typeof(scope.page) != 'undefined' || typeof(scope.count) != 'undefined')
+				uri += ('?page=' + scope.page + '&count=' + scope.count);
 			const opt = requester.Options(uri, "GET", token);
 			requester.HttpGet(opt, function(err, status, res) {
 				token = checker(status, res, scope, main, token, callback);
