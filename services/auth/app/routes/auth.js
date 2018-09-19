@@ -89,7 +89,7 @@ router.get('/user/id', function(req, res, next) {
             if (err) {
                 err.status = err.status || status;
                 err.service = scope;
-                return next(err)
+                return next(err);
             }
             if (!scope) {
                 return next(TError('Scope is null', status || err.status));
@@ -100,7 +100,7 @@ router.get('/user/id', function(req, res, next) {
                     if (err) {
                         err.status = err.status || status;
                         err.service = scope;
-                        return next(err)
+                        return next(err);
                     }
                     if (!user) {
                         return next(TError('User is null', status || err.status, scope));
@@ -189,7 +189,7 @@ function TError(message, status, service = undefined) {
 // Формирование ответа
 function TData(content, service) {
     let data = { content: content };
-    if (service !== true)
+    if (service)
         data.service = service;
     return data;
 }
