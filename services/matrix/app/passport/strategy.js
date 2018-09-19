@@ -42,9 +42,7 @@ module.exports = {
 				err.name = 'ServiceTokenError';
 				return done(err, 401, false);
 			}
-
-			const appId = token.userID;
-			return Client.findById(appId, function(err, application) {
+			return Client.findById(token.appId, function(err, application) {
 				if (err) { 
 					return done(err, 500, false);
 				} else if (!application) {

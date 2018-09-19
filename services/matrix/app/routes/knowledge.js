@@ -58,7 +58,6 @@ router.post('/create', function(req, res, next) {
 
 // Получить список всех знаний
 router.get('/', function(req, res, next) {
-    console.log('private');
     log.info(`START - ${req.originalUrl} - ${req.method} - ${req.ip}`);
     const header_auth = req.headers['authorization'];
     if (validator.Validity(header_auth) != null) {
