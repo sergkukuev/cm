@@ -6,8 +6,8 @@ var express         = require('express'),
     compress        = require('compression'),
     methodOverride  = require('method-override'),
     log             = require('./log')(module),
-    client          = require('./client'),
-    cors            = require('cors');
+    cors            = require('cors'),
+    verify          = require('./../app/models/client').VerifyClient;
 
 module.exports = function(app, config) {
     var env = process.env.NODE_ENV || 'development';
@@ -36,6 +36,8 @@ module.exports = function(app, config) {
     routes.forEach(function (route) {
         require(route)(app);
     });
+
+    verify('aggregator', 'aggr_id', 'aggr_secret', true);   // Проверка наличия записи о клиенте в бд
 
     // 404
     app.use(function(req, res, next) {
