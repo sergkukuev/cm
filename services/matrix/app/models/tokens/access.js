@@ -1,6 +1,6 @@
-const mongoose  = require('mongoose');
-
-const Schema  = mongoose.Schema;
+const   mongoose    = require('mongoose'),
+        Schema      = mongoose.Schema;
+        
 var AccessToken = new Schema({
     appId: {
         type: String,
@@ -20,4 +20,4 @@ var AccessToken = new Schema({
 mongoose.model('AccessToken', AccessToken);
 
 var model = mongoose.model('AccessToken');
-module.exports.token = model;
+module.exports.model = model;
