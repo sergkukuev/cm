@@ -15,19 +15,6 @@ module.exports = {
         if (service !== true)
             data.service = service;
         return data;
-    },
-    // Описатели распространенных ошибок
-    // Отсутствие ключа
-    NoKey : function(key) {
-        return 'Missing key \'' + key + '\'';
-    },
-    // Некорректный идентификатор
-    InvalidId : function(id) {
-        return 'Identifier \'' + id + '\' is invalid';
-    },
-    // Объект не найден по данному идентификатору
-    NotFound : function(id) {
-        return 'Object by \'' + id + '\' not found';
     }
 }
 
