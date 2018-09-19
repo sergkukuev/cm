@@ -13,7 +13,7 @@ module.exports = {
 		let main = function(data, callback) {
 			// kns = knowledges
 			const uri = host + '/kns/create';
-			const opt = requester.Options(uri, "POST");
+			const opt = requester.Options(uri, "POST", token);
 			requester.HttpPost(opt, data, function(err, status, res) {
 				token = checker(status, res, data, main, token, callback);
                 if (token !== null)
@@ -26,7 +26,7 @@ module.exports = {
 	CreateWork : function(data, callback) {
 		let main = function(data, callback) {
 			const uri = host + '/works/create';
-			const opt = requester.Options(uri, "POST");
+			const opt = requester.Options(uri, "POST", token);
 			requester.HttpPost(opt, data, function(err, status, res) {
 				token = checker(status, res, data, main, token, callback);
                 if (token !== null)
@@ -40,7 +40,7 @@ module.exports = {
 		let main = function(data, callback) {
 			// HMark = mark holder
 			const uri = host + '/users/create';
-			const opt = requester.Options(uri, "POST");
+			const opt = requester.Options(uri, "POST", token);
 			requester.HttpPost(opt, data, function(err, status, res) {
 				token = checker(status, res, data, main, token, callback);
                 if (token !== null)
@@ -58,7 +58,7 @@ module.exports = {
 		};
 		let main = function(scope, callback) {
 			const uri = host + '/kns/' + scope.id;
-			const opt = requester.Options(uri, "PUT");
+			const opt = requester.Options(uri, "PUT", token);
 			requester.HttpPut(opt, scope.data, function(err, status, res) {
 				token = checker(status, res, scope, main, token, callback);
                 if (token !== null)
@@ -75,7 +75,7 @@ module.exports = {
 		};
 		let main = function(scope, callback) {
 			const uri = host + '/works/' + scope.id;
-			const opt = requester.Options(uri, "PUT");
+			const opt = requester.Options(uri, "PUT", token);
 			requester.HttpPut(opt, scope.data, function(err, status, res) {
 				token = checker(status, res, scope, main, token, callback);
                 if (token !== null)
@@ -93,7 +93,7 @@ module.exports = {
 		};
 		let main = function(scope, callback) {
 			const uri = host + '/works/' + scope.id_work + '/tasks/' + scope.id_task;
-			const opt = requester.Options(uri, "PUT");
+			const opt = requester.Options(uri, "PUT", token);
 			requester.HttpPut(opt, scope.data, function(err, status, res) {
 				token = checker(status, res, scope, main, token, callback);
                 if (token !== null)
@@ -110,7 +110,7 @@ module.exports = {
 		};
 		let main = function(scope, callback) {
 			const uri = host + '/users/' + id;
-			const opt = requester.Options(uri, "PUT");
+			const opt = requester.Options(uri, "PUT", token);
 			requester.HttpPut(opt, scope.data, function(err, status, res) {
 				token = checker(status, res, scope, main, token, callback);
                 if (token !== null)
@@ -128,7 +128,7 @@ module.exports = {
 		};
 		let main = function(scope, callback) {
 			const uri = host + '/kns?page=' + scope.page + '&count=' + scope.count;
-			const opt = requester.Options(uri, "GET");
+			const opt = requester.Options(uri, "GET", token);
 			requester.HttpGet(opt, function(err, status, res) {
 				token = checker(status, res, scope, main, token, callback);
                 if (token !== null)
@@ -141,7 +141,7 @@ module.exports = {
 	GetKnById : function(id, callback) {
 		let main = function(id, callback) {
 			const uri = host + '/kns/' + id;
-			const opt = requester.Options(uri, "GET");
+			const opt = requester.Options(uri, "GET", token);
 			requester.HttpGet(opt, function(err, status, res) {
 				token = checker(status, res, id, main, token, callback);
                 if (token !== null)
@@ -158,7 +158,7 @@ module.exports = {
 		};
 		let main = function(scope, callback) {
 			const uri = host + '/works?page=' + scope.page + '&count=' + scope.count;
-			const opt = requester.Options(uri, "GET");
+			const opt = requester.Options(uri, "GET", token);
 			requester.HttpGet(opt, function(err, status, res) {
 				token = checker(status, res, scope, main, token, callback);
                 if (token !== null)
@@ -171,7 +171,7 @@ module.exports = {
 	GetWorkById : function(id, callback) {
 		let main = function(id, callback) {
 			const uri = host + '/works/' + id;
-			const opt = requester.Options(uri, "GET");
+			const opt = requester.Options(uri, "GET", token);
 			requester.HttpGet(opt, function(err, status, res) {
 				token = checker(status, res, id, main, token, callback);
                 if (token !== null)
@@ -188,7 +188,7 @@ module.exports = {
 		};
 		let main = function(scope, callback) {
 			const uri = host + '/users?page=' + scope.page + '&count=' + scope.count;
-			const opt = requester.Options(uri, "GET");
+			const opt = requester.Options(uri, "GET", token);
 			requester.HttpGet(opt, function(err, status, res) {
 				token = checker(status, res, scope, main, token, callback);
                 if (token !== null)
@@ -201,7 +201,7 @@ module.exports = {
 	GetHMarkById : function(id, callback) {
 		let main = function(id, callback) {
 			const uri = host + '/users/' + id;
-			const opt = requester.Options(uri, "GET");
+			const opt = requester.Options(uri, "GET", token);
 			requester.HttpGet(opt, function(err, status, res) {
 				token = checker(status, res, id, main, token, callback);
                 if (token !== null)
@@ -215,7 +215,7 @@ module.exports = {
 	DeleteKn : function(callback) {
 		let main = function(data = null, callback) {
 			const uri = host + '/kns';
-			const opt = requester.Options(uri, "DELETE");
+			const opt = requester.Options(uri, "DELETE", token);
 			requester.HttpDelete(opt, function(err, status, res) {
 				token = checker(status, res, data, main, token, callback);
                 if (token !== null)
@@ -228,7 +228,7 @@ module.exports = {
 	DeleteKnById : function(id, callback) {
 		let main = function(id, callback) {
 			const uri = host + '/kns/' + id;
-			const opt = requester.Options(uri, "DELETE");
+			const opt = requester.Options(uri, "DELETE", token);
 			requester.HttpDelete(opt, function(err, status, res) {
 				token = checker(status, res, id, main, token, callback);
                 if (token !== null)
@@ -241,7 +241,7 @@ module.exports = {
 	DeleteWork : function(callback) {
 		let main = function(data = null, callback) {
 			const uri = host + '/works';
-			const opt = requester.Options(uri, "DELETE");
+			const opt = requester.Options(uri, "DELETE", token);
 			requester.HttpDelete(opt, function(err, status, res) {
 				token = checker(status, res, data, main, token, callback);
                 if (token !== null)
@@ -254,7 +254,7 @@ module.exports = {
 	DeleteWorkById : function(id, callback) {
 		let main = function(id, callback) {
 			const uri = host + '/works/' + id;
-			const opt = requester.Options(uri, "DELETE");
+			const opt = requester.Options(uri, "DELETE", token);
 			requester.HttpDelete(opt, function(err, status, res) {
 				token = checker(status, res, id, main, token, callback);
                 if (token !== null)
@@ -267,7 +267,7 @@ module.exports = {
 	DeleteHMark : function(callback) {
 		let main = function(data = null, callback) {
 			const uri = host + '/users';
-			const opt = requester.Options(uri, "DELETE");
+			const opt = requester.Options(uri, "DELETE", token);
 			requester.HttpDelete(opt, function(err, status, res) {
 				token = checker(status, res, data, main, token, callback);
                 if (token !== null)
@@ -280,7 +280,7 @@ module.exports = {
 	DeleteHMarkById : function(id, callback) {
 		let main = function(id, callback) {
 			const uri = host + '/users/' + id;
-			const opt = requester.Options(uri, "DELETE");
+			const opt = requester.Options(uri, "DELETE", token);
 			requester.HttpDelete(opt, function(err, status, res) {
 				token = checker(status, res, id, main, token, callback);
                 if (token !== null)
