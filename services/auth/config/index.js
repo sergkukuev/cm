@@ -9,8 +9,8 @@ var config = {
             name: 'auth_cm'
         },
         security : {
-            userTokenLife : 1800,
-            serviceTokenLife : 1800
+            UTLife : 1800,
+            STLife : 1800
         },
         port: process.env.PORT || 3005,
         db: 'mongodb://localhost/auth_cm'

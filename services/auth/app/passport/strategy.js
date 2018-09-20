@@ -41,7 +41,7 @@ module.exports = {
 
 			let result = {
 				token : tokenValue,
-				expires_in : cs.serviceTokenLife
+				expires_in : cs.STLife
 			};
 			return done(null, null, result);
 		});
@@ -58,7 +58,7 @@ module.exports = {
 			}
 
 			const timeLife = (Date.now() - token.created) / 1000;	// Вычисление времени жизни токена
-			if (timeLife > cs.serviceTokenLife) {	// Сравнение с конфигурацией
+			if (timeLife > cs.STLife) {	// Сравнение с конфигурацией
 				token.remove(function(err) {
 					if (err)
 						return done(err, 500, false);
@@ -118,7 +118,7 @@ module.exports = {
 				return done(new Error('Access token not found'), 401, false);
 
 			const timeLife = Math.round((Date.now() - token.created) / 1000);	// Вычисление времени жизни токена
-			if(timeLife > cs.tokenLife) { 	// Сравнение с конфигурацией
+			if(timeLife > cs.UTLife) { 	// Сравнение с конфигурацией
 				UAToken.remove({token : accessToken}, function(err) {
 					if (err) 
 						return done(err, 500);

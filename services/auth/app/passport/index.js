@@ -110,7 +110,7 @@ function checkBearerAuth(header_authorization, callback) {
     return strategy.CheckServiceAToken(serviceToken, function(err, status, result) {
         let response = {
             token: serviceToken,
-            expires_in : cs.serviceTokenLife
+            expires_in : cs.STLife
         };
         if (err)
             return callback(err, status, response);
