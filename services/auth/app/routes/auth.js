@@ -6,9 +6,8 @@ const   express   = require('express'),
         passport  = require('./../passport');
 
 // Форматирование данных перед отправкой
-let TError  = require('./../validators/format').TError, // Создание новой ошибки
-    AError  = require('./../validators/format').AError, // Добавление параметров к существующей ошибке
-    TData   = require('./../validators/format').TData;  // Формирование данных
+let TError  = require('./../validators/format').TError,
+    TData   = require('./../validators/format').TData;
 
 module.exports = (app) => {
     app.use('/api/auth', router);
@@ -39,11 +38,11 @@ router.post('/login', function(req, res, next) {
             password      : validator.Validity(req.body.password)
         };
         if (!data.appId)
-            return next(TError(null, 'Parameter "app_id" is undefined', 400, scope));
+            return next(TError(null, true, 'Parameter "app_id" is undefined', 400, scope));
         if (!data.redirect_uri)
-            return next(TError(null, 'Parameter "redirect_uri" is undefined', 400, scope));
+            return next(TError(null, true, 'Parameter "redirect_uri" is undefined', 400, scope));
         if (!data.response_type)
-            return next(TError(null, 'Parameter "response_type" is undefined', 400, scope));
+            return next(TError(null, true, 'Parameter "response_type" is undefined', 400, scope));
         if (!data.login || !data.password) {
             log.warn('Login or password isn\'t defined. Redirect to the authorization page')
             return res.status(401).render('auth', {
@@ -54,7 +53,7 @@ router.post('/login', function(req, res, next) {
         }
         return passport.GetUserCode(data, function(err, status, result) {
             if (err)
-                return next(AError(err, null, null, err.status || status, scope));
+                return next(TError(err, err.status || status, scope));
 
             log.info(`SUCCESS - ${req.originalUrl} - ${req.method} - ${req.ip}`);
             const url = data.redirect_uri + "?code=" + result;
@@ -78,7 +77,7 @@ router.post('/token', function(req, res, next) {
         } else if (type === 'password') {
             return passAuthorization(req, res, next, scope);
         } else {
-            return next(TError(null, 'Parameter "grant_type" is undefined', 400, scope));
+            return next(TError(null, true, 'Parameter "grant_type" is undefined', 400, scope));
         }
     });
 });
@@ -92,12 +91,12 @@ router.get('/user/id', function(req, res, next) {
 
         const user_auth = validator.Validity(req.headers['user-authorization']);
         if (!user_auth)
-            return next(TError(null, 'Header "user-authorization" is undefined', 401, scope));
+            return next(TError(null, true, 'Header "user-authorization" is undefined', 401, scope));
         return passport.CheckUserByBearer(user_auth, function(err, status, user) {
             if (err)
-                return next(AError(err, null, null, err.status || status, scope));
+                return next(TError(err, err.status || status, scope));
             if (!user)
-                return next(TError(null, 'User is null', status, scope));
+                return next(TError(null, true, 'User is null', status, scope));
 
             log.info(`SUCCESS - ${req.originalUrl} - ${req.method} - ${req.ip}`);
             return res.status(200).send(TData({id : user.id}, scope));
@@ -114,12 +113,12 @@ router.get('/user', function(req, res, next) {
 
         const user_auth = validator.Validity(req.headers['user-authorization']);
         if (!user_auth)
-            return next(TError(null, 'Header "user-authorization" is undefined', 401, scope));
+            return next(TError(null, true, 'Header "user-authorization" is undefined', 401, scope));
         return passport.CheckUserByBearer(user_auth, function(err, status, user) {
             if (err)
-                return next(AError(err, null, null, err.status || status, scope));
+                return next(TError(err, err.status || status, scope));
             if (!user)
-                return next(TError(null, 'User is null', status, scope));
+                return next(TError(null, true, 'User is null', status, scope));
 
             log.info(`SUCCESS - ${req.originalUrl} - ${req.method} - ${req.ip}`);
             return res.status(200).send(TData(user, scope));
@@ -132,12 +131,12 @@ function codeAuthorization(req, res, next, service_scope) {
     log.info('Code authorization');
     const code = validator.Validity(req.body.code);
     if (!code)
-        return next(TError(null, 'Login or password is undefined', 400, service_scope));
+        return next(TError(null, true, 'Login or password is undefined', 400, service_scope));
     return passport.SetUTokenByCode(code, function(err, status, user_scope) {
         if (err) 
-            return next(AError(err, null, null, err.status || status, scope));
+            return next(TError(err, err.status || status, scope));
         if (!user_scope)
-            return next(TError(null, 'User for this password and login is not found', status, service_scope));
+            return next(TError(null, true, 'User for this password and login is not found', status, service_scope));
 
         log.info(`SUCCESS - ${req.originalUrl} - ${req.method} - ${req.ip}`);
         return res.status(200).send(TData(user_scope, service_scope));
@@ -152,12 +151,12 @@ function passAuthorization(req, res, next, service_scope) {
         pass: validator.Validity(req.body.password)
     };
     if (!data.login || !data.pass)
-        return next(TError(null, 'Login or password is undefined', 400, service_scope));
+        return next(TError(null, true, 'Login or password is undefined', 400, service_scope));
     return passport.SetUTokenByPass(data, function(err, status, user_scope) {
         if (err)
-            return next(AError(err, null, null, err.status || status, scope));
+            return next(TError(err, err.status || status, scope));
         if (!user_scope)
-            return next(TError(null, 'User for this password and login is not found', status, service_scope));
+            return next(TError(null, true, 'User for this password and login is not found', status, service_scope));
         
         log.info(`SUCCESS - ${req.originalUrl} - ${req.method} - ${req.ip}`);
         return res.status(200).send(TData(user_scope, service_scope));
@@ -169,12 +168,12 @@ function refreshTokenAuthorization(req, res, next, service_scope) {
     log.info('Token authorization');
     const token = validator.Validity(req.body.refresh_token);
     if (!token)
-        return next(TError(null, 'Token is undefined', 400, service_scope));
+        return next(TError(null, true, 'Token is undefined', 400, service_scope));
     return passport.SetUTokenByToken(token, function(err, status, user_scope) {
         if (err)
-            return next(AError(err, null, null, err.status || status, scope));
+            return next(TError(err, err.status || status, scope));
         if (!user_scope)
-            return next(TError(null, 'User for this password and login is not found', status, service_scope));
+            return next(TError(null, true, 'User for this password and login is not found', status, service_scope));
         
         log.info(`SUCCESS - ${req.originalUrl} - ${req.method} - ${req.ip}`);
         return res.status(200).send(TData(user_scope, service_scope));
@@ -186,13 +185,13 @@ function serviceAuth(header_auth, callback) {
     if (validator.Validity(header_auth)) {
         return passport.CheckServiceAuth(header_auth, function(err, status, scope) {
             if (err || !scope) {
-                err ? callback(AError(err, null, null, err.status || status, scope), null) :
-                    callback(TError(null, 'Scope is null', status), null);
+                err ? callback(TError(err, err.status || status, scope), null) :
+                    callback(TError(null, true, 'Scope is null', status), null);
                 return;
             }
         });
     }
-    return callback(TError(null, 'Header "authorization" is undefined', 401), null);  
+    return callback(TError(null, true, 'Header "authorization" is undefined', 401), null);  
 }
 
 // TODO: ПРИВЕСТИ В НОРМАЛЬНЫЙ ВИД ВСЕ ЭТУ ФИГНЮ
