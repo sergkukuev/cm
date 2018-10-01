@@ -19,94 +19,83 @@ const User = new Schema({
         type: String,
         required: true
     },
+    // Дата создания
     created: {
         type: Date, 
         default: Date.now
     },
-    code: String    // Код пользователя
+    // Код пользователя
+    code: {
+        type: String
+    }
 });
-
-// Получить список всех пользователей
-User.statics.getAll = function(callback) {
-    return this.find(function(err, users) {
-        if (err)
-            return callback(err, null);
-        if (users) {
-            let result = [];
-            for (let i = 0; i < users.length; i++)
-                result[i] = users[i];
-            return callback(null, result);
-        }
-        return callback(null, null);
-    });
-}
-
-// Обновить код доступа
-User.statics.updateCode = function(info, callback) {
-    let code = crypto.randomBytes(10).toString('base64');
-    return this.findOneAndUpdate({ code: info }, { code: code }, { new: true }, function(err, user) {
-        err ? callback(err, null) : (user ? callback(null, user) : callback(null, null));
-    });
-}
 
 // Создание пользователя
 User.statics.create = function(user, callback) {
+    user = new User(user);  // Создаем модель токена из данных
     user.code = crypto.randomBytes(10).toString('base64');
-    return user.save(callback);
+    user.save(function(err, user) {
+        if (err)
+            callback(err, null);
+        else
+            user ? callback(null, user) : callback(new Error('User not saved'), null);
+        return;
+    });
 }
 
-// Зашифровка пароля
-User.methods.encryptPassword = function(password) {
-  return crypto.createHmac('sha1', this.salt).update(password).digest("hex");
+// Получить пользователя по идентификатору
+User.statics.GetById = function(id, callback) {
+    return this.findById(id, function(err, user) {
+        if (err || !user) {
+            err ? callback(err, null) : callback(null, null);
+            return;
+        } 
+        return callback(null, user);
+    });
+}
+
+// Получить пользователя по логину/паролю
+User.statics.GetByLogin = function(login, callback) {
+    return this.findOne({ login: login }, function(err, user) {
+        if (err || !user) {
+            err ? callback(err, null) : callback(null, null);
+            return;
+        }
+        return callback(null, user);
+    });
+}
+
+// Получить пользователя по коду
+User.statics.GetByCode = function(oldCode) {
+    let newCode = crypto.randomBytes(10).toString('base64');
+    return this.findOneAndUpdate({ code: oldCode }, { code: newCode }, { new: true }, function(err, user) {
+        if (err || !user) {
+            err ? callback(err, null) : callback(null, null);
+            return;
+        }
+        return callback(null, user);
+    });
 }
 
 // Проверка пароля пользователя
-User.methods.verify = function(password){
-    return this.encryptPassword(password) === this.hPassword;
-}
-
-// Удаление пользователя по идентификатору
-User.methods.deleteById = function(id, callback) {
-    return this.findByIdAndRemove(id, function(err, user) {
-        err ? callback(err, null) : (user ? callback(null, Format(user)) : callback(null, null));
-    })
-}
-
-// Удаление всех пользователей
-User.methods.delete = function(callback) {
-    return this.remove({}, function(err, result) {
-        err ? callback(err, null) : (result ? callback(null, result) : callback(null, null));
-    })
+User.methods.Verify = function(password){
+    return EncryptPassword(password) === this.hPassword;
 }
 
 // Получить идентификатор
-User.virtual('userID').get(function() {
+User.virtual('userId').get(function() {
     return this.id;
 });
 
 // Установить пароль
 User.virtual('password').set(function(password){
     this.salt = crypto.randomBytes(32).toString('base64');
-    this.hPassword = this.encryptPassword(password);
+    this.hPassword = EncryptPassword(password);
 });
 
-// Формат на выдачу элемента
-function Format(user) {
-    let item = {
-        id      : user._id,
-        login   : user.login,
-        group   : user.group,
-        created : user.created
-    };
-	let flag = false;
-	for (let element in item)
-		if (element == undefined || element == null)
-			flag = true;
-
-	// Хоть одно поле нераспознано, кидаем пустой JSON
-	if (flag)
-		item = null;
-    return item;
+// Зашифровка пароля
+function EncryptPassword(password) {
+    return crypto.createHmac('sha1', this.salt).update(password).digest("hex");
 }
 
 mongoose.model('User', User);

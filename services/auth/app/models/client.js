@@ -18,18 +18,22 @@ const Client = new Schema({
     }
 });
 
-// Получение клиента по appId
-Client.statics.GetByApp = function(id, callback) {
-    return findByData({ appId: id }, callback);
-}
-
 // Получение клиента по appId и appSecret
-Client.statics.GetByAppAndSecret = function(id, secret, callback) {
+Client.statics.GetByData = function(id, secret, callback) {
     let data = {
         appId: id,
         appSecret: secret
     };
-    return findByData(data, callback);
+    return this.findOne(data, function(err, app) {
+        if (err) {
+            return callback(err, null);
+        } else if (!app) {
+            let err = new Error('Client with this data not found');
+            err.name = 'ServiceTokenError';
+            return callback(err, null);
+        }
+        return callback(null, app);
+    });
 }
 
 // Получение клиента по id
@@ -61,20 +65,6 @@ mongoose.model('Client', Client);
 const log = require('./../../config/log')(module);
 var ClientModel = mongoose.model('Client');
 module.exports.model = ClientModel;
-
-// Поиск клиента по информации
-function findByData(data, callback) {
-    ClientModel.findOne(data, function(err, app) {
-        if (err) {
-            return callback(err, null);
-        } else if (!app) {
-            let err = new Error('Client with this data not found');
-            err.name = 'ServiceTokenError';
-            return callback(err, null);
-        }
-        return callback(null, app);
-    });
-}
 
 // Проверка клиента-агрегатора в базе
 module.exports.VerifyClient = function(name, appId, appSecret, created) {

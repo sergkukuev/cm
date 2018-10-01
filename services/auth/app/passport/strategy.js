@@ -9,23 +9,6 @@ const 	User   	= require('./../models/user').model,
 		RToken 	= require('./../models/tokens/refresh').model;
 
 module.exports = {
-	// Получение кода пользователя
-	GetUserCode : function (login, password, done) {
-		return User.findOne({login: login}, function (err, user) {
-			if (err) {
-				return done(err, 500, null);
-			} else if (!user) {
-				return done(new Error('User not found'), 500, null);
-			} else if (!user.verify(password)) {
-				return done(new Error('Password is wrong'), 400, null);
-			}
-			// Обновление кода
-			User.updateCode(user.code, function (err, result) {
-				err ? done(err, 500, null) : done(null, 200, result.code);
-				return;
-			});
-		});
-	},
 	// Создание токенов для пользователя по коду
 	UTokenByCode : function(code, done) {
 		return User.findOne({code: code}, function(err, user) {
@@ -163,26 +146,15 @@ module.exports = {
 		});
 	},
 	CheckService,
-	CheckServiceById,
 	CheckServiceByToken,
 	CheckUser,
-	SetNewAToken
+	SetNewAToken,
+	GetUserCode
 }
 
 // Проверка сервиса по appId (name) и appSecret (pass)
 function CheckService(service, done) {
-	return Client.GetByAppAndSecret(service.name, service.pass, function(err, app) {
-		if (err && err.name == 'ServiceTokenError')
-			return done(err, 401, null);
-		else if (err)
-			return done(err, 500, null);
-		return done(null, 200, app);
-	});
-}
-
-// Проверка сервиса по appId
-function CheckServiceById(appId, done) {
-	return Client.GetByApp(appId, function(err, app) {
+	return Client.GetByData(service.name, service.pass, function(err, app) {
 		if (err && err.name == 'ServiceTokenError')
 			return done(err, 401, null);
 		else if (err)
@@ -262,5 +234,26 @@ function SetNewAToken(application, done) {
 	return AToken.Create(token, function(err, token) {
 		err ? done(err, 500, null) : done(null, 201, AToken.Format(token));
 		return;
+	});
+}
+
+// Получение кода пользователя
+function GetUserCode(data, done) {
+	return User.GetByLogin(data.login, function(err, user) {
+		if (err)
+			return done(err, 500, null);
+		else if (!user) 
+			return done(new Error('User not found'), 404, null);
+		else if (!user.Verify(data.password)) {
+			return done(new Error('Login or password is wrong'), 400, null);
+		}
+		// Идентификация пройдена успешно, обновляем и выдаем код
+		User.GetByCode(user.code, function(err, user) {
+			if (err)
+				return done(err, 500, null);
+			else if (!user) 
+				return done(new Error('User not found'), 404, null);
+			return done(null, 202, user.code);
+		});
 	});
 }

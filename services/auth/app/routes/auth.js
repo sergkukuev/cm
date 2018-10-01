@@ -13,14 +13,36 @@ module.exports = (app) => {
     app.use('/api/auth', router);
 };
 
+// Получить код авторизации
+router.put('/code', function(req, res, next) {
+    log.info(`START - ${req.originalUrl} - ${req.method} - ${req.ip}`);
+    passport.ServiceAuth(req.headers['authorization'], function(err, scope) {
+        if (err)
+            return next(err);
+        const data = {
+            login: validator.Validity(req.body.login),
+            password: validator.Validity(req.body.password),
+            response_type: validator.ResponseType(req.body.grant_type)
+        };
+        if (!data.login || !data.pass)
+            return next(TError(null, true, 'Login or password is undefined', 400, scope));
+        passport.GetUserCode(data, function(err, code) {
+            if (err)
+                return next(err);
+            log.info(`SUCCESS - ${req.originalUrl} - ${req.method} - ${req.ip}`);
+            return res.status(202).send(TData({ code: code }, scope));
+        });
+    });
+});
+
 // Получить токен авторизации
 router.post('/token', function(req, res, next) {
     log.info(`START - ${req.originalUrl} - ${req.method} - ${req.ip}`);
     passport.ServiceAuth(req.headers['authorization'], function(err, scope) {
         if (err)
             return next(err);
-        let type = req.body.grant_type;
-        if (type === 'authorization_code') {
+        let type = validator.ResponseType(req.body.grant_type);
+        if (type === 'code') {
             return codeAuthorization(req, res, next, scope);
         } else if (type === 'refresh_token') {
             return rTokenAuthorization(req, res, next, scope); 

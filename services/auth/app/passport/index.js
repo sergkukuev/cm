@@ -1,7 +1,6 @@
 const   basic       = require('basic-auth'),
         strategy    = require('./strategy'),
         validator   = require('./../validators'),
-        life        = require('./../../config').security.STLife,
         log         = require('./../../config/log')(module);
 
 const   TError = require('./../validators/format').TError;
@@ -9,23 +8,6 @@ const   basicType  = /basic/i,
         bearerType = /bearer/i;
 
 module.exports = {
-    // Получение кода пользователя для авторизации
-    GetUserCode : function (data, callback) {
-        log.info('Get user code for auth');
-        const validator = checkResType(data.response_type, 'code');
-        if (!validator)
-            return callback(new Error('Invalid response type'), 400, null);
-
-        return strategy.CheckServiceById(data.appId, function (err, status, response) {
-            if (err)
-                return callback(err, status, response);
-            else if (!response)
-                return callback(err, status, null);
-            return strategy.GetUserCode(data.login, data.password, function(err, status, code){
-                return callback(err, status, code);
-            });
-        });
-    },
     // Пересоздание токенов пользователя по коду
     SetUTokenByCode : function(code, callback) {
         log.info('Set user tokens by code');
@@ -60,7 +42,8 @@ module.exports = {
         });
     },
     ServiceAuth,
-    UserAuth
+    UserAuth,
+    GetUserCode
 }
 
 // Проверка сервисной авторизации
@@ -95,7 +78,23 @@ function UserAuth(header_auth , callback) {
                 callback(TError(null, true, 'User is null', 400), null);
             return;
         }
-        return callback(null, 200, user);
+        return callback(null, user);
+    });
+}
+
+// Получение кода пользователя для авторизации
+function GetUserCode(data, callback) {
+    log.info('Get user code for authorization');
+    if (data.response_type == 'code')
+        return callback(TError(null, true, 'Invalid parameter "grant_type"', 400), null);
+
+    return strategy.GetUserCode(data, function(err, status, code){
+        if (err || !code) {
+            err ? callback(err, status, null) : 
+                callback(new Error('User code is null'), 400, null);
+            return;
+        }
+        return callback(null, code);
     });
 }
 
@@ -142,11 +141,4 @@ function bearerAuth(header_auth, callback) {
         }
         return callback(null, status, token);
     });
-}
-
-// Проверка на совпадение с нужным типом
-function checkResType(type, needed) {
-    if (type === needed)
-        return true;
-    return false;
 }
