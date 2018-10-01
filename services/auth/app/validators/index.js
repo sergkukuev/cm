@@ -2,7 +2,7 @@ module.exports = {
     // Проверка типа запроса
     ResponseType : function(type) {
         type = this.Validity(type);
-        if (type != "code" && type != "refreshToken")
+        if (type != "code" && type != "refresh_token" && type != 'password')
             type = null;
         return type;
     },
