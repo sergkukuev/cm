@@ -1,5 +1,5 @@
 const mongoose  = require('mongoose'),
-      life      = require('./../../../config').security.STLife,
+      life      = require('../../config').security.STLife,
       Schema    = mongoose.Schema;
 
 // Модель токена доступа
@@ -88,10 +88,13 @@ Token.statics.get = function(callback) {
 }
 
 mongoose.model('AccessToken', Token);
+mongoose.model('RefreshToken', Token);
 mongoose.model('UserAccessToken', Token);
 
 var ServiceModel = mongoose.model('AccessToken'),
-    UserModel    = mongoose.model('UserAccessToken');
+    UserModel    = mongoose.model('UserAccessToken'),
+    RefreshToken = mongoose.model('RefreshToken');
 
 module.exports.model_s = ServiceModel;
 module.exports.model_u = UserModel;
+module.exports.model_r = RefreshToken;

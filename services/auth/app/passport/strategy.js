@@ -4,9 +4,9 @@ const	crypto	= require('crypto'),
 // Необходимые модели БД
 const 	User   	= require('./../models/user').model,
 		Client 	= require('./../models/client').model,
-		AToken  = require('./../models/tokens/access').model_s,
-		UAToken = require('./../models/tokens/access').model_u,
-		RToken 	= require('./../models/tokens/refresh').model;
+		AToken  = require('./../models/token').model_s,
+		UAToken = require('./../models/token').model_u,
+		RToken 	= require('./../models/token').model_r;
 
 module.exports = {
 	// Создание токенов для пользователя по коду
@@ -204,7 +204,7 @@ function CheckUser(token, done) {
 			return done(err, 500, null);
 		// Проверка на срок жизни токена
 		const life = (Date.now() - token.created) / 1000;
-		if (life > cs.STLife) {
+		if (life > cs.UTLife) {
 			token.remove(function(err) {
 				if (err) {
 					return done(err, 500, null);
