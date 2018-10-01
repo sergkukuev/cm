@@ -1,39 +1,14 @@
 const   basic       = require('basic-auth'),
         strategy    = require('./strategy'),
-        cs          = require('./../../config').security,
+        validator   = require('./../validators'),
+        life        = require('./../../config').security.STLife,
         log         = require('./../../config/log')(module);
 
-const basicType  = /basic/i;
-const bearerType = /bearer/i;
+const   TError = require('./../validators/format').TError;
+const   basicType  = /basic/i,
+        bearerType = /bearer/i;
 
 module.exports = {
-    // Проверка сервисной авторизации
-    CheckServiceAuth : function(header_authorization, callback) {
-        log.info('Checker service authorization');
-        const type = basicType.test(header_authorization);
-        if (type)
-            return checkBasicAuth(header_authorization, callback);
-        else if (bearerType.test(header_authorization))
-            return checkBearerAuth(header_authorization, callback);
-        return callback(new Error('Unknown authorization type'), 400, null);
-    },
-    // Проверка авторизации пользователя
-    CheckUserByBearer : function(header_text , callback) {
-        log.info('Checker user authorization by bearer token');
-        if (!bearerType.test(header_text))
-            return callback(new Error('Isn\'t Bearer token'), 400, null);
-        const token = getBearer(header_text);
-        return strategy.СheckUserByAToken(token, function(err, status, user) {
-            if (err)
-                return callback(err, status);
-            if (status || !user)
-                return callback(new Error('User not found'), status);
-            return callback(null, status, user);
-        });
-    },
-    /**
-    * @param {Object} data - data
-    */
     // Получение кода пользователя для авторизации
     GetUserCode : function (data, callback) {
         log.info('Get user code for auth');
@@ -83,40 +58,89 @@ module.exports = {
                 return callback(null, status, null);
             return callback(null, null, scope);
         });
-    }
+    },
+    ServiceAuth,
+    UserAuth
+}
+
+// Проверка сервисной авторизации
+function ServiceAuth(header_auth, callback) {
+    log.info('Checker service authorization');
+    if (!validator.Validity(header_auth))
+        return callback(TError(null, true, 'Header "authorization" is undefined', 401), null);
+
+    choiceSAuth(header_auth, function(err, status, scope) {
+        if (err || !scope) {
+            err ? callback(TError(err, true, err.status || status, scope), null) :
+                callback(TError(null, true, 'Scope is null', status), null);
+            return;
+        }
+        return callback(null, scope);
+    });
+}
+
+// Проверка авторизации пользователя по токену
+function UserAuth(header_auth , callback) {
+    log.info('Checker user authorization');
+    if (!validator.Validity(header_auth))
+        return callback(TError(null, true, 'Header "user-authorization" is undefined', 401), null);
+    if (!bearerType.test(header_auth))
+        return callback(TError(null, true, 'Isn\'t Bearer token', 400), null);
+    
+    const token =  String(header_auth);
+    token = token.slice(7);
+    return strategy.CheckUser(token, function(err, status, user) {
+        if (err || !user) {
+            err ? callback(err, status, null) :
+                callback(TError(null, true, 'User is null', 400), null);
+            return;
+        }
+        return callback(null, 200, user);
+    });
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+// Выбор сервисной авторизации
+function choiceSAuth(header_auth, callback) {
+    const type = basicType.test(header_auth);
+    if (type)
+        return basicAuth(header_auth, callback);
+    else if (bearerType.test(header_auth))
+        return bearerAuth(header_auth, callback);
+    return callback(new Error('Unknown authorization type'), 400, null);
 }
 
 // Проверка авторизации по appId и appSecret
-function checkBasicAuth(header_authorization, callback) {
-    const service = basic.parse(header_authorization);
-    return strategy.CheckService(service.name, service.pass, function(err, status, application) {
-        if (err)
-            return callback(err, status, null);
-        if (!application)
-            return callback(null, status, null);
-        return strategy.SetNewAToken(application, function(err, status, scope) {
-            if (err)
-                return callback(err, status, null);
-            if (!scope)
-                return callback(null, status, null);
-            return callback(null, null, scope);
+function basicAuth(header_auth, callback) {
+    const service = basic.parse(header_auth);
+    strategy.CheckService(service, function(err, status, app) {
+        if (err || !app) {
+            err ? callback(err, status, null) : 
+                callback(new Error('Service data is null'), 400, null);
+            return;
+        }
+        strategy.SetNewAToken(app, function(err, status, scope) {
+            if (err || !scope) {
+                err ? callback(err, status, null) : 
+                    callback(new Error('Service data is null'), 400, null);
+                return;
+            }
+            return callback(null, 200, scope);
         });
     });
 }
 
 // Проверка авторизации по токену
-function checkBearerAuth(header_authorization, callback) {
-    const serviceToken = getBearer(header_authorization);
-    return strategy.CheckServiceAToken(serviceToken, function(err, status, result) {
-        let response = {
-            token: serviceToken,
-            expires_in : cs.STLife
-        };
-        if (err)
-            return callback(err, status, response);
-        if (!result)
-            return callback(new Error('Invalid token'), 400, response);
-        return callback(null, status, response);
+function bearerAuth(header_auth, callback) {
+    const service = String(header_auth);
+    service = service.slice(7);
+    strategy.CheckServiceByToken(service, function(err, status, token) {
+        if (err || !token) {
+            err ? callback(err, status, null) : 
+                callback(new Error('Token is null'), 400, null);
+            return;
+        }
+        return callback(null, status, token);
     });
 }
 
@@ -125,11 +149,4 @@ function checkResType(type, needed) {
     if (type === needed)
         return true;
     return false;
-}
-
-// Получить токен
-function getBearer(token) {
-    token = String(token);
-    token = token.slice(7);
-    return token;
 }

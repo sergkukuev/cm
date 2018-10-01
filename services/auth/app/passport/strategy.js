@@ -4,8 +4,8 @@ const	crypto	= require('crypto'),
 // Необходимые модели БД
 const 	User   	= require('./../models/user').model,
 		Client 	= require('./../models/client').model,
-		AToken  = require('./../models/tokens/access').model,
-		UAToken = require('./../models/tokens/users_access').model,
+		AToken  = require('./../models/tokens/access').model_a,
+		UAToken = require('./../models/tokens/access').model_u,
 		RToken 	= require('./../models/tokens/refresh').model;
 
 module.exports = {
@@ -25,115 +25,6 @@ module.exports = {
 				return;
 			});
 		});
-	},
-	// Установка нового токена доступа
-	SetNewAToken : function(application, done) {
-		let tokenValue = crypto.randomBytes(32).toString('base64');
-		let token = new AToken({
-			userID	: application.id,
-			token 	: tokenValue
-		});
-		return token.save(function(err, token) {
-			if (err)
-				return done(err, 500, null);
-			else if (!token)
-				return done(new Error('Token not saved'), 500, null);
-
-			let result = {
-				token : tokenValue,
-				expires_in : cs.STLife
-			};
-			return done(null, null, result);
-		});
-	},
-	// Проверка токена доступа
-	CheckServiceAToken : function(accessToken, done) {
-		return AToken.findOne({token : accessToken}, function(err, token) {
-			if (err)
-				return done(err, 500);
-			else if (!token) {
-				let err = new Error('Application with this access token not found');
-				err.name = 'ServiceTokenError';
-				return done(err, 401, false);
-			}
-
-			const timeLife = (Date.now() - token.created) / 1000;	// Вычисление времени жизни токена
-			if (timeLife > cs.STLife) {	// Сравнение с конфигурацией
-				token.remove(function(err) {
-					if (err)
-						return done(err, 500, false);
-				});
-				let err = new Error('Access token is expired');
-				err.name = 'ServiceTokenError';
-				return done(err, 401, false);
-			}
-
-			const appId = token.userID;
-			return Client.findById(appId, function(err, application) {
-				if (err) { 
-					return done(err, 500, false);
-				} else if (!application) {
-					return done(new Error('Wrong access token'), 404, false);
-				} else
-					return done(null, null, true);
-			});
-		});
-	},
-	// Проверка сервиса по appId и appSecret
-	CheckService : function(appId, appSecret, done) {
-		return Client.findOne({appId : appId}, function(err, app_cli) {
-			if (err)
-				return done(err, 500);
-			else if (!app_cli) {
-				let err = new Error('Application with this appId and appSecret not found');
-				err.name = 'ServiceTokenError';
-				return done(err, 401, false);
-			} else if (app_cli.appSecret != appSecret) {
-				let err = new Error('Application with this appId and appSecret not found');
-				err.name = 'ServiceTokenError';
-				return done(err, 401, false);
-			}
-			return done(null, null, app_cli);
-		});
-	},
-	// Проверка сервиса только по appId
-	CheckServiceById : function(appId, done) {
-		return Client.findOne({appId: appId}, function (err, app_cli) {
-			if (err)
-				return done(err, 500);
-			else if (!app_cli) {
-				let err = new Error('Application with this appId not found');
-				err.name = 'ServiceTokenError';
-				return done(err, 401);
-			}
-			return done(null, 200, true);
-		});
-	},
-	// Проверка пользователя по токену доступа
-	СheckUserByAToken : function(accessToken, done) {
-		UAToken.findOne({token : accessToken},function(err, token) {
-			if (err)
-				return done(err, 500);
-			if (!token)
-				return done(new Error('Access token not found'), 401, false);
-
-			const timeLife = Math.round((Date.now() - token.created) / 1000);	// Вычисление времени жизни токена
-			if(timeLife > cs.UTLife) { 	// Сравнение с конфигурацией
-				UAToken.remove({token : accessToken}, function(err) {
-					if (err) 
-						return done(err, 500);
-				});
-				return done(new Error('Token expired'), 401);
-			}
-			// Поиск пользователя по идентификатору
-			return User.findById(token.userID, function(err, user) {	
-				if (err)
-					return done(err, 500);
-				if (!user)
-					return done(new Error('Unkown user'), 401);
-				return done(null, null, user);
-			});
-		});	
 	},
 	// Создание токенов для пользователя по коду
 	UTokenByCode : function(code, done) {
@@ -270,5 +161,106 @@ module.exports = {
 				});
 			});
 		});
-	}
+	},
+	CheckService,
+	CheckServiceById,
+	CheckServiceByToken,
+	CheckUser,
+	SetNewAToken
+}
+
+// Проверка сервиса по appId (name) и appSecret (pass)
+function CheckService(service, done) {
+	return Client.GetByAppAndSecret(service.name, service.pass, function(err, app) {
+		if (err && err.name == 'ServiceTokenError')
+			return done(err, 401, null);
+		else if (err)
+			return done(err, 500, null);
+		return done(null, 200, app);
+	});
+}
+
+// Проверка сервиса по appId
+function CheckServiceById(appId, done) {
+	return Client.GetByApp(appId, function(err, app) {
+		if (err && err.name == 'ServiceTokenError')
+			return done(err, 401, null);
+		else if (err)
+			return done(err, 500, null);
+		return done(null, 200, app);
+	});
+}
+
+// Проверка токена доступа
+function CheckServiceByToken(token, done) {
+	return AToken.GetByValue(token, function(err, token) {
+		if (err && err.name == 'TokenError') {
+			err.name = 'ServiceTokenError';
+			return done(err, 401, null);
+		} else if (err)
+			return done(err, 500, null);
+		// Проверка на срок жизни токена
+		const life = (Date.now() - token.created) / 1000;
+		if (life > cs.STLife) {
+			token.remove(function(err) {
+				if (err) {
+					return done(err, 500, null);
+				}
+			});
+			let err = new Error('Access token is expired');
+			err.name = 'ServiceTokenError';
+			return done(err, 401, null);
+		}
+		// Поиск клиента по идентификатору
+		return Client.GetById(token.userId, function(err, app) {
+			if (err && err.name == 'ServiceTokenError')
+				return done(err, 401, null);
+			else if (err)
+				return done(err, 500, null);
+			return done(null, 200, AToken.Format(token));
+		});
+	});
+}
+
+// Проверка пользователя по токену доступа
+function CheckUser(token, done) {
+	return UAToken.GetByValue(token, function(err, token) {
+		if (err && err.name == 'TokenError') {
+			err.name = 'UserTokenError';
+			return done(err, 401, null);
+		} else if (err)
+			return done(err, 500, null);
+		// Проверка на срок жизни токена
+		const life = (Date.now() - token.created) / 1000;
+		if (life > cs.STLife) {
+			token.remove(function(err) {
+				if (err) {
+					return done(err, 500, null);
+				}
+			});
+			let err = new Error('Access token is expired');
+			err.name = 'UserTokenError';
+			return done(err, 401, null);
+		}
+		// Поиск пользователя по идентификатору
+		return User.GetById(token.userId, function(err, user) {	
+			if (err)
+				return done(err, 500, null);
+			else if (!user)
+				return done(new Error('User not found'), 404, null);
+			return done(null, 200, user);
+		});
+	});
+}
+
+// Установка нового токена доступа
+function SetNewAToken(application, done) {
+	let token = {
+		userId: application.id,
+		value: crypto.randomBytes(32).toString('base64')
+	};
+	return AToken.Create(token, function(err, token) {
+		err ? done(err, 500, null) : done(null, 201, AToken.Format(token));
+		return;
+	});
 }

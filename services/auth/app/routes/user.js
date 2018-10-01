@@ -27,19 +27,12 @@ router.get('/', function(req, res, next) {
 // Получить идентификатор пользователя по токену
 router.get('/id', function(req, res, next) {
     log.info(`START - ${req.originalUrl} - ${req.method} - ${req.ip}`);
-    serviceAuth(req.headers['authorization'], function(err, scope) {
+    passport.ServiceAuth(req.headers['authorization'], function(err, scope) {
         if (err)
             return next(err);
-
-        const user_auth = validator.Validity(req.headers['user-authorization']);
-        if (!user_auth)
-            return next(TError(null, true, 'Header "user-authorization" is undefined', 401, scope));
-        return passport.CheckUserByBearer(user_auth, function(err, status, user) {
+        return passport.UserAuth(req.headers['user-authorization'], function(err, user) {
             if (err)
-                return next(TError(err, true, err.status || status, scope));
-            if (!user)
-                return next(TError(null, true, 'User is null', status, scope));
-
+                return next(err);
             log.info(`SUCCESS - ${req.originalUrl} - ${req.method} - ${req.ip}`);
             return res.status(200).send(TData({id : user.id}, scope));
         });
@@ -69,18 +62,3 @@ router.delete('/:id', function(req, res, next) {
     log.info(`START - ${req.originalUrl} - ${req.method} - ${req.ip}`);
     return res.status(200).send({ message: 'It\'s stub!' });
 });
-
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Проверка сервисной авторизации
-function serviceAuth(header_auth, callback) {
-    if (validator.Validity(header_auth)) {
-        return passport.CheckServiceAuth(header_auth, function(err, status, scope) {
-            if (err || !scope) {
-                err ? callback(TError(err, true, err.status || status, scope), null) :
-                    callback(TError(null, true, 'Scope is null', status), null);
-                return;
-            }
-        });
-    }
-    return callback(TError(null, true, 'Header "authorization" is undefined', 401), null);  
-}
