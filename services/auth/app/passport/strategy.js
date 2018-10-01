@@ -4,7 +4,7 @@ const	crypto	= require('crypto'),
 // Необходимые модели БД
 const 	User   	= require('./../models/user').model,
 		Client 	= require('./../models/client').model,
-		AToken  = require('./../models/tokens/access').model_a,
+		AToken  = require('./../models/tokens/access').model_s,
 		UAToken = require('./../models/tokens/access').model_u,
 		RToken 	= require('./../models/tokens/refresh').model;
 

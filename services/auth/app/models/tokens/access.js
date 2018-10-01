@@ -93,5 +93,5 @@ mongoose.model('UserAccessToken', Token);
 var ServiceModel = mongoose.model('AccessToken'),
     UserModel    = mongoose.model('UserAccessToken');
 
-module.exports.model_a = ServiceModel;
+module.exports.model_s = ServiceModel;
 module.exports.model_u = UserModel;
