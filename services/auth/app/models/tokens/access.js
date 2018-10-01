@@ -1,13 +1,14 @@
 const mongoose  = require('mongoose'),
+      life      = require('./../../../config').security.STLife,
       Schema    = mongoose.Schema;
 
 // Модель токена доступа
-var AToken = new Schema({
-    userID: {
+var Token = new Schema({
+    userId: {
         type: String,
         required: true
     },
-    token: {
+    value: {
         type: String,
         unique: true,
         required: true
@@ -22,9 +23,43 @@ var AToken = new Schema({
     }
 });
 
+// Создание токена доступа
+Token.statics.Create = function(token, callback) {
+    token = new Token(token);  // Создаем модель токена из данных
+    token.save(function(err, token) {
+        if (err)
+            callback(err, null);
+        else
+            token ? callback(null, token) : callback(new Error('Token not saved'), null);
+        return;
+    });
+}
+
+// Поиск токена по значению
+Token.statics.GetByValue = function(value, callback) {
+    return this.findOne({ value: value }, function (err, token) {
+        if (err) {
+            return callback(err, null);
+        } else if (!token) {
+            let err = new Error('Token with this value not found');
+            err.name = 'TokenError';
+            return callback(err, null);
+        }
+        return callback(null, token);
+    });
+}
+
+// Формат для выдачи сервису
+Token.statics.Format = function(token) {
+    return {
+        token: token.value,
+        expires_in: life
+    };
+}
+
 // Получить токены доступа по идентификатору пользователя
-AToken.statics.getByUserId = function(id, callback) {
-    return this.find({userID: id}, function(err, tokens) {
+Token.statics.getByUserId = function(id, callback) {
+    return this.find({userId: id}, function(err, tokens) {
         if (err)
             return callback(err, null);
         if (tokens) {
@@ -38,7 +73,7 @@ AToken.statics.getByUserId = function(id, callback) {
 }
 
 // Получить все имеющиеся токены доступа
-AToken.statics.get = function(callback) {
+Token.statics.get = function(callback) {
     return this.find(function(err, tokens) {
         if (err)
             return callback(err, null);
@@ -52,7 +87,11 @@ AToken.statics.get = function(callback) {
     });
 }
 
-mongoose.model('AccessToken', AToken);
+mongoose.model('AccessToken', Token);
+mongoose.model('UserAccessToken', Token);
 
-var TokenModel = mongoose.model('AccessToken');
-module.exports.model = TokenModel;
+var ServiceModel = mongoose.model('AccessToken'),
+    UserModel    = mongoose.model('UserAccessToken');
+
+module.exports.model_a = ServiceModel;
+module.exports.model_u = UserModel;
