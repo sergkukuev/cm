@@ -31,7 +31,7 @@ const User = new Schema({
 });
 
 // Создание пользователя
-User.statics.create = function(user, callback) {
+User.statics.Create = function(user, callback) {
     user = new User(user);  // Создаем модель токена из данных
     user.code = crypto.randomBytes(10).toString('base64');
     user.save(function(err, user) {
@@ -54,9 +54,9 @@ User.statics.GetById = function(id, callback) {
     });
 }
 
-// Получить пользователя по логину/паролю
-User.statics.GetByLogin = function(login, callback) {
-    return this.findOne({ login: login }, function(err, user) {
+// Получить пользователя по информации
+User.statics.GetByData = function(data, callback) {
+    return this.findOne(data, function(err, user) {
         if (err || !user) {
             err ? callback(err, null) : callback(null, null);
             return;
@@ -66,7 +66,7 @@ User.statics.GetByLogin = function(login, callback) {
 }
 
 // Получить пользователя по коду
-User.statics.GetByCode = function(oldCode) {
+User.statics.GetByCode = function(oldCode, callback) {
     let newCode = crypto.randomBytes(10).toString('base64');
     return this.findOneAndUpdate({ code: oldCode }, { code: newCode }, { new: true }, function(err, user) {
         if (err || !user) {
@@ -79,7 +79,7 @@ User.statics.GetByCode = function(oldCode) {
 
 // Проверка пароля пользователя
 User.methods.Verify = function(password){
-    return EncryptPassword(password) === this.hPassword;
+    return encryptPassword(password) === this.hPassword;
 }
 
 // Получить идентификатор
@@ -90,11 +90,11 @@ User.virtual('userId').get(function() {
 // Установить пароль
 User.virtual('password').set(function(password){
     this.salt = crypto.randomBytes(32).toString('base64');
-    this.hPassword = EncryptPassword(password);
+    this.hPassword = encryptPassword(password);
 });
 
 // Зашифровка пароля
-function EncryptPassword(password) {
+function encryptPassword(password) {
     return crypto.createHmac('sha1', this.salt).update(password).digest("hex");
 }
 
