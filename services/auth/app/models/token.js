@@ -31,6 +31,36 @@ Token.statics.Create = function(token, callback) {
     });
 }
 
+// Получить все токены
+Token.statics.Get = function(callback) {
+    return this.find(function(err, tokens) {
+        if (err)
+            return callback(err, null);
+        if (tokens) {
+            let result = [];
+            for (let i = 0; i < tokens.length; i++)
+                result[i] = tokens[i];
+            return callback(null, result);
+        }
+        return callback(null, null);
+    });
+}
+
+// Получить токены доступа по id пользователя
+Token.statics.GetByUserId = function(id, callback) {
+    return this.find({ userId: id }, function(err, tokens) {
+        if (err)
+            return callback(err, null);
+        if (tokens) {
+            let result = [];
+            for (let i = 0; i < tokens.length; i++)
+                result[i] = tokens[i];
+            return callback(null, result);
+        }
+        return callback(null, null);
+    });
+}
+
 // Поиск токена по значению
 Token.statics.GetByValue = function(value, callback) {
     return this.findOne({ value: value }, function (err, token) {
@@ -45,42 +75,22 @@ Token.statics.GetByValue = function(value, callback) {
     });
 }
 
+// Удаление всех клиентов из базы
+Token.statics.Clear = function(callback) {
+    this.remove({}, function(err, result) {
+        if (err) 
+            return callback(err, null);
+        else
+            result ? callback(null, result) : callback(new Error('Deleting failed'), null);
+    });
+}
+
 // Формат для выдачи сервису
 Token.statics.Format = function(token) {
     return {
         token: token.value,
         expires_in: life
     };
-}
-
-// Получить токены доступа по идентификатору пользователя
-Token.statics.getByUserId = function(id, callback) {
-    return this.find({userId: id}, function(err, tokens) {
-        if (err)
-            return callback(err, null);
-        if (tokens) {
-            let result = [];
-            for (let i = 0; i < tokens.length; i++)
-                result[i] = tokens[i];
-            return callback(null, result);
-        }
-        return callback(null, null);
-    });
-}
-
-// Получить все имеющиеся токены доступа
-Token.statics.get = function(callback) {
-    return this.find(function(err, tokens) {
-        if (err)
-            return callback(err, null);
-        if (tokens) {
-            let result = [];
-            for (let i = 0; i < tokens.length; i++)
-                result[i] = tokens[i];
-            return callback(null, result);
-        }
-        return callback(null, null);
-    });
 }
 
 mongoose.model('AccessToken', Token);
