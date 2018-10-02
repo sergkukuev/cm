@@ -4,152 +4,22 @@ const	crypto	= require('crypto'),
 // Необходимые модели БД
 const 	User   	= require('./../models/user').model,
 		Client 	= require('./../models/client').model,
-		AToken  = require('./../models/token').model_s,
-		UAToken = require('./../models/token').model_u,
+		SToken  = require('./../models/token').model_s,
+		UToken = require('./../models/token').model_u,
 		RToken 	= require('./../models/token').model_r;
 
 module.exports = {
-	// Создание токенов для пользователя по коду
-	UTokenByCode : function(code, done) {
-		return User.findOne({code: code}, function(err, user) {
-			if (err)
-				return done(err, 500);
-			if (!user)
-				return done(new Error('User with this code not found'), 401, false);
-			// Удаление старых токенов
-			RToken.remove({userID: user.userID}, function(err) {
-				if (err)
-					return done(err);
-				return;
-			});
-			UAToken.remove({userID : user.userID}, function(err) {
-				if (err)
-					return done(err);
-				return;
-			});
-			// Создание токенов
-			let tokenValue = crypto.randomBytes(32).toString('base64');
-			let refreshTokenValue = crypto.randomBytes(32).toString('base64');
-			let token = new UAToken({
-				token : tokenValue,
-				userID: user.id
-			});
-			let refreshToken = new RToken({
-				token : refreshTokenValue, 
-				userID: user.id
-			});
-			return refreshToken.save(function(err) {
-				if (err)
-					return done(err, 500);
-				token.save(function(err, token) {
-					if (err)
-						return done(err, 500);
-					let result = {
-						user: user,
-						access_token: tokenValue,
-						refresh_token: refreshTokenValue,
-						expires_in: cs.userTokenLife
-					}
-					return done(null, null, result);
-				});
-			});
-		});
-	},
-	// Создание токенов для пользователя по паролю
-	UTokenByPass : function(data, done) {
-		return User.findOne({login: data.login}, function(err, user) {
-			if (err)
-				return done(err, 500);
-			if (!user)
-				return done(new Error('User with this login and password not found'), 401, false);
-			if (!user.verify(data.pass))
-				return done(new Error('Wrong password for this user'), 400, false);
-			// Удаление старых токенов
-			RToken.remove({userID: user.userID}, function(err) {
-				if (err)
-					return done(err);
-			});
-			UAToken.remove({userID : user.userID}, function(err) {
-				if (err)
-					return done(err);
-			});
-			// Создание токенов
-			let tokenValue = crypto.randomBytes(32).toString('base64');
-			let token = new UAToken({
-				token : tokenValue,
-				userID: user.id
-			});
-			return token.save(function(err, token) {
-				if (err)
-					return done(err, 500);
-				else if (!token)
-					return done(new Error('Token was not saved'), 500, false);
-				let result = {
-					user: user,
-					access_token: token,
-					expires_in: cs.userTokenLife
-				}
-				return done(null, null, result);
-			});
-		});
-	},
-	// Создание токенов для пользователя по токену
-	UTokenByToken : function(refreshToken, done) {
-		RToken.findOne({token : refreshToken}, function(err, token) {
-			if (err)
-				return done(err, 500);
-			if (!token)
-				return done(new Error('Refresh token not found'), 404, false);
-			
-			return User.findById(token.userID, function(err, user) {
-				if (err)
-					return done(err, 500);
-				if (!user)
-					return done(new Error('User by this refresh token not found'), 404, false);
-				// Удаление старых токенов
-				RToken.remove({userID : user.userID}, function(err) {
-					if (err)
-						return done(err, 500);
-				});
-				UAToken.remove({userID : user.userID}, function(err) {
-					if (err)
-						return done(err, 500);
-				});
-				// Создание токенов
-				let tokenValue = crypto.randomBytes(32).toString('base64');
-				let refreshTokenValue = crypto.randomBytes(32).toString('base64');	
-				let token = new UAToken({
-					token : tokenValue, 
-					userID: user.userID 
-				});
-				let refToken = new RToken({
-					token : refreshTokenValue, 
-					userID: user.userID
-				});
-				refToken.save(function(err) {
-					if (err)
-	    				return done(err, 500);
-				});
-				return token.save(function(err, token) {
-					if (err)
-						return done(err, 500);
-					else if (!token)
-						return done(new Error('Token was not saved'), 500, false);
-					let result = {
-						access_token : tokenValue,
-						refresh_token : refreshTokenValue,
-						expires_in : cs.userTokenLife
-					}
-					return done(null, null, result);
-				});
-			});
-		});
-	},
-	CheckService,
-	CheckServiceByToken,
-	CheckUser,
-	SetNewAToken,
-	GetUserCode
+	// Проверка сервисной авторизации
+	CheckService,		// Проверка авторизации сервиса по appId и appSecret
+	CheckServiceByToken,// Проверка авторизации по токену доступа
+	SetNewToken,		// Установка нового токена доступа
+	// Проверка авторизации пользователя
+	CheckUser,		// Проверка авторизации по токену
+	GetUserCode,	// Получить код пользователя
+	// Обновление токенов пользователя
+	UTokenByCode,	
+	UTokenByPass,	
+	UTokenByToken	
 }
 
 // Проверка сервиса по appId (name) и appSecret (pass)
@@ -165,7 +35,7 @@ function CheckService(service, done) {
 
 // Проверка токена доступа
 function CheckServiceByToken(token, done) {
-	return AToken.GetByValue(token, function(err, token) {
+	return SToken.GetByValue(token, function(err, token) {
 		if (err && err.name == 'TokenError') {
 			err.name = 'ServiceTokenError';
 			return done(err, 401, null);
@@ -189,14 +59,26 @@ function CheckServiceByToken(token, done) {
 				return done(err, 401, null);
 			else if (err)
 				return done(err, 500, null);
-			return done(null, 200, AToken.Format(token));
+			return done(null, 200, SToken.Format(token));
 		});
+	});
+}
+
+// Установка нового токена доступа
+function SetNewToken(application, done) {
+	let token = {
+		userId: application.id,
+		value: crypto.randomBytes(32).toString('base64')
+	};
+	return SToken.Create(token, function(err, token) {
+		err ? done(err, 500, null) : done(null, 201, SToken.Format(token));
+		return;
 	});
 }
 
 // Проверка пользователя по токену доступа
 function CheckUser(token, done) {
-	return UAToken.GetByValue(token, function(err, token) {
+	return UToken.GetByValue(token, function(err, token) {
 		if (err && err.name == 'TokenError') {
 			err.name = 'UserTokenError';
 			return done(err, 401, null);
@@ -225,21 +107,9 @@ function CheckUser(token, done) {
 	});
 }
 
-// Установка нового токена доступа
-function SetNewAToken(application, done) {
-	let token = {
-		userId: application.id,
-		value: crypto.randomBytes(32).toString('base64')
-	};
-	return AToken.Create(token, function(err, token) {
-		err ? done(err, 500, null) : done(null, 201, AToken.Format(token));
-		return;
-	});
-}
-
 // Получение кода пользователя
 function GetUserCode(data, done) {
-	return User.GetByLogin(data.login, function(err, user) {
+	return User.GetByData({ login: data.login }, function(err, user) {
 		if (err)
 			return done(err, 500, null);
 		else if (!user) 
@@ -254,6 +124,111 @@ function GetUserCode(data, done) {
 			else if (!user) 
 				return done(new Error('User not found'), 404, null);
 			return done(null, 202, user.code);
+		});
+	});
+}
+
+// Создание токенов для пользователя по коду
+function UTokenByCode(code, done) {
+	return User.GetByData({ code: code }, function(err, user) {
+		if (err)
+			return done(err, 500, null);
+		else if (!user)
+			return done(new Error('User not found'), 404, null);
+		return refreshUToken(user.id, null, done);
+	});
+}
+
+// Создание токенов для пользователя по паролю
+function UTokenByPass(data, done) {
+	return User.GetByData({ login: data.login }, function(err, user) {
+		if (err)
+			return done(err, 500, null);
+		else if (!user)
+			return done(new Error('User not found'), 404, null);
+		else if (!user.Verify(data.password))
+			return done(new Error('Login or password is wrong'), 401, null);
+		return refreshUToken(user.id, null, done);
+	});
+}
+
+// Создание токенов для пользователя по токену
+function UTokenByToken(refresh, done) {
+	RToken.GetByValue(refresh, function(err, token) {
+		if (err)
+			return done(err, 500, null);
+		if (!token)
+			return done(new Error('Refresh token not found'), 404, false);
+		
+		return User.GetById(token.userId, function(err, user) {
+			if (err)
+				return done(err, 500);
+			if (!user)
+				return done(new Error('User not found'), 404, false);
+			return refreshUToken(user.id, token.created, done);
+		});
+	});
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+// Удаление и создание токенов доступа и обновления
+function refreshUToken(userId, life, done) {
+	return deleteUToken(userId, life, function(err, status) {
+		if (err)
+			return done(err, status, null);
+		return createUToken(userId, function(err, status, result) {
+			err ? done(err, status, null) : done(null, status, result);
+		});
+	});
+}
+
+// Удаление токенов
+function deleteUToken(userId, life, done) {
+	// Удаление токена обновления
+	RToken.remove({ userId: userId }, function(err) {
+		if (err)
+			return done(err, 500);
+	});
+	// Проверка на срок жизни токена
+	// если обновление происходит по токену обновления
+	let alife = true;
+	if (life) {
+		life = (Date.now() - life) / 1000;
+		if (life > cs.RTLife)
+			alife = false;
+	}
+	if (!alife) {	// Токен стух
+		let err = new Error('Refresh token is expired');
+		err.name = 'RefreshTokenError';
+		return done(err, 401);
+	} else {	// Токен жив или обновление не по токену (удаляем старый токен доступа)
+		return UToken.remove({ userId: userId }, function(err) {
+			err ? done(err, 500) : done(null, 200);
+			return;
+		});
+	}
+}
+
+// Создание токенов
+function createUToken(userId, done) {
+	// Создание токенов
+	let token = {
+		value: crypto.randomBytes(32).toString('base64'),
+		userId: userId
+	};
+	return RToken.Create(token, function(err, refresh_token) {
+		if (err)
+			return done(err, 500, null);
+		token.value = crypto.randomBytes(32).toString('base64');
+		UToken.Create(token, function(err, access_token) {
+			if (err)
+				return done(err, 500, null);
+			let result = {
+				access: access_token.value,
+				refresh: refresh_token.value,
+				expires_in: cs.UTLife
+			};
+			return done(null, 201, result);
 		});
 	});
 }

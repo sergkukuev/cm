@@ -8,9 +8,10 @@ var config = {
         app: {
             name: 'auth_cm'
         },
-        security : {
-            UTLife : 1800,
-            STLife : 1800
+        security: {
+            UTLife: 3600,   // Пользовательский токен живет 1 час
+            STLife: 7200,   // Токен доступа сервисный живет 2 часа
+            RTLife: 86400   // Токен обновления живет 24 часа
         },
         port: process.env.PORT || 3005,
         db: 'mongodb://localhost/auth_cm'

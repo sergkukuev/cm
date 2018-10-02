@@ -8,42 +8,13 @@ const   basicType  = /basic/i,
         bearerType = /bearer/i;
 
 module.exports = {
-    // Пересоздание токенов пользователя по коду
-    SetUTokenByCode : function(code, callback) {
-        log.info('Set user tokens by code');
-        return strategy.UTokenByCode(code, function(err, status, scope) {
-            if (err)
-                return callback(err, status, null);
-            if (!scope)
-                return callback(null, status, null);
-            return callback(null, null, scope);
-        });
-    },
-    // Пересоздание токенов пользователя по паролю
-    SetUTokenByPass : function(data, callback) {
-        log.info('Set user tokens by password');
-        return strategy.UTokenByPass(data, function(err, status, scope) {
-            if (err)
-                return callback(err, status, null);
-            if (!scope)
-                return callback(null, status, null);
-            return callback(null, null, scope);
-        });
-    },
-    // Пересоздание токенов пользователя по токену
-    SetUTokenByToken : function(token, callback) {
-        log.info('Set user tokens by token');
-        return strategy.UTokenByToken(token, function(err, status, scope) {
-            if (err)
-                return callback(err, status, null);
-            if (!scope)
-                return callback(null, status, null);
-            return callback(null, null, scope);
-        });
-    },
-    ServiceAuth,
-    UserAuth,
-    GetUserCode
+    ServiceAuth,    // Сервисная авторизация
+    UserAuth,       // Пользовательская авторизация
+    GetUserCode,    // Получить код пользователя
+    // Обновление токенов пользователя
+    SetUTokenByCode,
+    SetUTokenByPass,
+    SetUTokenByToken
 }
 
 // Проверка сервисной авторизации
@@ -91,11 +62,29 @@ function GetUserCode(data, callback) {
     return strategy.GetUserCode(data, function(err, status, code){
         if (err || !code) {
             err ? callback(err, status, null) : 
-                callback(new Error('User code is null'), 400, null);
+                callback(TError(null, true, 400, 'User code is null'), 400, null);
             return;
         }
         return callback(null, code);
     });
+}
+
+// Обновление токенов пользователя по коду
+function SetUTokenByCode(code, callback) {
+    log.info('Set user tokens by code');
+    return updateToken(code, strategy.UTokenByCode, callback);
+}
+
+// Обновление токенов пользователя по паролю
+function SetUTokenByPass(data, callback) {
+    log.info('Set user tokens by password');
+    return updateToken(data, strategy.UTokenByPass, callback);
+}
+
+// Обновление токенов пользователя по токену
+function SetUTokenByToken(token, callback) {
+    log.info('Set user tokens by token');
+    return updateToken(token, strategy.UTokenByToken, callback);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////
@@ -118,7 +107,7 @@ function basicAuth(header_auth, callback) {
                 callback(new Error('Service data is null'), 400, null);
             return;
         }
-        strategy.SetNewAToken(app, function(err, status, scope) {
+        strategy.SetNewToken(app, function(err, status, scope) {
             if (err || !scope) {
                 err ? callback(err, status, null) : 
                     callback(new Error('Service data is null'), 400, null);
@@ -140,5 +129,17 @@ function bearerAuth(header_auth, callback) {
             return;
         }
         return callback(null, status, token);
+    });
+}
+
+// Обновление пользовательских токенов
+function updateToken(data, method, callback) {
+    return method(data, function(err, status, scope) {
+        if (err || !scope) {
+            err ? callback(err, status, null) : 
+                callback(TError(null, true, 400, 'Scope is null'), 400, null);
+            return;
+        }
+        return callback(null, 201, scope);
     });
 }
