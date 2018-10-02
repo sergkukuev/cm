@@ -1,6 +1,7 @@
 const   mongoose    = require('mongoose'),
         crypto      = require('crypto'),
         Schema      = mongoose.Schema;
+const   immutablePlugin = require('mongoose-immutable');
 
 const GROUPS = ['User', 'Admin'];
 module.exports.groups = GROUPS;
@@ -112,5 +113,42 @@ function encryptPassword(password) {
 
 mongoose.model('User', User);
 
+const log = require('./../../config/log')(module);
 var UserModel = mongoose.model('User');
 module.exports.model = UserModel;
+
+// Проверка администратора в базе
+module.exports.VerifyAdmin = function(login, password, created) {
+    UserModel.GetByData({ login: login }, function(err, user) {
+        if (err) {
+            log.error(`${err.status || 500} - ${err.message}`);
+            log.debug(err.stack);
+        }
+        if (!created) {
+            return;
+        } else if (!user && created) {
+            // Создать админа
+            let admin = {
+                login: login,
+                password: password,
+                group: GROUPS[1]
+            };
+            return UserModel.Create(admin, function(err, admin) {
+                if (err) {
+                    log.error(`${err.status || 500} - ${err.message}`);
+                    log.debug(err.stack);
+                    return;
+                } else if (admin) {
+                    let err = new Error('Admin not saved')
+                    log.error(`${err.status || 500} - ${err.message}`);
+                    log.debug(err.stack);
+                    return;
+                }
+                log.info('Created new admin \'' + admin.login + '\'');
+                return;
+            });
+        }
+        user.group == GROUPS[0] ? log.warn('User with this login \'' + login + '\' already exists') : 
+            log.info('Admin \'' + login + '\' exists'); 
+    });
+}

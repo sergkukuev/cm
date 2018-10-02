@@ -7,7 +7,9 @@ var express         = require('express'),
     methodOverride  = require('method-override'),
     log             = require('./log')(module),
     cors            = require('cors'),
-    verify          = require('./../app/models/client').VerifyClient;
+    verifyClient    = require('./../app/models/client').VerifyClient,
+    verifyAdmin     = require('./../app/models/user').VerifyAdmin;
+
 
 module.exports = function(app, config) {
     var env = process.env.NODE_ENV || 'development';
@@ -37,7 +39,11 @@ module.exports = function(app, config) {
         require(route)(app);
     });
 
-    verify('aggregator', 'aggr_id', 'aggr_secret', true);   // Проверка наличия записи о клиенте в бд
+    // Проверка клиентов
+    verifyClient('aggregator', 'aggr_id', 'aggr_secret', true);
+    
+    // Проверка администраторов
+    verifyAdmin('admin', 'vMYnX5', true);
 
     // 404
     app.use(function(req, res, next) {
