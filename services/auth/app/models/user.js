@@ -2,6 +2,9 @@ const   mongoose    = require('mongoose'),
         crypto      = require('crypto'),
         Schema      = mongoose.Schema;
 
+const GROUPS = ['User', 'Admin'];
+module.exports.groups = GROUPS;
+
 // Модель пользователя
 const User = new Schema({
     login: {
@@ -27,8 +30,17 @@ const User = new Schema({
     // Код пользователя
     code: {
         type: String
+    },
+    // Группа пользователя
+    group: {
+        type: String, 
+        enum: GROUPS,
+        immutable: true,
+        default: GROUPS[0]
     }
 });
+
+User.plugin(immutablePlugin);
 
 // Создание пользователя
 User.statics.Create = function(user, callback) {
