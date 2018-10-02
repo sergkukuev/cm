@@ -1,6 +1,7 @@
 const   basic       = require('basic-auth'),
         strategy    = require('./strategy'),
         validator   = require('./../validators'),
+        userGroup   = require('./../models/user').groups,
         log         = require('./../../config/log')(module);
 
 const   TError = require('./../validators/format').TError;
@@ -10,6 +11,7 @@ const   basicType  = /basic/i,
 module.exports = {
     ServiceAuth,    // Сервисная авторизация
     UserAuth,       // Пользовательская авторизация
+    AdminAuth,      // Авторизация администратора
     GetUserCode,    // Получить код пользователя
     // Обновление токенов пользователя
     SetUTokenByCode,
@@ -33,8 +35,20 @@ function ServiceAuth(header_auth, callback) {
     });
 }
 
+// Проверка авторизации администратора по токену
+function AdminAuth(header_auth, callback) {
+    log.info('Checker admin authorization');
+    UserAuth(header_auth, function(err, user) {
+        if (err)
+            return callback(err, null);
+        else if (user.group != userGroup[1])
+            return callback(TError(null, true, 'Access denied', 401), null);
+        return callback(null, user);
+    });
+}
+
 // Проверка авторизации пользователя по токену
-function UserAuth(header_auth , callback) {
+function UserAuth(header_auth, callback) {
     log.info('Checker user authorization');
     if (!validator.Validity(header_auth))
         return callback(TError(null, true, 'Header "user-authorization" is undefined', 401), null);
