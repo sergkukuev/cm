@@ -16,10 +16,6 @@ var Token = new Schema({
     created: {
         type: Date,
         default: Date.now
-    },
-    lastUse : {
-        type: Date,
-        default : Date.now
     }
 });
 
