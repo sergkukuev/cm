@@ -28,9 +28,7 @@ Client.statics.GetByData = function(id, secret, callback) {
         if (err) {
             return callback(err, null);
         } else if (!app) {
-            let err = new Error('Client with this data not found');
-            err.name = 'ServiceTokenError';
-            return callback(err, null);
+            return callback(new Error('Client not found'), null);
         }
         return callback(null, app);
     });
@@ -42,9 +40,7 @@ Client.statics.GetById = function(id, callback) {
         if (err) {
             return callback(err, null);
         } else if (!app) {
-            let err = new Error('Wrong access token');
-            err.name = 'ServiceTokenError';
-            return callback(err, null);
+            return callback(new Error('Client not found'), null);
         }
         return callback(null, app);
     });
@@ -52,11 +48,13 @@ Client.statics.GetById = function(id, callback) {
 
 // Удаление всех клиентов из базы
 Client.statics.Clear = function(callback) {
-    this.remove({}, function(err, result) {
-        if (err) 
+    return this.remove({}, function(err, result) {
+        if (err) {
             return callback(err, null);
-        else
-            result ? callback(null, result) : callback(new Error('Deleting failed'), null);
+        } else if (!result) {
+            return callback(new Error('Delete falied'), null);
+        }
+        return callback(null, result);
     });
 }
 

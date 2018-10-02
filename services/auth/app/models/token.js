@@ -1,8 +1,7 @@
 const mongoose  = require('mongoose'),
-      life      = require('../../config').security.STLife,
       Schema    = mongoose.Schema;
 
-// Модель токена доступа
+// Модель токена
 var Token = new Schema({
     userId: {
         type: String,
@@ -19,45 +18,46 @@ var Token = new Schema({
     }
 });
 
-// Создание токена доступа
+// Создание токена
 Token.statics.Create = function(token, callback) {
     token = new Token(token);  // Создаем модель токена из данных
-    token.save(function(err, token) {
-        if (err)
-            callback(err, null);
-        else
-            token ? callback(null, token) : callback(new Error('Token not saved'), null);
-        return;
+    return token.save(function(err, token) {
+        if (err) {
+            return callback(err, null);
+        } else if (!token) {
+            return callback(new Error('Token not save'), null);
+        }
+        return callback(null, token);
     });
 }
 
 // Получить все токены
 Token.statics.Get = function(callback) {
     return this.find(function(err, tokens) {
-        if (err)
+        if (err) {
             return callback(err, null);
-        if (tokens) {
-            let result = [];
-            for (let i = 0; i < tokens.length; i++)
-                result[i] = tokens[i];
-            return callback(null, result);
+        } else if (!tokens) {
+            return callback(new Error('Tokens not found'), null);
         }
-        return callback(null, null);
+        let result = [];
+        for (let i = 0; i < tokens.length; i++)
+            result[i] = tokens[i];
+        return callback(null, result);
     });
 }
 
-// Получить токены доступа по id пользователя
+// Получить токены по id пользователя
 Token.statics.GetByUserId = function(id, callback) {
     return this.find({ userId: id }, function(err, tokens) {
-        if (err)
+        if (err) {
             return callback(err, null);
-        if (tokens) {
-            let result = [];
-            for (let i = 0; i < tokens.length; i++)
-                result[i] = tokens[i];
-            return callback(null, result);
+        } else if (!tokens) {
+            return callback(new Error('Tokens not found'), null);
         }
-        return callback(null, null);
+        let result = [];
+        for (let i = 0; i < tokens.length; i++)
+            result[i] = tokens[i];
+        return callback(null, result);
     });
 }
 
@@ -67,29 +67,29 @@ Token.statics.GetByValue = function(value, callback) {
         if (err) {
             return callback(err, null);
         } else if (!token) {
-            let err = new Error('Token with this value not found');
-            err.name = 'TokenError';
-            return callback(err, null);
+            return callback(new Error('Token not found'), null);
         }
         return callback(null, token);
     });
 }
 
-// Удаление всех клиентов из базы
+// Удаление всех токенов из базы
 Token.statics.Clear = function(callback) {
-    this.remove({}, function(err, result) {
-        if (err) 
+    return this.remove({}, function(err, result) {
+        if (err) {
             return callback(err, null);
-        else
-            result ? callback(null, result) : callback(new Error('Deleting failed'), null);
+        } else if (!result) {
+            return callback(new Error('Delete falied'), null);
+        }
+        return callback(null, result);
     });
 }
 
-// Формат для выдачи сервису
+// Формат для выдачи сервисного токена
 Token.statics.Format = function(token) {
     return {
         token: token.value,
-        expires_in: life
+        expires_in: require('../../config').security.STLife
     };
 }
 
