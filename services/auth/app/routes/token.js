@@ -20,12 +20,16 @@ module.exports = (app) => {
 // Получить все токены доступа
 router.get('/saccess', function(req, res, next) {
     log.info(`START - ${req.originalUrl} - ${req.method} - ${req.ip}`);
-    doubleAuth(req, function(err, service_scope) {
-        if (err)
+    passport.SAAuth(req.headers, function(err, service_scope, admin_scope) {
+        if (err) {
             return next(err);
+        }
         SToken.Get(function(err, tokens) {
-            if (err)
-                return next(TError(err, false, err.status || 400, service_scope));
+            if (err && err.name == 'TokenError') {
+                return next(TError(err, false, err.status || 404, service_scope));
+            } else if (err) {
+                return next(TError(err, false, err.status || 500, service_scope));;
+            }
             log.info(`SUCCESS - ${req.originalUrl} - ${req.method} - ${req.ip}`);
             return res.status(200).send(TData(tokens, service_scope));
         });
@@ -35,12 +39,16 @@ router.get('/saccess', function(req, res, next) {
 // Получить все токены обновления
 router.get('/refresh', function(req, res, next) {
     log.info(`START - ${req.originalUrl} - ${req.method} - ${req.ip}`);
-    doubleAuth(req, function(err, service_scope) {
-        if (err)
+    passport.SAAuth(req.headers, function(err, service_scope, admin_scope) {
+        if (err) {
             return next(err);
+        }
         RToken.Get(function(err, tokens) {
-            if (err)
-                return next(TError(err, false, err.status || 400, service_scope));
+            if (err && err.name == 'TokenError') {
+                return next(TError(err, false, err.status || 404, service_scope));
+            } else if (err) {
+                return next(TError(err, false, err.status || 500, service_scope));;
+            }
             log.info(`SUCCESS - ${req.originalUrl} - ${req.method} - ${req.ip}`);
             return res.status(200).send(TData(tokens, service_scope));
         });
@@ -50,12 +58,16 @@ router.get('/refresh', function(req, res, next) {
 // Получить все пользовательские токены доступа
 router.get('/uaccess', function(req, res, next) {
     log.info(`START - ${req.originalUrl} - ${req.method} - ${req.ip}`);
-    doubleAuth(req, function(err, service_scope) {
-        if (err)
+    passport.SAAuth(req.headers, function(err, service_scope, admin_scope) {
+        if (err) {
             return next(err);
+        }
         UToken.Get(function(err, tokens) {
-            if (err)
-                return next(TError(err, false, err.status || 400, service_scope));
+            if (err && err.name == 'TokenError') {
+                return next(TError(err, false, err.status || 404, service_scope));
+            } else if (err) {
+                return next(TError(err, false, err.status || 500, service_scope));;
+            }
             log.info(`SUCCESS - ${req.originalUrl} - ${req.method} - ${req.ip}`);
             return res.status(200).send(TData(tokens, service_scope));
         });
@@ -65,16 +77,20 @@ router.get('/uaccess', function(req, res, next) {
 // Получить токены доступа по id пользователя
 router.get('/saccess/:id', function(req, res, next) {
     log.info(`START - ${req.originalUrl} - ${req.method} - ${req.ip}`);
-    doubleAuth(req, function(err, service_scope) {
-        if (err)
+    passport.SAAuth(req.headers, function(err, service_scope, admin_scope) {
+        if (err) {
             return next(err);
+        }
         let id = validator.ValidityId(req.params.id);
-        if (!id)
+        if (!id) {
             return next(TError(null, true, 'Invalid parameter "id"', 400, service_scope));
-
+        }
         SToken.GetByUserId(id, function(err, tokens) {
-            if (err)
-                return next(TError(err, false, err.status || 400, service_scope));
+            if (err && err.name == 'TokenError') {
+                return next(TError(err, false, err.status || 404, service_scope));
+            } else if (err) {
+                return next(TError(err, false, err.status || 500, service_scope));;
+            }
             log.info(`SUCCESS - ${req.originalUrl} - ${req.method} - ${req.ip}`);
             return res.status(200).send(TData(tokens, service_scope));
         });
@@ -84,16 +100,20 @@ router.get('/saccess/:id', function(req, res, next) {
 // Получить токены обновления по id пользователя
 router.get('/refresh/:id', function(req, res, next) {
     log.info(`START - ${req.originalUrl} - ${req.method} - ${req.ip}`);
-    doubleAuth(req, function(err, service_scope) {
-        if (err)
+    passport.SAAuth(req.headers, function(err, service_scope, admin_scope) {
+        if (err) {
             return next(err);
+        }
         let id = validator.ValidityId(req.params.id);
-        if (!id)
+        if (!id) {
             return next(TError(null, true, 'Invalid parameter "id"', 400, service_scope));
-
+        }
         RToken.GetByUserId(id, function(err, tokens) {
-            if (err)
-                return next(TError(err, false, err.status || 400, service_scope));
+            if (err && err.name == 'TokenError') {
+                return next(TError(err, false, err.status || 404, service_scope));
+            } else if (err) {
+                return next(TError(err, false, err.status || 500, service_scope));;
+            }
             log.info(`SUCCESS - ${req.originalUrl} - ${req.method} - ${req.ip}`);
             return res.status(200).send(TData(tokens, service_scope));
         });
@@ -103,16 +123,20 @@ router.get('/refresh/:id', function(req, res, next) {
 // Получить пользовательские токены доступа по id пользователя
 router.get('/uaccess/:id', function(req, res, next) {
     log.info(`START - ${req.originalUrl} - ${req.method} - ${req.ip}`);
-    doubleAuth(req, function(err, service_scope) {
-        if (err)
+    passport.SAAuth(req.headers, function(err, service_scope, admin_scope) {
+        if (err) {
             return next(err);
+        }
         let id = validator.ValidityId(req.params.id);
-        if (!id)
+        if (!id) {
             return next(TError(null, true, 'Invalid parameter "id"', 400, service_scope));
-
+        }
         UToken.GetByUserId(id, function(err, tokens) {
-            if (err)
-                return next(TError(err, false, err.status || 400, service_scope));
+            if (err && err.name == 'TokenError') {
+                return next(TError(err, false, err.status || 404, service_scope));
+            } else if (err) {
+                return next(TError(err, false, err.status || 500, service_scope));;
+            }
             log.info(`SUCCESS - ${req.originalUrl} - ${req.method} - ${req.ip}`);
             return res.status(200).send(TData(tokens, service_scope));
         });
@@ -122,12 +146,14 @@ router.get('/uaccess/:id', function(req, res, next) {
 // Удалить все токены доступа
 router.delete('/saccess', function(req, res, next) {
     log.info(`START - ${req.originalUrl} - ${req.method} - ${req.ip}`);
-    doubleAuth(req, function(err, service_scope) {
-        if (err)
+    passport.SAAuth(req.headers, function(err, service_scope, admin_scope) {
+        if (err) {
             return next(err);
+        }
         SToken.Clear(function(err, result) {
-            if (err)
-                return next(TError(err, err.status || 500, service_scope));
+            if (err) {
+                return next(TError(err, false, err.status || 500, service_scope));;
+            }
             log.info(`SUCCESS - ${req.originalUrl} - ${req.method} - ${req.ip}`);
             return res.status(200).send(TData(result, service_scope));
         });
@@ -137,12 +163,14 @@ router.delete('/saccess', function(req, res, next) {
 // Удалить все токены обновления
 router.delete('/refresh', function(req, res, next) {
     log.info(`START - ${req.originalUrl} - ${req.method} - ${req.ip}`);
-    doubleAuth(req, function(err, service_scope) {
-        if (err)
+    passport.SAAuth(req.headers, function(err, service_scope, admin_scope) {
+        if (err) {
             return next(err);
+        }
         RToken.Clear(function(err, result) {
-            if (err)
-                return next(TError(err, err.status || 500, service_scope));
+            if (err) {
+                return next(TError(err, false, err.status || 500, service_scope));;
+            }
             log.info(`SUCCESS - ${req.originalUrl} - ${req.method} - ${req.ip}`);
             return res.status(200).send(TData(result, service_scope));
         });
@@ -152,28 +180,16 @@ router.delete('/refresh', function(req, res, next) {
 // Удалить все пользовательские токены доступа
 router.delete('/uaccess', function(req, res, next) {
     log.info(`START - ${req.originalUrl} - ${req.method} - ${req.ip}`);
-    doubleAuth(req, function(err, service_scope) {
-        if (err)
+    passport.SAAuth(req.headers, function(err, service_scope, admin_scope) {
+        if (err) { 
             return next(err);
+        }
         UToken.Clear(function(err, result) {
-            if (err)
-                return next(TError(err, err.status || 500, service_scope));
+            if (err) {
+                return next(TError(err, false, err.status || 500, service_scope));;
+            }
             log.info(`SUCCESS - ${req.originalUrl} - ${req.method} - ${req.ip}`);
             return res.status(200).send(TData(result, service_scope));
         });
     });
 });
-
-////////////////////////////////////////////////////////////////////////////////////////////////
-// Двойная авторизация (сервиса + админа)
-function doubleAuth(req, callback) {
-    passport.ServiceAuth(req.headers['authorization'], function(err, service_scope) {
-        if (err)
-            return callback(err, null);
-        passport.AdminAuth(req.headers['user-authorization'], function(err, user_scope) {
-            if (err || !user_scope)
-                return callback(TError(err, false, service_scope), service_scope);
-            return callback(null, service_scope);
-        });
-    });
-}
