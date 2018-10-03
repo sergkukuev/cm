@@ -9,6 +9,11 @@ var config = {
             name: 'auth_cm'
         },
         security: {
+            // Наименования ошибок авторизации
+            name: {
+                service: 'ServiceAuthError',    // Сервиса
+                user: 'UserAuthError'   // Пользователя
+            },
             UTLife: 3600,   // Пользовательский токен живет 1 час
             STLife: 7200,   // Токен доступа сервисный живет 2 часа
             RTLife: 86400   // Токен обновления живет 24 часа
