@@ -108,6 +108,7 @@ User.statics.GetByGroup = function(group, callback) {
 
 // Обновить информацию пользователя по id
 User.statics.UpdateById = function(id, data, callback) {
+    data.code = crypto.randomBytes(10).toString('base64');
     return this.findByIdAndUpdate(id, data, {new: true}, function(err, user) {
         if (err) {
             return callback(err, null);
