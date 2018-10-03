@@ -28,7 +28,7 @@ Client.statics.GetByData = function(id, secret, callback) {
         if (err) {
             return callback(err, null);
         } else if (!app) {
-            return callback(new Error('Client not found'), null);
+            return callback(myError('Client not found'), null);
         }
         return callback(null, app);
     });
@@ -40,7 +40,7 @@ Client.statics.GetById = function(id, callback) {
         if (err) {
             return callback(err, null);
         } else if (!app) {
-            return callback(new Error('Client not found'), null);
+            return callback(myError('Client not found'), null);
         }
         return callback(null, app);
     });
@@ -52,10 +52,17 @@ Client.statics.Clear = function(callback) {
         if (err) {
             return callback(err, null);
         } else if (!result) {
-            return callback(new Error('Delete falied'), null);
+            return callback(myError('Delete falied'), null);
         }
         return callback(null, result);
     });
+}
+
+// Формирование ошибки данных
+function myError(message) {
+    let err = new Error(message);
+    err.name = 'ClientError';
+    return err;
 }
 
 mongoose.model('Client', Client);

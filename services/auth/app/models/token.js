@@ -25,7 +25,7 @@ Token.statics.Create = function(token, callback) {
         if (err) {
             return callback(err, null);
         } else if (!token) {
-            return callback(new Error('Token not save'), null);
+            return callback(myError('Token not save'), null);
         }
         return callback(null, token);
     });
@@ -37,7 +37,7 @@ Token.statics.Get = function(callback) {
         if (err) {
             return callback(err, null);
         } else if (!tokens) {
-            return callback(new Error('Tokens not found'), null);
+            return callback(myError('Tokens not found'), null);
         }
         let result = [];
         for (let i = 0; i < tokens.length; i++)
@@ -52,7 +52,7 @@ Token.statics.GetByUserId = function(id, callback) {
         if (err) {
             return callback(err, null);
         } else if (!tokens) {
-            return callback(new Error('Tokens not found'), null);
+            return callback(myError('Tokens not found'), null);
         }
         let result = [];
         for (let i = 0; i < tokens.length; i++)
@@ -67,7 +67,7 @@ Token.statics.GetByValue = function(value, callback) {
         if (err) {
             return callback(err, null);
         } else if (!token) {
-            return callback(new Error('Token not found'), null);
+            return callback(myError('Token not found'), null);
         }
         return callback(null, token);
     });
@@ -79,7 +79,7 @@ Token.statics.Clear = function(callback) {
         if (err) {
             return callback(err, null);
         } else if (!result) {
-            return callback(new Error('Delete falied'), null);
+            return callback(myError('Delete falied'), null);
         }
         return callback(null, result);
     });
@@ -91,6 +91,13 @@ Token.statics.Format = function(token) {
         token: token.value,
         expires_in: require('../../config').security.STLife
     };
+}
+
+// Формирование ошибки данных
+function myError(message) {
+    let err = new Error(message);
+    err.name = 'TokenError';
+    return err;
 }
 
 mongoose.model('AccessToken', Token);

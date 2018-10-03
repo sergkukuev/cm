@@ -48,7 +48,7 @@ User.statics.Create = function(user, callback) {
         if (err) {
             return callback(err, null);
         } else if (!user) {
-            return callback(new Error('User not saved'));
+            return callback(myError('User not saved'));
         }
         return callback(null, user);
     });
@@ -60,7 +60,7 @@ User.statics.GetById = function(id, callback) {
         if (err) {
             return callback(err, null);
         } else if (!user) {
-            return callback(new Error('User not found'));
+            return callback(myError('User not found'));
         } 
         return callback(null, user);
     });
@@ -72,7 +72,7 @@ User.statics.GetByData = function(data, callback) {
         if (err) {
             return callback(err, null);
         } else if (!user) {
-            return callback(new Error('User not found'));
+            return callback(myError('User not found'));
         } 
         return callback(null, user);
     });
@@ -85,7 +85,7 @@ User.statics.GetByCode = function(oldCode, callback) {
         if (err) {
             return callback(err, null);
         } else if (!user) {
-            return callback(new Error('User not found'));
+            return callback(myError('User not found'));
         }
         return callback(null, user);
     });
@@ -97,7 +97,7 @@ User.statics.GetByGroup = function(group, callback) {
         if (err) {
             return callback(err, null);
         } else if (!users) {
-            return callback(new Error('Users not found'));
+            return callback(myError('Users not found'));
         } 
         let result = [];
         for (let i = 0; i < users.length; i++)
@@ -112,7 +112,7 @@ User.statics.UpdateById = function(id, data, callback) {
         if (err) {
             return callback(err, null);
         } else if (!user) {
-            return callback(new Error('User not found'));
+            return callback(myError('User not found'));
         }
         return callback(null, user);
     });
@@ -129,7 +129,7 @@ User.statics.DeleteById = function(id, callback) {
         if (err) {
             return callback(err, null);
         } else if (!user) {
-            return callback(new Error('User not found'));
+            return callback(myError('User not found'));
         }
         return callback(null, user);
     });
@@ -141,7 +141,7 @@ User.statics.ClearByGroup = function(group, callback) {
         if (err) {
             return callback(err, null);
         } else if (!result) {
-            return callback(new Error('Delete failed'));
+            return callback(myError('Delete failed'));
         }
         return callback(null, result);
     });
@@ -161,6 +161,14 @@ User.virtual('password').set(function(password){
 // Зашифровка пароля
 function encryptPassword(password) {
     return crypto.createHmac('sha1', this.encPassword.salt).update(password).digest("hex");
+}
+
+
+// Формирование ошибки данных
+function myError(message) {
+    let err = new Error(message);
+    err.name = 'UserError';
+    return err;
 }
 
 mongoose.model('User', User);
