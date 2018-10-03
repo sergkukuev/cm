@@ -25,10 +25,12 @@ module.exports = {
 // Проверка сервиса по appId (name) и appSecret (pass)
 function CheckService(service, done) {
 	return Client.GetByData(service.name, service.pass, function(err, app) {
-		if (err && err.name == 'ServiceTokenError')
+		if (err && err.name == 'ClientError') {
+			err.name = cs.name.service;
 			return done(err, 401, null);
-		else if (err)
+		} else if (err) {
 			return done(err, 500, null);
+		}
 		return done(null, 200, app);
 	});
 }
@@ -37,10 +39,11 @@ function CheckService(service, done) {
 function CheckServiceByToken(token, done) {
 	return SToken.GetByValue(token, function(err, token) {
 		if (err && err.name == 'TokenError') {
-			err.name = 'ServiceTokenError';
+			err.name = cs.name.service;
 			return done(err, 401, null);
-		} else if (err)
+		} else if (err) {
 			return done(err, 500, null);
+		}
 		// Проверка на срок жизни токена
 		const life = (Date.now() - token.created) / 1000;
 		if (life > cs.STLife) {
@@ -50,21 +53,23 @@ function CheckServiceByToken(token, done) {
 				}
 			});
 			let err = new Error('Access token is expired');
-			err.name = 'ServiceTokenError';
+			err.name = cs.name.service;
 			return done(err, 401, null);
 		}
 		// Поиск клиента по идентификатору
 		return Client.GetById(token.userId, function(err, app) {
-			if (err && err.name == 'ServiceTokenError')
+			if (err && err.name == 'ClientError') {
+				err.name = cs.name.service;
 				return done(err, 401, null);
-			else if (err)
+			} else if (err) {
 				return done(err, 500, null);
+			}
 			return done(null, 200, SToken.Format(token));
 		});
 	});
 }
 
-// Установка нового токена доступа
+// Установка нового токена доступа для сервиса
 function SetNewToken(application, done) {
 	let token = {
 		userId: application.id,
@@ -80,10 +85,11 @@ function SetNewToken(application, done) {
 function CheckUser(token, done) {
 	return UToken.GetByValue(token, function(err, token) {
 		if (err && err.name == 'TokenError') {
-			err.name = 'UserTokenError';
+			err.name = cs.name.user;
 			return done(err, 401, null);
-		} else if (err)
+		} else if (err) {
 			return done(err, 500, null);
+		}	
 		// Проверка на срок жизни токена
 		const life = (Date.now() - token.created) / 1000;
 		if (life > cs.UTLife) {
@@ -93,15 +99,16 @@ function CheckUser(token, done) {
 				}
 			});
 			let err = new Error('Access token is expired');
-			err.name = 'UserTokenError';
+			err.name = cs.name.user;
 			return done(err, 401, null);
 		}
 		// Поиск пользователя по идентификатору
 		return User.GetById(token.userId, function(err, user) {	
-			if (err)
+			if (err && err.name == 'UserError') {
+				return done(err, 404, null);
+			} else if (err) {
 				return done(err, 500, null);
-			else if (!user)
-				return done(new Error('User not found'), 404, null);
+			}
 			return done(null, 200, user);
 		});
 	});
@@ -110,19 +117,20 @@ function CheckUser(token, done) {
 // Получение кода пользователя
 function GetUserCode(data, done) {
 	return User.GetByData({ login: data.login }, function(err, user) {
-		if (err)
+		if (err && err.name == 'UserError') {
+			return done(err, 404, null);
+		} else if (err) {
 			return done(err, 500, null);
-		else if (!user) 
-			return done(new Error('User not found'), 404, null);
-		else if (!user.Verify(data.password)) {
-			return done(new Error('Login or password is wrong'), 400, null);
+		} else if (!user.Verify(data.password)) {
+			return done(new Error('Login or password is wrong'), 401, null);
 		}
 		// Идентификация пройдена успешно, обновляем и выдаем код
 		User.GetByCode(user.code, function(err, user) {
-			if (err)
+			if (err && err.name == 'UserError') {
+				return done(err, 404, null);
+			} else if (err) {
 				return done(err, 500, null);
-			else if (!user) 
-				return done(new Error('User not found'), 404, null);
+			}
 			return done(null, 202, user.code);
 		});
 	});
@@ -131,41 +139,44 @@ function GetUserCode(data, done) {
 // Создание токенов для пользователя по коду
 function UTokenByCode(code, done) {
 	return User.GetByData({ code: code }, function(err, user) {
-		if (err)
+		if (err && err.name == 'UserError') {
+			return done(err, 404, null);
+		} else if (err) {
 			return done(err, 500, null);
-		else if (!user)
-			return done(new Error('User not found'), 404, null);
-		return refreshUToken(user.id, null, done);
+		}
+		return refreshUToken(user._id, null, done);
 	});
 }
 
 // Создание токенов для пользователя по паролю
 function UTokenByPass(data, done) {
 	return User.GetByData({ login: data.login }, function(err, user) {
-		if (err)
+		if (err && err.name == 'UserError') {
+			return done(err, 404, null);
+		} else if (err) {
 			return done(err, 500, null);
-		else if (!user)
-			return done(new Error('User not found'), 404, null);
-		else if (!user.Verify(data.password))
+		} else if (!user.Verify(data.password)) {
 			return done(new Error('Login or password is wrong'), 401, null);
-		return refreshUToken(user.id, null, done);
+		}
+		return refreshUToken(user._id, null, done);
 	});
 }
 
 // Создание токенов для пользователя по токену
 function UTokenByToken(refresh, done) {
 	RToken.GetByValue(refresh, function(err, token) {
-		if (err)
+		if (err && err.name == 'TokenError') {
+			return done(err, 404, null);
+		} else if (err) {
 			return done(err, 500, null);
-		if (!token)
-			return done(new Error('Refresh token not found'), 404, false);
-		
+		}
 		return User.GetById(token.userId, function(err, user) {
-			if (err)
-				return done(err, 500);
-			if (!user)
-				return done(new Error('User not found'), 404, false);
-			return refreshUToken(user.id, token.created, done);
+			if (err && err.name == 'UserError') {
+				return done(err, 404, null);
+			} else if (err) {
+				return done(err, 500, null);
+			}
+			return refreshUToken(user._id, token.created, done);
 		});
 	});
 }
@@ -174,8 +185,9 @@ function UTokenByToken(refresh, done) {
 // Удаление и создание токенов доступа и обновления
 function refreshUToken(userId, life, done) {
 	return deleteUToken(userId, life, function(err, status) {
-		if (err)
+		if (err) {
 			return done(err, status, null);
+		}
 		return createUToken(userId, function(err, status, result) {
 			err ? done(err, status, null) : done(null, status, result);
 		});
@@ -186,20 +198,22 @@ function refreshUToken(userId, life, done) {
 function deleteUToken(userId, life, done) {
 	// Удаление токена обновления
 	RToken.remove({ userId: userId }, function(err) {
-		if (err)
+		if (err) {
 			return done(err, 500);
+		}
 	});
 	// Проверка на срок жизни токена
 	// если обновление происходит по токену обновления
 	let alife = true;
 	if (life) {
 		life = (Date.now() - life) / 1000;
-		if (life > cs.RTLife)
-			alife = false;
+		if (life > cs.RTLife) {
+			alife = false;	// Токен стух
+		}
 	}
-	if (!alife) {	// Токен стух
+	if (!alife) {	
 		let err = new Error('Refresh token is expired');
-		err.name = 'RefreshTokenError';
+		err.name = cs.name.user;
 		return done(err, 401);
 	} else {	// Токен жив или обновление не по токену (удаляем старый токен доступа)
 		return UToken.remove({ userId: userId }, function(err) {
@@ -217,12 +231,14 @@ function createUToken(userId, done) {
 		userId: userId
 	};
 	return RToken.Create(token, function(err, refresh_token) {
-		if (err)
+		if (err) {
 			return done(err, 500, null);
+		}
 		token.value = crypto.randomBytes(32).toString('base64');
 		UToken.Create(token, function(err, access_token) {
-			if (err)
+			if (err) {
 				return done(err, 500, null);
+			}
 			let result = {
 				access: access_token.value,
 				refresh: refresh_token.value,
