@@ -1,8 +1,10 @@
 // Маршруты работы с пользователями
 const   router    = require('express').Router(),
         log       = require('./../../config/log')(module),
-        validator = require('./../validators'),
         passport  = require('./../passport');
+
+const   User = require('./../models/user').model,
+        userGroups = require('./../models/user').groups;
 
 // Форматирование данных перед отправкой
 let TError  = require('./../validators/format').TError,
@@ -27,15 +29,12 @@ router.get('/', function(req, res, next) {
 // Получить идентификатор пользователя по токену
 router.get('/id', function(req, res, next) {
     log.info(`START - ${req.originalUrl} - ${req.method} - ${req.ip}`);
-    passport.ServiceAuth(req.headers['authorization'], function(err, scope) {
-        if (err)
+    passport.SUAuth(req.headers, function(err, service_scope, user) {
+        if (err) {
             return next(err);
-        return passport.UserAuth(req.headers['user-authorization'], function(err, user) {
-            if (err)
-                return next(err);
-            log.info(`SUCCESS - ${req.originalUrl} - ${req.method} - ${req.ip}`);
-            return res.status(200).send(TData({id : user.id}, scope));
-        });
+        }
+        log.info(`SUCCESS - ${req.originalUrl} - ${req.method} - ${req.ip}`);
+        return res.status(200).send(TData({id : user.id}, service_scope));
     });
 });
 
